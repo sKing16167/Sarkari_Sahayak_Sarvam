@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import schemesData from '@/data/schemes.json';
+import { SchemeRealIcon } from '@/components/CivicIcons';
 import {
   ArrowLeft,
   Volume2,
@@ -245,8 +246,12 @@ export default function SchemeDetailPage() {
         <div className="mt-6 bg-[#FFFDF9] rounded-3xl p-6 sm:p-8 border-2 border-[#E6D7C3] shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start gap-4 sm:gap-5">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#FFF3E0] border border-[#FFE0B2] flex items-center justify-center text-4xl sm:text-5xl flex-shrink-0 shadow-2xs">
-                {scheme.icon}
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#FFF3E0] border border-[#FFE0B2] flex items-center justify-center p-2 flex-shrink-0 shadow-2xs">
+                <SchemeRealIcon
+                  iconId={scheme.iconId}
+                  category={scheme.category}
+                  className="w-12 h-12 sm:w-14 sm:h-14"
+                />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -365,9 +370,10 @@ export default function SchemeDetailPage() {
               {documentsList.map((d, i) => (
                 <span
                   key={i}
-                  className="inline-block px-3.5 py-2 bg-[#FFF3E0] text-amber-950 border border-[#FFE0B2] rounded-xl text-sm sm:text-base font-bold"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#FFF3E0] text-amber-950 border border-[#FFE0B2] rounded-xl text-sm sm:text-base font-bold"
                 >
-                  📄 {d}
+                  <FileText className="w-4 h-4 text-saffron shrink-0" />
+                  <span>{d}</span>
                 </span>
               ))}
             </div>

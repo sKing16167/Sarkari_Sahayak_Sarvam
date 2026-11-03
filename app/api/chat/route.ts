@@ -48,7 +48,7 @@ function matchSchemes(transcript: string, schemes: Scheme[]): Scheme[] {
       if (lower.includes(s.name.en.toLowerCase())) score += 5;
       if (lower.includes(s.name.hi)) score += 5;
       if (lower.includes(s.name.mr)) score += 5;
-      for (const k of s.keywords) {
+      for (const k of s.keywords || []) {
         if (lower.includes(k.toLowerCase())) {
           score += 2;
         }

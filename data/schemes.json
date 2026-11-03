@@ -120,7 +120,55 @@
       ]
     },
     "officialLink": "https://pmkisan.gov.in",
-    "keywords": ["kisan", "farmer", "kheti", "pm kisan", "instalment", "kist", "sheti", "krishi", "6000", "2000", "किसान", "शेतकरी"]
+    "keywords": [
+      "kisan",
+      "farmer",
+      "kheti",
+      "pm kisan",
+      "instalment",
+      "kist",
+      "sheti",
+      "krishi",
+      "6000",
+      "2000",
+      "किसान",
+      "शेतकरी"
+    ],
+    "iconId": "tractor_harvest",
+    "sourcePortal": "pmkisan.gov.in (Ministry of Agriculture & Farmers Welfare)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 85,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer"
+      ],
+      "maxAnnualIncome": 800000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "land",
+        "mobile"
+      ]
+    }
   },
   {
     "id": "ladki-bahin",
@@ -243,7 +291,59 @@
       ]
     },
     "officialLink": "https://ladkibahin.maharashtra.gov.in",
-    "keywords": ["ladki bahin", "ladki behan", "women", "mahila", "maharashtra", "1500", "majhi ladki", "bahin", "behen", "लाडकी", "बहीण", "महिला"]
+    "keywords": [
+      "ladki bahin",
+      "ladki behan",
+      "women",
+      "mahila",
+      "maharashtra",
+      "1500",
+      "majhi ladki",
+      "bahin",
+      "behen",
+      "लाडकी",
+      "बहीण",
+      "महिला"
+    ],
+    "iconId": "women_empowerment",
+    "sourcePortal": "ladakibahin.maharashtra.gov.in (Govt of Maharashtra WCD)",
+    "criteria": {
+      "minAge": 21,
+      "maxAge": 65,
+      "genders": [
+        "female"
+      ],
+      "occupations": [
+        "homemaker",
+        "farmer",
+        "laborer",
+        "vendor",
+        "artisan",
+        "unemployed"
+      ],
+      "maxAnnualIncome": 250000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "maharashtra"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "income",
+        "ration",
+        "photo"
+      ]
+    }
   },
   {
     "id": "ayushman-bharat",
@@ -362,7 +462,64 @@
       ]
     },
     "officialLink": "https://beneficiary.nha.gov.in",
-    "keywords": ["ayushman", "pmjay", "health", "hospital", "ilaj", "treatment", "5 lakh", "bimari", "doctor", "swasthya", "card", "vaya vandana", "आयुष्मान", "इलाज", "आरोग्य"]
+    "keywords": [
+      "ayushman",
+      "pmjay",
+      "health",
+      "hospital",
+      "ilaj",
+      "treatment",
+      "5 lakh",
+      "bimari",
+      "doctor",
+      "swasthya",
+      "card",
+      "vaya vandana",
+      "आयुष्मान",
+      "इलाज",
+      "आरोग्य"
+    ],
+    "iconId": "hospital_shield",
+    "sourcePortal": "pmjay.gov.in (National Health Authority)",
+    "criteria": {
+      "minAge": 0,
+      "maxAge": 100,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer",
+        "laborer",
+        "vendor",
+        "artisan",
+        "homemaker",
+        "senior",
+        "unemployed",
+        "student"
+      ],
+      "maxAnnualIncome": 250000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "ration",
+        "mobile"
+      ]
+    }
   },
   {
     "id": "pm-ujjwala",
@@ -477,7 +634,57 @@
       ]
     },
     "officialLink": "https://www.pmuy.gov.in",
-    "keywords": ["ujjwala", "gas", "cylinder", "chulha", "lpg", "rasoi", "subsidy", "gas connection", "उज्ज्वला", "गैस", "सिलेंडर", "शेगडी"]
+    "keywords": [
+      "ujjwala",
+      "gas",
+      "cylinder",
+      "chulha",
+      "lpg",
+      "rasoi",
+      "subsidy",
+      "gas connection",
+      "उज्ज्वला",
+      "गैस",
+      "सिलेंडर",
+      "शेगडी"
+    ],
+    "iconId": "lpg_cylinder",
+    "sourcePortal": "pmuy.gov.in (Ministry of Petroleum & Natural Gas)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 80,
+      "genders": [
+        "female"
+      ],
+      "occupations": [
+        "homemaker",
+        "laborer",
+        "farmer",
+        "artisan",
+        "vendor"
+      ],
+      "maxAnnualIncome": 250000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "sc_st",
+        "obc",
+        "general",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "ration",
+        "bank",
+        "photo"
+      ]
+    }
   },
   {
     "id": "pm-awas",
@@ -592,7 +799,62 @@
       ]
     },
     "officialLink": "https://pmayg.nic.in",
-    "keywords": ["awas", "makan", "ghar", "home", "house", "pmay", "pucca ghar", "gramin awas", "kholi", "gharkul", "आवास", "मकान", "घरकुल"]
+    "keywords": [
+      "awas",
+      "makan",
+      "ghar",
+      "home",
+      "house",
+      "pmay",
+      "pucca ghar",
+      "gramin awas",
+      "kholi",
+      "gharkul",
+      "आवास",
+      "मकान",
+      "घरकुल"
+    ],
+    "iconId": "brick_home",
+    "sourcePortal": "pmaymis.gov.in / pmayg.nic.in (MoHUA & MoRD)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 75,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer",
+        "laborer",
+        "vendor",
+        "artisan",
+        "homemaker",
+        "senior",
+        "unemployed"
+      ],
+      "maxAnnualIncome": 600000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "income",
+        "ration"
+      ]
+    }
   },
   {
     "id": "sukanya-samriddhi",
@@ -704,7 +966,60 @@
       ]
     },
     "officialLink": "https://www.indiapost.gov.in",
-    "keywords": ["sukanya", "samriddhi", "girl", "beti", "ladki", "savings", "post office", "bachee", "education", "daughter", "सुकन्या", "बेटी", "मुलगी"]
+    "keywords": [
+      "sukanya",
+      "samriddhi",
+      "girl",
+      "beti",
+      "ladki",
+      "savings",
+      "post office",
+      "bachee",
+      "education",
+      "daughter",
+      "सुकन्या",
+      "बेटी",
+      "मुलगी"
+    ],
+    "iconId": "scholar_book",
+    "sourcePortal": "indiapost.gov.in / nsiindia.gov.in (Ministry of Finance)",
+    "criteria": {
+      "minAge": 0,
+      "maxAge": 45,
+      "genders": [
+        "female",
+        "male"
+      ],
+      "occupations": [
+        "farmer",
+        "homemaker",
+        "laborer",
+        "vendor",
+        "artisan",
+        "entrepreneur",
+        "student"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "photo",
+        "bank"
+      ]
+    }
   },
   {
     "id": "pm-vishwakarma",
@@ -819,7 +1134,60 @@
       ]
     },
     "officialLink": "https://pmvishwakarma.gov.in",
-    "keywords": ["vishwakarma", "artisan", "carpenter", "tailor", "silai", "barber", "mason", "potter", "toolkit", "15000", "karigar", "विश्वकर्मा", "सिलाई", "कारीगर", "सुतार", "शिंपी"]
+    "keywords": [
+      "vishwakarma",
+      "artisan",
+      "carpenter",
+      "tailor",
+      "silai",
+      "barber",
+      "mason",
+      "potter",
+      "toolkit",
+      "15000",
+      "karigar",
+      "विश्वकर्मा",
+      "सिलाई",
+      "कारीगर",
+      "सुतार",
+      "शिंपी"
+    ],
+    "iconId": "artisan_tools",
+    "sourcePortal": "pmvishwakarma.gov.in (Ministry of MSME)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 70,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "artisan",
+        "entrepreneur"
+      ],
+      "maxAnnualIncome": 800000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "obc",
+        "sc_st",
+        "general",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "mobile",
+        "ration"
+      ]
+    }
   },
   {
     "id": "pm-surya-ghar",
@@ -934,7 +1302,59 @@
       ]
     },
     "officialLink": "https://pmsuryaghar.gov.in",
-    "keywords": ["surya ghar", "solar", "bijli", "electricity", "muft bijli", "300 unit", "78000", "rooftop", "सोलर", "बिजली", "सूर्य घर", "वीज"]
+    "keywords": [
+      "surya ghar",
+      "solar",
+      "bijli",
+      "electricity",
+      "muft bijli",
+      "300 unit",
+      "78000",
+      "rooftop",
+      "सोलर",
+      "बिजली",
+      "सूर्य घर",
+      "वीज"
+    ],
+    "iconId": "solar_roof",
+    "sourcePortal": "pmsuryaghar.gov.in (Ministry of New & Renewable Energy)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 85,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer",
+        "homemaker",
+        "entrepreneur",
+        "artisan",
+        "vendor",
+        "senior"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "mobile"
+      ]
+    }
   },
   {
     "id": "pm-fasal-bima",
@@ -1045,7 +1465,53 @@
       ]
     },
     "officialLink": "https://pmfby.gov.in",
-    "keywords": ["fasal", "bima", "crop", "insurance", "barish", "nuksan", "pmfby", "pik vima", "kheti", "फसल", "बीमा", "पीक विमा"]
+    "keywords": [
+      "fasal",
+      "bima",
+      "crop",
+      "insurance",
+      "barish",
+      "nuksan",
+      "pmfby",
+      "pik vima",
+      "kheti",
+      "फसल",
+      "बीमा",
+      "पीक विमा"
+    ],
+    "iconId": "crop_shield",
+    "sourcePortal": "pmfby.gov.in (Ministry of Agriculture)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 85,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "land"
+      ]
+    }
   },
   {
     "id": "kisan-credit-card",
@@ -1152,7 +1618,53 @@
       ]
     },
     "officialLink": "https://pmkisan.gov.in",
-    "keywords": ["kcc", "kisan credit card", "loan", "karz", "4%", "kheti loan", "dairy loan", "किसान क्रेडिट", "कर्ज", "लोन"]
+    "keywords": [
+      "kcc",
+      "kisan credit card",
+      "loan",
+      "karz",
+      "4%",
+      "kheti loan",
+      "dairy loan",
+      "किसान क्रेडिट",
+      "कर्ज",
+      "लोन"
+    ],
+    "iconId": "kcc_card",
+    "sourcePortal": "myscheme.gov.in / pmkisan.gov.in (NABARD & Dept of Financial Services)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 75,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "land",
+        "photo"
+      ]
+    }
   },
   {
     "id": "pm-matru-vandana",
@@ -1263,7 +1775,57 @@
       ]
     },
     "officialLink": "https://pmmvy.wcd.gov.in",
-    "keywords": ["matru vandana", "pregnant", "garbhvati", "delivery", "baby", "mother", "pmmvy", "5000", "mamta", "गर्भवती", "मातृ वंदना", "प्रसूती"]
+    "keywords": [
+      "matru vandana",
+      "pregnant",
+      "garbhvati",
+      "delivery",
+      "baby",
+      "mother",
+      "pmmvy",
+      "5000",
+      "mamta",
+      "गर्भवती",
+      "मातृ वंदना",
+      "प्रसूती"
+    ],
+    "iconId": "mother_child",
+    "sourcePortal": "pmmvy.wcd.gov.in (Ministry of Women & Child Development)",
+    "criteria": {
+      "minAge": 19,
+      "maxAge": 45,
+      "genders": [
+        "female"
+      ],
+      "occupations": [
+        "homemaker",
+        "laborer",
+        "farmer",
+        "vendor",
+        "artisan",
+        "unemployed"
+      ],
+      "maxAnnualIncome": 800000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "mobile"
+      ]
+    }
   },
   {
     "id": "pm-svanidhi",
@@ -1362,7 +1924,55 @@
       ]
     },
     "officialLink": "https://pmsvanidhi.mohua.gov.in",
-    "keywords": ["svanidhi", "street vendor", "thela", "rehdi", "patri", "10000", "50000", "dukan", "feriwala", "स्वनिधि", "ठेला", "फेरीवाला"]
+    "keywords": [
+      "svanidhi",
+      "street vendor",
+      "thela",
+      "rehdi",
+      "patri",
+      "10000",
+      "50000",
+      "dukan",
+      "feriwala",
+      "स्वनिधि",
+      "ठेला",
+      "फेरीवाला"
+    ],
+    "iconId": "street_cart",
+    "sourcePortal": "pmsvanidhi.mohua.gov.in (Ministry of Housing & Urban Affairs)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 65,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "vendor",
+        "entrepreneur"
+      ],
+      "maxAnnualIncome": 500000,
+      "areas": [
+        "urban",
+        "rural"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "mobile"
+      ]
+    }
   },
   {
     "id": "pm-janaushadhi",
@@ -1461,7 +2071,58 @@
       ]
     },
     "officialLink": "https://janaushadhi.gov.in",
-    "keywords": ["janaushadhi", "medicine", "dawa", "dawai", "generic", "sasti dawa", "sugar", "bp", "medical", "जनऔषधि", "दवा", "औषध"]
+    "keywords": [
+      "janaushadhi",
+      "medicine",
+      "dawa",
+      "dawai",
+      "generic",
+      "sasti dawa",
+      "sugar",
+      "bp",
+      "medical",
+      "जनऔषधि",
+      "दवा",
+      "औषध"
+    ],
+    "iconId": "medicine_kit",
+    "sourcePortal": "janaushadhi.gov.in (Dept of Pharmaceuticals)",
+    "criteria": {
+      "minAge": 0,
+      "maxAge": 100,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer",
+        "laborer",
+        "vendor",
+        "artisan",
+        "homemaker",
+        "student",
+        "entrepreneur",
+        "senior",
+        "unemployed"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": []
+    }
   },
   {
     "id": "atal-pension-eshram",
@@ -1568,7 +2229,59 @@
       ]
     },
     "officialLink": "https://eshram.gov.in",
-    "keywords": ["pension", "atal", "eshram", "e-shram", "majdoor", "worker", "bima", "suraksha", "5000", "budhapa", "पेंशन", "ई-श्रम", "मजदूर"]
+    "keywords": [
+      "pension",
+      "atal",
+      "eshram",
+      "e-shram",
+      "majdoor",
+      "worker",
+      "bima",
+      "suraksha",
+      "5000",
+      "budhapa",
+      "पेंशन",
+      "ई-श्रम",
+      "मजदूर"
+    ],
+    "iconId": "pension_shield",
+    "sourcePortal": "eshram.gov.in / npscra.nsdl.co.in (Ministry of Labour & Employment)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 59,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "laborer",
+        "vendor",
+        "artisan",
+        "farmer",
+        "homemaker"
+      ],
+      "maxAnnualIncome": 250000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "mobile"
+      ]
+    }
   },
   {
     "id": "lakhpati-didi",
@@ -1674,7 +2387,54 @@
       ]
     },
     "officialLink": "https://lakhpatididi.gov.in",
-    "keywords": ["lakhpati", "didi", "shg", "bachat gat", "drone didi", "mahila loan", "samuh", "लखपति", "दीदी", "बचत गट", "समूह"]
+    "keywords": [
+      "lakhpati",
+      "didi",
+      "shg",
+      "bachat gat",
+      "drone didi",
+      "mahila loan",
+      "samuh",
+      "लखपति",
+      "दीदी",
+      "बचत गट",
+      "समूह"
+    ],
+    "iconId": "shg_women",
+    "sourcePortal": "lakhpatididi.gov.in (Ministry of Rural Development)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 60,
+      "genders": [
+        "female"
+      ],
+      "occupations": [
+        "homemaker",
+        "artisan",
+        "farmer",
+        "entrepreneur",
+        "vendor"
+      ],
+      "maxAnnualIncome": 300000,
+      "areas": [
+        "rural"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "ration"
+      ]
+    }
   },
   {
     "id": "pm-yasasvi",
@@ -1789,7 +2549,53 @@
       ]
     },
     "officialLink": "https://scholarships.gov.in",
-    "keywords": ["scholarship", "yasasvi", "student", "school", "college", "padhai", "chatravritti", "nsp", "shikshan", "छात्रवृत्ति", "स्कॉलरशिप", "शिष्यवृत्ती"]
+    "keywords": [
+      "scholarship",
+      "yasasvi",
+      "student",
+      "school",
+      "college",
+      "padhai",
+      "chatravritti",
+      "nsp",
+      "shikshan",
+      "छात्रवृत्ति",
+      "स्कॉलरशिप",
+      "शिष्यवृत्ती"
+    ],
+    "iconId": "graduation_cap",
+    "sourcePortal": "scholarships.gov.in (Ministry of Social Justice & Empowerment)",
+    "criteria": {
+      "minAge": 13,
+      "maxAge": 25,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "student"
+      ],
+      "maxAnnualIncome": 250000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "obc",
+        "sc_st",
+        "general"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "income",
+        "caste"
+      ]
+    }
   },
   {
     "id": "mgnrega",
@@ -1899,7 +2705,56 @@
       ]
     },
     "officialLink": "https://nrega.nic.in",
-    "keywords": ["mgnrega", "manrega", "nrega", "job card", "rojgar", "100 din", "majduri", "kaam", "मनरेगा", "जॉब कार्ड", "रोजगार"]
+    "keywords": [
+      "mgnrega",
+      "manrega",
+      "nrega",
+      "job card",
+      "rojgar",
+      "100 din",
+      "majduri",
+      "kaam",
+      "मनरेगा",
+      "जॉब कार्ड",
+      "रोजगार"
+    ],
+    "iconId": "rural_work",
+    "sourcePortal": "nrega.nic.in (Ministry of Rural Development)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 65,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "laborer",
+        "farmer",
+        "unemployed",
+        "homemaker"
+      ],
+      "maxAnnualIncome": 250000,
+      "areas": [
+        "rural"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "ration",
+        "photo"
+      ]
+    }
   },
   {
     "id": "pm-jan-suraksha",
@@ -2006,6 +2861,1298 @@
       ]
     },
     "officialLink": "https://jansuraksha.gov.in",
-    "keywords": ["suraksha bima", "jeevan jyoti", "pmsby", "pmjjby", "20 rupaye", "436", "insurance", "accident", "2 lakh", "सुरक्षा बीमा", "जीवन ज्योति"]
+    "keywords": [
+      "suraksha bima",
+      "jeevan jyoti",
+      "pmsby",
+      "pmjjby",
+      "20 rupaye",
+      "436",
+      "insurance",
+      "accident",
+      "2 lakh",
+      "सुरक्षा बीमा",
+      "जीवन ज्योति"
+    ],
+    "iconId": "life_shield",
+    "sourcePortal": "jansuraksha.gov.in (Department of Financial Services)",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 70,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer",
+        "laborer",
+        "vendor",
+        "artisan",
+        "homemaker",
+        "student",
+        "entrepreneur",
+        "senior"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "mobile"
+      ]
+    }
+  },
+  {
+    "id": "pm-mudra-yojana",
+    "icon": "🏦",
+    "iconId": "mudra_bank",
+    "category": "livelihood",
+    "sourcePortal": "mudra.org.in / jansamarth.in (Ministry of Finance)",
+    "name": {
+      "hi": "प्रधानमंत्री मुद्रा योजना (PMMY - शिशु, किशोर व तरुण ऋण)",
+      "mr": "पंतप्रधान मुद्रा योजना (PMMY - व्यवसाय कर्ज)",
+      "en": "Pradhan Mantri MUDRA Yojana (PMMY Micro-Enterprise Loan)"
+    },
+    "tagline": {
+      "hi": "छोटे व्यापार, दुकान, डेयरी और स्वरोजगार के लिए बिना गारंटी ₹20 लाख तक का बैंक लोन",
+      "mr": "छोट्या व्यवसायासाठी आणि दुकानासाठी विना गॅरंटी ₹20 लाखांपर्यंत बँक कर्ज",
+      "en": "Collateral-free business loan up to ₹20 Lakh under Shishu, Kishore, Tarun & Tarun Plus"
+    },
+    "benefitBadge": {
+      "hi": "बिना गारंटी ₹50,000 से ₹20 लाख तक व्यापार ऋण",
+      "mr": "विना गॅरंटी ₹50,000 ते ₹20 लाखांपर्यंत व्यवसाय कर्ज",
+      "en": "Collateral-free loan from ₹50,000 up to ₹20 Lakh"
+    },
+    "benefits": [
+      "Shishu Loan up to ₹50,000 for starting a small shop or micro unit",
+      "Kishore Loan from ₹50,000 to ₹5 Lakh and Tarun Plus up to ₹20 Lakh for expansion",
+      "Zero collateral/security required and Mudra RuPay debit card provided for working capital"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "शिशु ऋण: नई दुकान या छोटा काम शुरू करने के लिए ₹50,000 तक का तुरंत लोन",
+        "किशोर व तरुण प्लस ऋण: व्यापार बढ़ाने के लिए ₹5 लाख से ₹20 लाख तक की सहायता",
+        "कोई जमीन या प्रॉपर्टी गिरवी रखने की जरूरत नहीं (बिना गारंटी लोन)"
+      ],
+      "mr": [
+        "शिशु कर्ज: नवीन दुकान किंवा छोटा व्यवसाय सुरू करण्यासाठी ₹50,000 पर्यंत कर्ज",
+        "किशोर व तरुण प्लस कर्ज: व्यवसाय वाढवण्यासाठी ₹5 लाख ते ₹20 लाखांपर्यंत मदत",
+        "कोणतीही जमीन किंवा मालमत्ता तारण ठेवण्याची गरज नाही"
+      ],
+      "en": [
+        "Shishu Loan up to ₹50,000 for starting a small shop or micro unit",
+        "Kishore Loan from ₹50,000 to ₹5 Lakh and Tarun Plus up to ₹20 Lakh for expansion",
+        "Zero collateral/security required and Mudra RuPay debit card provided"
+      ]
+    },
+    "eligibility": [
+      "Any Indian citizen aged 18 to 65 years planning to start or expand a non-farm micro business",
+      "Shopkeepers, tailors, food stalls, auto/taxi operators, artisans, and dairy/poultry units",
+      "Applicant should not be a defaulter at any bank or financial institution"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "18 से 65 वर्ष का कोई भी भारतीय नागरिक जो छोटा व्यापार, दुकान, सिलाई या डेयरी शुरू करना चाहता है",
+        "दुकानदार, फल-सब्जी विक्रेता, कारीगर, ऑटो चालक और छोटे उद्यमी पात्र हैं",
+        "आवेदक किसी बैंक का डिफॉल्टर नहीं होना चाहिए"
+      ],
+      "mr": [
+        "18 ते 65 वयोगटातील कोणताही भारतीय नागरिक जो छोटा व्यवसाय किंवा दुकान सुरू करू इच्छितो",
+        "दुकानदार, कारागीर, फळ-भाजी विक्रेते आणि छोटे व्यावसायिक पात्र आहेत",
+        "अर्जदार कोणत्याही बँकेचा थकबाकीदार नसावा"
+      ],
+      "en": [
+        "Any Indian citizen aged 18 to 65 years planning to start or expand a non-farm micro business",
+        "Shopkeepers, tailors, food stalls, auto/taxi operators, artisans, and dairy/poultry units",
+        "Applicant should not be a defaulter at any bank or financial institution"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card & PAN Card",
+      "Bank Passbook (last 6 months statement if existing)",
+      "Passport size photographs & Business address/quotation proof"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड",
+        "बैंक पासबुक",
+        "पासपोर्ट साइज फोटो",
+        "दुकान/व्यापार का संक्षिप्त विवरण"
+      ],
+      "mr": [
+        "आधार कार्ड",
+        "बँक पासबुक",
+        "पासपोर्ट साईज फोटो",
+        "व्यवसायाचा तपशील"
+      ],
+      "en": [
+        "Aadhaar Card",
+        "Bank Passbook",
+        "Passport Size Photo",
+        "Business quotation/plan"
+      ]
+    },
+    "howToApply": [
+      "Apply online at jansamarth.in or udyamimitra.in portal",
+      "Or visit your nearest public/private sector bank or Gramin Bank branch and ask for the PMMY Shishu form",
+      "Loan is sanctioned after simple KYC and business verification"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "आधिकारिक पोर्टल jansamarth.in या udyamimitra.in पर ऑनलाइन आवेदन करें",
+        "या अपनी नजदीकी बैंक शाखा में जाकर प्रधानमंत्री मुद्रा योजना (शिशु/किशोर) फॉर्म भरें",
+        "आधार और बैंक सत्यापन के बाद राशि सीधे खाते में मिलती है"
+      ],
+      "mr": [
+        "अधिकृत पोर्टल jansamarth.in वर ऑनलाइन अर्ज करा",
+        "किंवा जवळच्या बँक शाखेत जाऊन मुद्रा योजना अर्ज भरा",
+        "पडताळणीनंतर कर्जाची रक्कम थेट खात्यात जमा होते"
+      ],
+      "en": [
+        "Apply online at jansamarth.in or udyamimitra.in portal",
+        "Or visit your nearest bank branch and ask for the PMMY Shishu form",
+        "Loan is sanctioned after simple KYC and business verification"
+      ]
+    },
+    "officialLink": "https://www.jansamarth.in",
+    "helpline": "1800-180-1111",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 65,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "entrepreneur",
+        "vendor",
+        "artisan",
+        "unemployed",
+        "homemaker"
+      ],
+      "maxAnnualIncome": 800000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "photo",
+        "mobile"
+      ]
+    },
+    "keywords": [
+      "mudra",
+      "pmmy",
+      "shishu",
+      "kishore",
+      "tarun",
+      "business loan",
+      "shop loan",
+      "व्यापार",
+      "मुद्रा",
+      "दुकान",
+      "लोन",
+      "कर्ज"
+    ]
+  },
+  {
+    "id": "namo-shetkari-maharashtra",
+    "icon": "🌾",
+    "iconId": "tractor_harvest",
+    "category": "farmer",
+    "sourcePortal": "nsmny.mahait.org (Govt of Maharashtra Agriculture Dept)",
+    "name": {
+      "hi": "नमो शेतकरी महासन्मान निधि योजना (महाराष्ट्र अतिरिक्त ₹6,000)",
+      "mr": "नमो शेतकरी महासन्मान निधी योजना (महाराष्ट्र शासन)",
+      "en": "Namo Shetkari Mahasanman Nidhi Yojana (Maharashtra ₹6,000 Top-up)"
+    },
+    "tagline": {
+      "hi": "महाराष्ट्र के किसानों को पीएम किसान के ₹6,000 के अलावा राज्य सरकार से ₹6,000 सालाना (कुल ₹12,000/वर्ष)",
+      "mr": "महाराष्ट्रातील शेतकऱ्यांना पीएम किसानच्या व्यतिरिक्त वर्षाला आणखी ₹6,000 (एकूण ₹12,000/वर्ष)",
+      "en": "Additional ₹6,000/year from Govt of Maharashtra on top of PM-KISAN (Total ₹12,000/year)"
+    },
+    "benefitBadge": {
+      "hi": "₹6,000/वर्ष अतिरिक्त (पीएम किसान मिलाकर कुल ₹12,000/वर्ष)",
+      "mr": "₹6,000/वर्ष अतिरिक्त (पीएम किसानसह एकूण ₹12,000/वर्ष)",
+      "en": "Extra ₹6,000/year (Total ₹12,000/year with PM-KISAN)"
+    },
+    "benefits": [
+      "₹6,000 per year in 3 installments of ₹2,000 via Direct Benefit Transfer (DBT)",
+      "Combined with PM-KISAN, eligible Maharashtra farmers receive ₹12,000 every year",
+      "Automatic enrollment for PM-KISAN verified farmers in Maharashtra"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "महाराष्ट्र सरकार द्वारा ₹2,000 की 3 किस्तों में हर साल ₹6,000 सीधे बैंक खाते में",
+        "पीएम किसान (₹6,000) और नमो शेतकरी (₹6,000) मिलाकर कुल ₹12,000 प्रति वर्ष का लाभ",
+        "पीएम किसान में पंजीकृत किसानों को अलग से जटिल फॉर्म भरने की आवश्यकता नहीं"
+      ],
+      "mr": [
+        "महाराष्ट्र शासनाकडून ₹2,000 च्या 3 हप्त्यांमध्ये दरवर्षी ₹6,000 थेट बँक खात्यात",
+        "पीएम किसान आणि नमो शेतकरी मिळून वर्षाला एकूण ₹12,000 चा थेट लाभ",
+        "पीएम किसान पात्र शेतकऱ्यांचा आपोआप समावेश"
+      ],
+      "en": [
+        "₹6,000 per year in 3 installments of ₹2,000 via Direct Benefit Transfer (DBT)",
+        "Combined with PM-KISAN, eligible Maharashtra farmers receive ₹12,000 every year",
+        "Automatic enrollment for PM-KISAN verified farmers in Maharashtra"
+      ]
+    },
+    "eligibility": [
+      "Cultivable landholding farmer family resident of Maharashtra",
+      "Registered and e-KYC verified on the PM-KISAN portal with Aadhaar-seeded bank account"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "महाराष्ट्र राज्य का निवासी किसान परिवार जिसके नाम पर कृषि योग्य भूमि (7/12 उतारा) हो",
+        "पीएम किसान पोर्टल पर ई-केवाईसी (e-KYC) और आधार-बैंक सीडिंग पूर्ण होनी चाहिए"
+      ],
+      "mr": [
+        "महाराष्ट्रातील शेतकरी कुटुंब ज्यांच्या नावावर शेतजमीन (7/12 उतारा) आहे",
+        "पीएम किसान पोर्टलवर ई-केवायसी आणि आधार लिंक बँक खाते असणे आवश्यक"
+      ],
+      "en": [
+        "Cultivable landholding farmer family resident of Maharashtra",
+        "Registered and e-KYC verified on the PM-KISAN portal with Aadhaar-seeded bank account"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "7/12 & 8A Land Extract",
+      "Aadhaar-linked Bank Passbook",
+      "Mobile Number"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड",
+        "7/12 और 8-अ जमीन उतारा",
+        "आधार से जुड़ा बैंक पासबुक",
+        "मोबाइल नंबर"
+      ],
+      "mr": [
+        "आधार कार्ड",
+        "7/12 व 8-अ उतारा",
+        "आधार लिंक बँक पासबुक",
+        "मोबाईल नंबर"
+      ],
+      "en": [
+        "Aadhaar Card",
+        "7/12 & 8A Land Extract",
+        "Aadhaar-linked Bank Passbook",
+        "Mobile Number"
+      ]
+    },
+    "howToApply": [
+      "Ensure your PM-KISAN registration and Aadhaar e-KYC are active",
+      "Check beneficiary status on nsmny.mahait.org or visit your Taluka Krishi Adhikari / CSC center"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "सुनिश्चित करें कि आपका पीएम किसान पंजीकरण और आधार ई-केवाईसी सक्रिय है",
+        "nsmny.mahait.org पर अपनी स्थिति जांचें या नजदीकी कृषि कार्यालय/सीएससी केंद्र से संपर्क करें"
+      ],
+      "mr": [
+        "तुमची पीएम किसान नोंदणी आणि आधार ई-केवायसी पूर्ण असल्याची खात्री करा",
+        "nsmny.mahait.org वर लाभार्थी स्थिती तपासा किंवा कृषी कार्यालयाशी संपर्क साधा"
+      ],
+      "en": [
+        "Ensure your PM-KISAN registration and Aadhaar e-KYC are active",
+        "Check beneficiary status on nsmny.mahait.org or visit your Taluka Krishi Adhikari / CSC center"
+      ]
+    },
+    "officialLink": "https://nsmny.mahait.org",
+    "helpline": "1800-233-4000",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 85,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer"
+      ],
+      "maxAnnualIncome": 800000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "maharashtra"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "land",
+        "mobile"
+      ]
+    },
+    "keywords": [
+      "namo",
+      "shetkari",
+      "mahasanman",
+      "maharashtra farmer",
+      "6000",
+      "12000",
+      "नमो शेतकरी",
+      "महाराष्ट्र किसान"
+    ]
+  },
+  {
+    "id": "nsap-old-age-pension",
+    "icon": "👵",
+    "iconId": "pension_shield",
+    "category": "livelihood",
+    "sourcePortal": "nsap.nic.in (Ministry of Rural Development)",
+    "name": {
+      "hi": "राष्ट्रीय वृद्धावस्था, विधवा एवं दिव्यांग पेंशन (NSAP / संजय गांधी निराधार योजना)",
+      "mr": "राष्ट्रीय वृद्धापकाळ, विधवा व दिव्यांग पेन्शन (संजय गांधी निराधार योजना)",
+      "en": "National Old Age, Widow & Disability Pension Scheme (NSAP / Niradhar)"
+    },
+    "tagline": {
+      "hi": "वरिष्ठ नागरिकों (60+ वर्ष), विधवा महिलाओं और दिव्यांगजनों को हर महीने ₹1,000 से ₹1,500 मासिक पेंशन",
+      "mr": "ज्येष्ठ नागरिक (60+ वर्षे), विधवा महिला आणि दिव्यांगांना दरमहा ₹1,500 पर्यंत मासिक पेन्शन",
+      "en": "Monthly social security pension of ₹1,000 to ₹1,500 for senior citizens (60+), widows & PwDs"
+    },
+    "benefitBadge": {
+      "hi": "₹1,000 से ₹1,500 प्रति माह आजीवन मासिक पेंशन",
+      "mr": "₹1,000 ते ₹1,500 दरमहा सामाजिक सुरक्षा पेन्शन",
+      "en": "₹1,000 to ₹1,500/month Direct Pension in Bank Account"
+    },
+    "benefits": [
+      "Monthly pension credited directly to Aadhaar-seeded bank or post office account",
+      "Central NSAP grant combined with State top-up (e.g., ₹1,500/month under Maharashtra Sanjay Gandhi / Shravanbal Yojana)",
+      "Priority coverage for BPL households, destitute elders, widows, and persons with disabilities"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "हर महीने ₹1,000 से ₹1,500 (राज्य अंशदान सहित) सीधे बैंक या डाकघर खाते में",
+        "60 वर्ष से अधिक के बुजुर्गों, विधवा महिलाओं और दिव्यांग नागरिकों को आजीवन आर्थिक सहारा",
+        "बीपीएल व कम आय वाले परिवारों को प्राथमिकता"
+      ],
+      "mr": [
+        "दरमहा ₹1,500 (श्रावणबाळ / संजय गांधी निराधार योजनेसह) थेट बँक किंवा पोस्ट खात्यात",
+        "60 वर्षांवरील ज्येष्ठ नागरिक, विधवा महिला आणि दिव्यांगांना कायमस्वरूपी आर्थिक आधार",
+        "दारिद्र्यरेषेखालील आणि अल्प उत्पन्न कुटुंबांना प्राधान्य"
+      ],
+      "en": [
+        "Monthly pension credited directly to Aadhaar-seeded bank or post office account",
+        "Central NSAP grant combined with State top-up (up to ₹1,500/month)",
+        "Priority coverage for BPL households, destitute elders, widows, and persons with disabilities"
+      ]
+    },
+    "eligibility": [
+      "Senior citizens aged 60 years or above (or Widows aged 18+, or Divyangjan with 40%+ disability)",
+      "Belonging to a low-income / BPL family with annual family income below ₹50,000 – ₹1,00,000"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "60 वर्ष या उससे अधिक आयु के वरिष्ठ नागरिक (या बेसहारा विधवा महिला / दिव्यांग नागरिक)",
+        "परिवार का नाम बीपीएल सूची में हो या वार्षिक आय निर्धारित सीमा से कम हो"
+      ],
+      "mr": [
+        "60 वर्षे किंवा त्याहून अधिक वयाचे ज्येष्ठ नागरिक (किंवा विधवा महिला / दिव्यांग व्यक्ती)",
+        "कुटुंब दारिद्र्यरेषेखालील (BPL) किंवा अल्प उत्पन्न गटातील असावे"
+      ],
+      "en": [
+        "Senior citizens aged 60 years or above (or Widows aged 18+, or Divyangjan with 40%+ disability)",
+        "Belonging to a low-income / BPL family"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Ration Card / BPL Card",
+      "Income Certificate",
+      "Bank Passbook"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड (आयु प्रमाण)",
+        "राशन कार्ड",
+        "आय प्रमाण पत्र (तहसीलदार)",
+        "बैंक पासबुक"
+      ],
+      "mr": [
+        "आधार कार्ड (वयाचा पुरावा)",
+        "रेशन कार्ड",
+        "उत्पन्नाचा दाखला",
+        "बँक पासबुक"
+      ],
+      "en": [
+        "Aadhaar Card (Age Proof)",
+        "Ration Card",
+        "Income Certificate",
+        "Bank Passbook"
+      ]
+    },
+    "howToApply": [
+      "Visit your Gram Panchayat, Tehsil office, or Ward office with Aadhaar and Ration Card",
+      "Or apply online via UMANG App / state e-District portal (Aaple Sarkar in Maharashtra)"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "अपने ग्राम पंचायत, तहसील कार्यालय या नगर निकाय कार्यालय में आवेदन जमा करें",
+        "या उमंग ऐप (UMANG) / राज्य ई-डिस्ट्रिक्ट (आपले सरकार) पोर्टल के माध्यम से ऑनलाइन आवेदन करें"
+      ],
+      "mr": [
+        "आपल्या ग्रामपंचायत, तहसील कार्यालय किंवा आपले सरकार सेवा केंद्रात अर्ज सादर करा",
+        "तपासणीनंतर दरमहा पेन्शन बँक खात्यात सुरू होते"
+      ],
+      "en": [
+        "Visit your Gram Panchayat, Tehsil office, or Ward office with Aadhaar and Ration Card",
+        "Or apply online via UMANG App / state e-District portal"
+      ]
+    },
+    "officialLink": "https://nsap.nic.in",
+    "helpline": "1800-11-0001",
+    "criteria": {
+      "minAge": 55,
+      "maxAge": 100,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "senior",
+        "homemaker",
+        "unemployed",
+        "farmer",
+        "laborer"
+      ],
+      "maxAnnualIncome": 150000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "ration",
+        "income",
+        "bank"
+      ]
+    },
+    "keywords": [
+      "pension",
+      "old age",
+      "senior",
+      "widow",
+      "niradhar",
+      "shravanbal",
+      "बुजुर्ग",
+      "वृद्धावस्था",
+      "विधवा",
+      "पेंशन",
+      "पेन्शन"
+    ]
+  },
+  {
+    "id": "udid-divyang-swavalamban",
+    "icon": "♿",
+    "iconId": "hospital_shield",
+    "category": "health",
+    "sourcePortal": "swavlambancard.gov.in (Dept of Empowerment of Persons with Disabilities)",
+    "name": {
+      "hi": "यूडीआईडी (UDID) दिव्यांग स्वावलंबन कार्ड एवं सहायक उपकरण योजना (ADIP)",
+      "mr": "यूडीआयडी (UDID) दिव्यांग स्वावलंबन कार्ड व मोफत सहाय्यक उपकरण योजना",
+      "en": "UDID Divyang Swavlamban Card & Free Assistive Devices (ADIP Scheme)"
+    },
+    "tagline": {
+      "hi": "दिव्यांगजनों को मुफ़्त ट्राईसाइकिल, श्रवण यंत्र, कृत्रिम अंग, रेल/बस किराए में छूट व छात्रवृत्ति",
+      "mr": "दिव्यांग बांधवांना मोफत ट्रायसायकल, श्रवणयंत्र, बस/रेल्वे सवलत आणि सरकारी योजनांचा लाभ",
+      "en": "Single national ID for PwDs offering free motorized tricycles, hearing aids, travel concessions & pensions"
+    },
+    "benefitBadge": {
+      "hi": "मुफ़्त सहायक उपकरण + रेल/बस छूट व दिव्यांग पेंशन",
+      "mr": "मोफत सहाय्यक उपकरणे + प्रवास सवलत व दिव्यांग पेन्शन",
+      "en": "Free Assistive Devices + Travel Concessions & Disability Benefits"
+    },
+    "benefits": [
+      "Universal ID valid across India for all central and state disability pensions and reservations",
+      "Free motorized tricycles, wheelchairs, smart canes, and hearing aids under ADIP scheme",
+      "Concessional loans through NHFDC and scholarship support for students with disabilities"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "पूरे भारत में मान्य एकल दिव्यांग पहचान पत्र (UDID) जिससे सभी सरकारी योजनाओं का लाभ मिलता है",
+        "ADIP योजना के तहत मुफ़्त मोटराइज्ड ट्राईसाइकिल, व्हीलचेयर, स्मार्ट छड़ी और कान की मशीन",
+        "सरकारी बस/रेल यात्रा में विशेष छूट और दिव्यांग छात्रवृत्ति व पेंशन में सीधी पात्रता"
+      ],
+      "mr": [
+        "संपूर्ण भारतात वैध असलेले युनिक दिव्यांग ओळखपत्र (UDID)",
+        "ADIP योजनेअंतर्गत मोफत ट्रायसायकल, व्हीलचेअर आणि श्रवणयंत्र",
+        "एस.टी. बस व रेल्वे प्रवासात सवलत तसेच दिव्यांग पेन्शनचा लाभ"
+      ],
+      "en": [
+        "Universal ID valid across India for all central and state disability pensions and reservations",
+        "Free motorized tricycles, wheelchairs, smart canes, and hearing aids under ADIP scheme",
+        "Concessional loans and scholarship support for students with disabilities"
+      ]
+    },
+    "eligibility": [
+      "Any Indian citizen with 40% or more benchmark disability (locomotor, visual, hearing, intellectual, etc.)",
+      "For free assistive devices under ADIP, monthly family income up to ₹22,500"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "कोई भी नागरिक जिसमें 40% या अधिक की दिव्यांगता हो (सभी आयु वर्ग पात्र)",
+        "मुफ़्त उपकरणों (ADIP) के लिए मासिक पारिवारिक आय ₹22,500 से कम होनी चाहिए"
+      ],
+      "mr": [
+        "40% किंवा त्याहून अधिक दिव्यांगत्व असलेला कोणताही भारतीय नागरिक",
+        "मोफत उपकरणांसाठी कौटुंबिक मासिक उत्पन्न ₹22,500 पेक्षा कमी असावे"
+      ],
+      "en": [
+        "Any Indian citizen with 40% or more benchmark disability",
+        "For free assistive devices under ADIP, monthly family income up to ₹22,500"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Passport Size Photo",
+      "Medical Disability Certificate (if existing)",
+      "Income Certificate"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड",
+        "पासपोर्ट साइज फोटो",
+        "दिव्यांग प्रमाण पत्र (यदि पहले से बना हो)",
+        "आय प्रमाण पत्र"
+      ],
+      "mr": [
+        "आधार कार्ड",
+        "पासपोर्ट साईज फोटो",
+        "दिव्यांग प्रमाणपत्र (असल्यास)",
+        "उत्पन्नाचा दाखला"
+      ],
+      "en": [
+        "Aadhaar Card",
+        "Passport Size Photo",
+        "Disability Certificate (if available)",
+        "Income Certificate"
+      ]
+    },
+    "howToApply": [
+      "Register online at swavlambancard.gov.in with Aadhaar and photo",
+      "Visit the district civil hospital CMO office for medical assessment and digital UDID card issuance"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "आधिकारिक वेबसाइट swavlambancard.gov.in पर ऑनलाइन आवेदन करें",
+        "जिला सरकारी अस्पताल में मेडिकल जांच के बाद डिजिटल UDID कार्ड जारी किया जाता है"
+      ],
+      "mr": [
+        "swavlambancard.gov.in या अधिकृत संकेतस्थळावर नोंदणी करा",
+        "जिल्हा शासकीय रुग्णालयात वैद्यकीय तपासणीनंतर डिजिटल UDID कार्ड मिळते"
+      ],
+      "en": [
+        "Register online at swavlambancard.gov.in with Aadhaar and photo",
+        "Visit the district civil hospital for medical assessment and digital UDID card issuance"
+      ]
+    },
+    "officialLink": "https://www.swavlambancard.gov.in",
+    "helpline": "14456",
+    "criteria": {
+      "minAge": 0,
+      "maxAge": 100,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "student",
+        "unemployed",
+        "artisan",
+        "vendor",
+        "farmer",
+        "laborer",
+        "homemaker",
+        "senior"
+      ],
+      "maxAnnualIncome": 270000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "divyang",
+        "general",
+        "obc",
+        "sc_st",
+        "minority"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "photo",
+        "income"
+      ]
+    },
+    "keywords": [
+      "udid",
+      "divyang",
+      "disability",
+      "handicap",
+      "wheelchair",
+      "tricycle",
+      "दिव्यांग",
+      "विकलांग",
+      "स्वावलंबन"
+    ]
+  },
+  {
+    "id": "nsp-post-matric-scholarship",
+    "icon": "🎓",
+    "iconId": "graduation_cap",
+    "category": "education",
+    "sourcePortal": "scholarships.gov.in (National Scholarship Portal)",
+    "name": {
+      "hi": "राष्ट्रीय छात्रवृत्ति पोर्टल (NSP पोस्ट-मैट्रिक SC/ST/OBC/अल्पसंख्यक/EWS छात्रवृत्ति)",
+      "mr": "राष्ट्रीय शिष्यवृत्ती पोर्टल (NSP मॅट्रिकोत्तर शिष्यवृत्ती व महाडीबीटी)",
+      "en": "National Scholarship Portal (NSP Post-Matric & Pragati Girl Scholarship)"
+    },
+    "tagline": {
+      "hi": "11वीं, 12वीं, कॉलेज, आईटीआई और डिप्लोमा/डिग्री छात्रों को पूरी ट्यूशन फीस व ₹50,000 तक सालाना भत्ता",
+      "mr": "11वी, 12वी, कॉलेज, आयटीआय व इंजिनिअरिंग विद्यार्थ्यांना संपूर्ण शैक्षणिक फी व ₹50,000 पर्यंत शिष्यवृत्ती",
+      "en": "Full tuition fee reimbursement + maintenance allowance up to ₹50,000/year for Class 11 to Degree students"
+    },
+    "benefitBadge": {
+      "hi": "100% ट्यूशन फीस वापसी + ₹50,000/वर्ष तक छात्रवृत्ति",
+      "mr": "100% शैक्षणिक फी परतावा + ₹50,000/वर्ष शिष्यवृत्ती",
+      "en": "Tuition Fee Waiver + up to ₹50,000/year Direct Scholarship"
+    },
+    "benefits": [
+      "Full reimbursement of compulsory non-refundable tuition fees in recognized colleges/ITIs",
+      "Annual academic maintenance allowance credited via Aadhaar Payment Bridge (APBS)",
+      "Includes AICTE Pragati Scholarship (₹50,000/year for girls in technical diploma/degree courses)"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "कॉलेज, पॉलिटेक्निक, आईटीआई और विश्वविद्यालय की अनिवार्य ट्यूशन फीस की प्रतिपूर्ति",
+        "हॉस्टल और किताबों के लिए सालाना भत्ता सीधे छात्र के आधार-लिंक्ड बैंक खाते में",
+        "तकनीकी शिक्षा ले रही छात्राओं को प्रगति योजना के तहत ₹50,000 प्रति वर्ष"
+      ],
+      "mr": [
+        "महाविद्यालय, आयटीआय आणि तांत्रिक शिक्षणाची संपूर्ण शिक्षण फी प्रतिपूर्ती",
+        "वसतिगृह आणि पुस्तकांसाठी वार्षिक भत्ता थेट विद्यार्थ्याच्या आधार-लिंक बँक खात्यात",
+        "प्रगती शिष्यवृत्ती अंतर्गत मुलींना तांत्रिक शिक्षणासाठी दरवर्षी ₹50,000"
+      ],
+      "en": [
+        "Full reimbursement of compulsory non-refundable tuition fees in recognized colleges/ITIs",
+        "Annual academic maintenance allowance credited via Aadhaar Payment Bridge",
+        "Includes AICTE Pragati Scholarship (₹50,000/year for girls in technical courses)"
+      ]
+    },
+    "eligibility": [
+      "Students studying in Class 11, 12, ITI, Diploma, Undergraduate, or Postgraduate courses",
+      "Annual family income below ₹2.5 Lakh (up to ₹8 Lakh for AICTE Pragati & Merit-cum-Means schemes)"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "11वीं, 12वीं, आईटीआई, डिप्लोमा या कॉलेज में अध्ययनरत नियमित छात्र-छात्राएं",
+        "पारिवारिक वार्षिक आय ₹2.5 लाख से कम (प्रगति/मेरिट योजनाओं में ₹8 लाख तक)"
+      ],
+      "mr": [
+        "11वी, 12वी, आयटीआय, डिप्लोमा किंवा पदवी शिक्षणात शिकणारे विद्यार्थी",
+        "कुटुंबाचे वार्षिक उत्पन्न ₹2.5 लाखांपेक्षा कमी (प्रगती योजनेसाठी ₹8 लाखांपर्यंत)"
+      ],
+      "en": [
+        "Students studying in Class 11, 12, ITI, Diploma, Undergraduate, or Postgraduate courses",
+        "Annual family income below ₹2.5 Lakh (up to ₹8 Lakh for AICTE Pragati)"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Income Certificate",
+      "Caste / EWS Certificate",
+      "Bank Passbook & Previous Marksheet"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड",
+        "आय प्रमाण पत्र",
+        "जाति / EWS प्रमाण पत्र",
+        "बैंक पासबुक और पिछली कक्षा की मार्कशीट"
+      ],
+      "mr": [
+        "आधार कार्ड",
+        "उत्पन्नाचा दाखला",
+        "जात प्रमाणपत्र",
+        "बँक पासबुक आणि मागील वर्षाची गुणपत्रिका"
+      ],
+      "en": [
+        "Aadhaar Card",
+        "Income Certificate",
+        "Caste / EWS Certificate",
+        "Bank Passbook & Marksheet"
+      ]
+    },
+    "howToApply": [
+      "Complete One-Time Registration (OTR) on scholarships.gov.in (or mahadbt.maharashtra.gov.in for Maharashtra)",
+      "Submit institute verification form to your school/college nodal officer"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "scholarships.gov.in (या महाराष्ट्र में mahadbt.maharashtra.gov.in) पर OTR पंजीकरण करें",
+        "फॉर्म भरकर अपने स्कूल/कॉलेज के नोडल अधिकारी से ऑनलाइन सत्यापित कराएं"
+      ],
+      "mr": [
+        "scholarships.gov.in किंवा mahadbt.maharashtra.gov.in वर ऑनलाइन अर्ज भरा",
+        "अर्जाची प्रत आपल्या महाविद्यालयात जमा करून पडताळणी पूर्ण करा"
+      ],
+      "en": [
+        "Complete One-Time Registration (OTR) on scholarships.gov.in",
+        "Submit institute verification form to your school/college nodal officer"
+      ]
+    },
+    "officialLink": "https://scholarships.gov.in",
+    "helpline": "0120-6619540",
+    "criteria": {
+      "minAge": 14,
+      "maxAge": 30,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "student"
+      ],
+      "maxAnnualIncome": 250000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "sc_st",
+        "obc",
+        "minority",
+        "general",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "income",
+        "caste"
+      ]
+    },
+    "keywords": [
+      "nsp",
+      "scholarship",
+      "post matric",
+      "pragati",
+      "college",
+      "student",
+      "छात्रवृत्ति",
+      "शिष्यवृत्ती",
+      "कॉलेज"
+    ]
+  },
+  {
+    "id": "swachh-bharat-shauchalay",
+    "icon": "🏡",
+    "iconId": "brick_home",
+    "category": "housing",
+    "sourcePortal": "sbm.gov.in (Ministry of Jal Shakti)",
+    "name": {
+      "hi": "स्वच्छ भारत मिशन (ग्रामीण एवं शहरी घरेलू शौचालय निर्माण अनुदान ₹12,000)",
+      "mr": "स्वच्छ भारत मिशन (वैयक्तिक घरगुती शौचालय अनुदान ₹12,000)",
+      "en": "Swachh Bharat Mission (IHHL Household Toilet Grant ₹12,000)"
+    },
+    "tagline": {
+      "hi": "घर में पक्का शौचालय और पानी टंकी बनाने के लिए सरकार से ₹12,000 की सीधी आर्थिक सहायता",
+      "mr": "घरात पक्के शौचालय बांधण्यासाठी शासनाकडून ₹12,000 चे थेट अनुदान",
+      "en": "₹12,000 financial incentive credited directly to bank account for constructing a household toilet"
+    },
+    "benefitBadge": {
+      "hi": "₹12,000 शौचालय निर्माण अनुदान सीधे बैंक खाते में",
+      "mr": "₹12,000 शौचालय बांधकाम अनुदान थेट बँक खात्यात",
+      "en": "₹12,000 Direct Grant for Household Toilet Construction"
+    },
+    "benefits": [
+      "₹12,000 incentive in two installments for constructing an Individual Household Latrine (IHHL)",
+      "Promotes dignity and safety for women, children, and elderly family members"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "शौचालय निर्माण के लिए ₹12,000 की सहायता राशि सीधे लाभार्थी के बैंक खाते में",
+        "महिलाओं, बच्चों और बुजुर्गों के स्वास्थ्य और सुरक्षा की गारंटी"
+      ],
+      "mr": [
+        "वैयक्तिक शौचालय बांधण्यासाठी ₹12,000 चे अनुदान थेट बँक खात्यात",
+        "महिला आणि ज्येष्ठ नागरिकांच्या आरोग्यासाठी व सुरक्षिततेसाठी महत्त्वाची योजना"
+      ],
+      "en": [
+        "₹12,000 incentive for constructing an Individual Household Latrine (IHHL)",
+        "Promotes dignity and safety for women, children, and elderly family members"
+      ]
+    },
+    "eligibility": [
+      "Rural or urban low-income households that currently do not have a functional toilet",
+      "Priority to BPL families, SC/ST households, women-headed households, small/marginal farmers, and PwDs"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "ऐसे ग्रामीण या शहरी परिवार जिनके घर में अभी पक्का शौचालय नहीं है",
+        "बीपीएल, छोटे किसान, महिला मुखिया, दिव्यांग और भूमिहीन मजदूर परिवार पात्र हैं"
+      ],
+      "mr": [
+        "ज्या ग्रामीण किंवा शहरी कुटुंबांच्या घरी अद्याप पक्के शौचालय नाही",
+        "बीपीएल, अल्पभूधारक शेतकरी, महिला प्रमुख आणि शेतमजूर कुटुंबे पात्र"
+      ],
+      "en": [
+        "Rural or urban low-income households that currently do not have a functional toilet",
+        "Priority to BPL families, SC/ST households, women-headed households, and small farmers"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Bank Passbook",
+      "Ration Card",
+      "Mobile Number & Applicant Photograph"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड",
+        "बैंक पासबुक",
+        "राशन कार्ड",
+        "मोबाइल नंबर और फोटो"
+      ],
+      "mr": [
+        "आधार कार्ड",
+        "बँक पासबुक",
+        "रेशन कार्ड",
+        "मोबाईल नंबर व फोटो"
+      ],
+      "en": [
+        "Aadhaar Card",
+        "Bank Passbook",
+        "Ration Card",
+        "Mobile Number & Photo"
+      ]
+    },
+    "howToApply": [
+      "Apply online at sbm.gov.in (Citizen Corner -> Application Form for IHHL) or through your Gram Panchayat Swachhagrahi"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "आधिकारिक वेबसाइट sbm.gov.in पर ऑनलाइन आवेदन करें या अपने ग्राम पंचायत सचिव से संपर्क करें"
+      ],
+      "mr": [
+        "sbm.gov.in या संकेतस्थळावर ऑनलाइन अर्ज करा किंवा ग्रामपंचायत कार्यालयात संपर्क साधा"
+      ],
+      "en": [
+        "Apply online at sbm.gov.in (Citizen Corner -> Application Form for IHHL) or via Gram Panchayat"
+      ]
+    },
+    "officialLink": "https://sbm.gov.in",
+    "helpline": "1800-11-0001",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 85,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer",
+        "laborer",
+        "homemaker",
+        "artisan",
+        "vendor",
+        "senior",
+        "unemployed"
+      ],
+      "maxAnnualIncome": 250000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "ration",
+        "photo"
+      ]
+    },
+    "keywords": [
+      "swachh",
+      "toilet",
+      "shauchalay",
+      "ihhl",
+      "12000",
+      "शौचालय",
+      "स्वच्छ भारत"
+    ]
+  },
+  {
+    "id": "janani-suraksha-yojana",
+    "icon": "🤱",
+    "iconId": "mother_child",
+    "category": "women",
+    "sourcePortal": "nhm.gov.in (National Health Mission - MoHFW)",
+    "name": {
+      "hi": "जननी सुरक्षा योजना (JSY एवं जननी शिशु सुरक्षा कार्यक्रम)",
+      "mr": "जननी सुरक्षा योजना (JSY - सुरक्षित प्रसूती अनुदान व मोफत उपचार)",
+      "en": "Janani Suraksha Yojana (JSY Safe Institutional Delivery Grant)"
+    },
+    "tagline": {
+      "hi": "सरकारी अस्पताल में सुरक्षित प्रसव पर नकद सहायता, मुफ़्त एम्बुलेंस (102/108), मुफ़्त दवाइयां व जांच",
+      "mr": "शासकीय रुग्णालयात सुरक्षित प्रसूतीसाठी रोख अनुदान, मोफत रुग्णवाहिका व मोफत औषधोपचार",
+      "en": "Cash incentive for institutional delivery + 100% free maternity care, medicines, diagnostics & ambulance"
+    },
+    "benefitBadge": {
+      "hi": "नकद प्रसव सहायता + अस्पताल में 100% मुफ़्त प्रसव व एम्बुलेंस",
+      "mr": "रोख प्रसूती अनुदान + शासकीय रुग्णालयात 100% मोफत प्रसूती",
+      "en": "Direct Cash Incentive + 100% Free Delivery & Ambulance"
+    },
+    "benefits": [
+      "Direct cash assistance (₹1,400 in rural areas / ₹1,000 in urban areas) credited to mother’s bank account",
+      "Completely free delivery (including C-section), free diet, free medicines, and free 102/108 drop-back ambulance under JSSK",
+      "Can be availed alongside PM Matru Vandana Yojana (₹5,000) for total benefit of ₹6,400+"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "सरकारी स्वास्थ्य केंद्र में प्रसव कराने पर ₹1,400 (ग्रामीण) / ₹1,000 (शहरी) की नकद राशि सीधे बैंक खाते में",
+        "अस्पताल में नॉर्मल या सिजेरियन डिलीवरी, दवाइयां, खून की जांच, भोजन और घर वापसी की एम्बुलेंस पूरी तरह मुफ़्त",
+        "पीएम मातृ वंदना योजना (₹5,000) के साथ मिलकर कुल ₹6,400+ की सीधी सहायता"
+      ],
+      "mr": [
+        "शासकीय रुग्णालयात प्रसूती केल्यास रोख अनुदान थेट मातेच्या बँक खात्यात",
+        "प्रसूती, शस्त्रक्रिया, औषधे, तपासण्या, आहार आणि रुग्णवाहिका सेवा पूर्णपणे मोफत",
+        "मातृ वंदना योजनेच्या ₹5,000 सोबत हा अतिरिक्त लाभ मिळतो"
+      ],
+      "en": [
+        "Direct cash assistance credited to mother’s bank account upon institutional delivery",
+        "Completely free delivery (including C-section), free diet, medicines, and free ambulance",
+        "Can be availed alongside PM Matru Vandana Yojana (₹5,000)"
+      ]
+    },
+    "eligibility": [
+      "Pregnant women delivering in government health centers or accredited hospitals",
+      "All BPL, SC, and ST women across India (and all pregnant women in High Focus states)"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "गर्भवती महिलाएं जो सरकारी अस्पताल, प्राथमिक स्वास्थ्य केंद्र (PHC/CHC) में प्रसव कराती हैं",
+        "कम आय (BPL), अनुसूचित जाति और जनजाति की सभी महिलाएं पात्र हैं"
+      ],
+      "mr": [
+        "शासकीय रुग्णालय किंवा प्राथमिक आरोग्य केंद्रात प्रसूती करणाऱ्या गर्भवती महिला",
+        "दारिद्र्यरेषेखालील (BPL), अनुसूचित जाती व जमातीच्या सर्व महिला पात्र"
+      ],
+      "en": [
+        "Pregnant women delivering in government health centers or accredited hospitals",
+        "All BPL, SC, and ST women across India"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "MCP (Mother & Child Protection) Card",
+      "Bank Passbook",
+      "BPL / Ration Card"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड",
+        "जच्चा-बच्चा सुरक्षा (MCP) कार्ड",
+        "बैंक पासबुक",
+        "राशन कार्ड"
+      ],
+      "mr": [
+        "आधार कार्ड",
+        "माता-बाल संरक्षण (MCP) कार्ड",
+        "बँक पासबुक",
+        "रेशन कार्ड"
+      ],
+      "en": [
+        "Aadhaar Card",
+        "MCP Card",
+        "Bank Passbook",
+        "Ration Card"
+      ]
+    },
+    "howToApply": [
+      "Register pregnancy early with your village ASHA worker or ANM sister at the local Anganwadi / PHC",
+      "Carry your Aadhaar and Bank Passbook at the time of hospital admission"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "गर्भावस्था के तुरंत बाद अपने गांव की आशा (ASHA) कार्यकर्ता या एएनएम दीदी के पास पंजीकरण कराएं",
+        "अस्पताल में प्रसव के समय आधार और बैंक पासबुक साथ रखें"
+      ],
+      "mr": [
+        "आपल्या भागातील आशा (ASHA) सेविका किंवा प्राथमिक आरोग्य केंद्रात नाव नोंदणी करा",
+        "प्रसूतीच्या वेळी आधार कार्ड आणि बँक पासबुक सोबत ठेवा"
+      ],
+      "en": [
+        "Register pregnancy early with your village ASHA worker or ANM sister at the local PHC",
+        "Carry your Aadhaar and Bank Passbook at the time of hospital admission"
+      ]
+    },
+    "officialLink": "https://nhm.gov.in",
+    "helpline": "104",
+    "criteria": {
+      "minAge": 19,
+      "maxAge": 45,
+      "genders": [
+        "female"
+      ],
+      "occupations": [
+        "homemaker",
+        "laborer",
+        "farmer",
+        "artisan",
+        "vendor",
+        "unemployed"
+      ],
+      "maxAnnualIncome": 250000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "sc_st",
+        "obc",
+        "general",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "ration"
+      ]
+    },
+    "keywords": [
+      "janani",
+      "jsy",
+      "delivery",
+      "pregnant",
+      "hospital",
+      "maternity",
+      "जननी",
+      "प्रसव",
+      "गर्भवती"
+    ]
+  },
+  {
+    "id": "stand-up-india",
+    "icon": "🏭",
+    "iconId": "mudra_bank",
+    "category": "livelihood",
+    "sourcePortal": "standupmitra.in (Ministry of Finance / SIDBI)",
+    "name": {
+      "hi": "स्टैंड-अप इंडिया योजना (महिला एवं SC/ST उद्यमियों हेतु ₹10 लाख से ₹1 करोड़ ऋण)",
+      "mr": "स्टँड-अप इंडिया योजना (महिला व SC/ST उद्योजकांसाठी ₹10 लाख ते ₹1 कोटी कर्ज)",
+      "en": "Stand-Up India Scheme (₹10 Lakh to ₹1 Crore Loan for Women & SC/ST)"
+    },
+    "tagline": {
+      "hi": "महिलाओं और अनुसूचित जाति/जनजाति के नागरिकों को अपना बड़ा उद्योग या सेवा व्यवसाय खड़ा करने के लिए बैंक ऋण",
+      "mr": "महिला आणि अनुसूचित जाती/जमातीच्या नागरिकांना स्वतःचा उद्योग उभारण्यासाठी ₹10 लाख ते ₹1 कोटी बँक कर्ज",
+      "en": "Bank loans between ₹10 Lakh and ₹1 Crore for Women and SC/ST entrepreneurs setting up greenfield enterprises"
+    },
+    "benefitBadge": {
+      "hi": "₹10 लाख से ₹1 करोड़ तक का उद्यम ऋण (महिला व SC/ST)",
+      "mr": "₹10 लाख ते ₹1 कोटी पर्यंत व्यवसाय कर्ज (महिला व SC/ST)",
+      "en": "₹10 Lakh to ₹1 Crore Enterprise Loan for Women & SC/ST"
+    },
+    "benefits": [
+      "Composite loan (term loan + working capital) between ₹10 Lakh and ₹100 Lakh (₹1 Crore)",
+      "Every bank branch in India is mandated to support at least one Woman and one SC/ST entrepreneur",
+      "Credit guarantee cover through NCGTC and handholding support via SIDBI Stand-Up Mitra portal"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "नया निर्माण (Manufacturing), सेवा (Service) या कृषि-संबद्ध व्यापार शुरू करने के लिए ₹10 लाख से ₹1 करोड़ तक ऋण",
+        "प्रत्येक बैंक शाखा को कम से कम एक महिला और एक SC/ST उद्यमी को ऋण देना अनिवार्य है",
+        "कम ब्याज दर और 7 वर्ष तक की आसान किस्त अवधि"
+      ],
+      "mr": [
+        "नवीन उत्पादन, सेवा किंवा कृषी-संलग्न व्यवसाय सुरू करण्यासाठी ₹10 लाख ते ₹1 कोटी पर्यंत कर्ज",
+        "प्रत्येक बँक शाखेला किमान एका महिला आणि एका SC/ST उद्योजकाला कर्ज देणे बंधनकारक",
+        "कमी व्याजदर आणि 7 वर्षांपर्यंत परतफेडीची मुदत"
+      ],
+      "en": [
+        "Composite loan between ₹10 Lakh and ₹1 Crore for new enterprises",
+        "Every bank branch is mandated to support at least one Woman and one SC/ST entrepreneur",
+        "Credit guarantee cover and handholding via Stand-Up Mitra portal"
+      ]
+    },
+    "eligibility": [
+      "SC/ST and/or Woman entrepreneur aged 18 years or above",
+      "Loan is available for greenfield (first-time) projects in manufacturing, services,agri-allied, or trading"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "18 वर्ष से अधिक आयु की कोई भी महिला उद्यमी या अनुसूचित जाति/जनजाति (SC/ST) का नागरिक",
+        "पहली बार नया उद्यम (Greenfield Project) शुरू करने के लिए पात्र"
+      ],
+      "mr": [
+        "18 वर्षांवरील कोणतीही महिला उद्योजिका किंवा अनुसूचित जाती/जमातीचे (SC/ST) नागरिक",
+        "प्रथमच नवीन व्यवसाय सुरू करण्यासाठी पात्र"
+      ],
+      "en": [
+        "SC/ST and/or Woman entrepreneur aged 18 years or above",
+        "Available for greenfield projects in manufacturing, services, or trading"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card & PAN Card",
+      "Caste Certificate (for SC/ST)",
+      "Bank Passbook",
+      "Project Report & Business Address Proof"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार और पैन कार्ड",
+        "जाति प्रमाण पत्र (SC/ST हेतु)",
+        "बैंक पासबुक",
+        "व्यापार प्रोजेक्ट रिपोर्ट"
+      ],
+      "mr": [
+        "आधार आणि पॅन कार्ड",
+        "जात प्रमाणपत्र (SC/ST साठी)",
+        "बँक पासबुक",
+        "प्रकल्प अहवाल"
+      ],
+      "en": [
+        "Aadhaar & PAN Card",
+        "Caste Certificate (if SC/ST)",
+        "Bank Passbook",
+        "Project Report"
+      ]
+    },
+    "howToApply": [
+      "Apply online at standupmitra.in or jansamarth.in",
+      "Or approach the Lead District Manager (LDM) or nearest commercial bank branch"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "आधिकारिक पोर्टल standupmitra.in या jansamarth.in पर ऑनलाइन आवेदन करें",
+        "या अपनी नजदीकी राष्ट्रीयकृत बैंक शाखा के प्रबंधक से संपर्क करें"
+      ],
+      "mr": [
+        "standupmitra.in किंवा jansamarth.in वर ऑनलाइन अर्ज करा",
+        "किंवा जवळच्या राष्ट्रीयीकृत बँक शाखेशी संपर्क साधा"
+      ],
+      "en": [
+        "Apply online at standupmitra.in or jansamarth.in",
+        "Or approach your nearest commercial bank branch"
+      ]
+    },
+    "officialLink": "https://www.standupmitra.in",
+    "helpline": "1800-180-1111",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 65,
+      "genders": [
+        "female",
+        "male"
+      ],
+      "occupations": [
+        "entrepreneur",
+        "artisan",
+        "vendor",
+        "farmer"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "sc_st",
+        "general",
+        "obc",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "photo"
+      ]
+    },
+    "keywords": [
+      "stand up",
+      "standup",
+      "10 lakh",
+      "1 crore",
+      "sc st loan",
+      "women entrepreneur",
+      "स्टैंड अप",
+      "उद्यम"
+    ]
   }
 ]

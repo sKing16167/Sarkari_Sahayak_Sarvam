@@ -1,256 +1,147 @@
 'use client';
 
-import React, { useState, useRef, useEffect, Suspense } from 'react';
+import React, { useState, useRef, useEffect, Suspense, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import schemesData from '@/data/schemes.json';
+import demoCache from '@/data/demo-cache.json';
 import { audioBlobToWav } from '@/lib/audio';
+import {
+  CitizenProfile,
+  CitizenOccupation,
+  CitizenGender,
+  CitizenArea,
+  CitizenSocialCategory,
+  DEFAULT_CITIZEN_PROFILE,
+  CITIZEN_PROFILE_STORAGE_KEY,
+  loadCitizenProfile,
+  saveCitizenProfile,
+  evaluateSchemeForCitizen,
+} from '@/lib/citizen-profile';
+import {
+  SchemesRegisterIcon,
+  CitizenProfileCheckIcon,
+  DocumentFolderIcon,
+  SchemeRealIcon,
+  DocumentRealIcon,
+} from '@/components/CivicIcons';
+import { IntroSplash } from '@/components/IntroSplash';
+import { UserManualModal } from '@/components/UserManualModal';
 import {
   Mic,
   Volume2,
-  Square,
-  RotateCcw,
-  CheckCircle2,
-  Gift,
-  FileText,
   ChevronRight,
-  Sparkles,
-  Send,
-  AlertCircle,
-  Radio,
-  Search,
-  PhoneCall,
-  BookOpen,
+  CheckCircle2,
+  FileText,
+  Gift,
+  Keyboard,
   X,
+  RotateCcw,
+  Sparkles,
+  Square,
+  PhoneCall,
+  Loader2,
+  Compass,
+  FileCheck2,
+  AlertCircle,
+  Upload,
   Palette,
   Languages,
   UserCheck,
-  FileCheck2,
   Cpu,
-  Upload,
+  BookOpen,
+  SlidersHorizontal,
+  Sun,
+  Shield,
+  Award,
 } from 'lucide-react';
 
-type BaseLang = 'hi' | 'mr' | 'en';
-type IndicLangCode = 'hi-IN' | 'mr-IN' | 'en-IN' | 'ta-IN' | 'te-IN' | 'bn-IN' | 'gu-IN' | 'kn-IN';
 type MicState = 'idle' | 'recording' | 'thinking' | 'speaking';
 type CategoryFilter = 'all' | 'farmer' | 'women' | 'health' | 'housing' | 'livelihood' | 'education';
-type ActiveTab = 'schemes' | 'wizard' | 'docs';
-type CivicTheme = 'theme-warmth' | 'theme-sovereign' | 'theme-daylight';
+type ActiveFeatureTab = 'schemes' | 'wizard' | 'doccheck';
+type ThemeMode = 'theme-warmth' | 'theme-sovereign' | 'theme-daylight';
+type IndicLang = 'hi' | 'mr' | 'ta' | 'te' | 'bn' | 'gu' | 'kn' | 'en';
 type SpeakerVoice = 'ritu' | 'priya' | 'aditya' | 'rohan';
 
-interface AnswerCardData {
+interface ChatResponse {
   schemeId: string | null;
-  spokenText: string;
-  card: {
-    title: string;
-    eligibility: string[];
-    benefits: string[];
-    documents: string[];
-  };
-  languageCode: string;
-  modelUsed?: string;
+  schemeName: string;
+  spokenAnswer: string;
+  eligibility: string[];
+  benefits: string[];
+  documents: string[];
+  officialLink: string;
+  confidence: string;
+  fallbackUsed?: boolean;
+  demoCached?: boolean;
 }
 
-const LANGUAGES_LIST: { code: IndicLangCode; label: string; native: string; base: BaseLang }[] = [
-  { code: 'hi-IN', label: 'Hindi', native: 'हिन्दी', base: 'hi' },
-  { code: 'mr-IN', label: 'Marathi', native: 'मराठी', base: 'mr' },
-  { code: 'ta-IN', label: 'Tamil', native: 'தமிழ்', base: 'en' },
-  { code: 'te-IN', label: 'Telugu', native: 'తెలుగు', base: 'en' },
-  { code: 'bn-IN', label: 'Bengali', native: 'বাংলা', base: 'hi' },
-  { code: 'gu-IN', label: 'Gujarati', native: 'ગુજરાતી', base: 'hi' },
-  { code: 'kn-IN', label: 'Kannada', native: 'ಕನ್ನಡ', base: 'en' },
-  { code: 'en-IN', label: 'English', native: 'English', base: 'en' },
+const LANG_OPTIONS: { id: IndicLang; code: string; label: string; sub: string }[] = [
+  { id: 'hi', code: 'hi-IN', label: 'हिन्दी', sub: 'Hindi' },
+  { id: 'mr', code: 'mr-IN', label: 'मराठी', sub: 'Marathi' },
+  { id: 'ta', code: 'ta-IN', label: 'தமிழ்', sub: 'Tamil' },
+  { id: 'te', code: 'te-IN', label: 'తెలుగు', sub: 'Telugu' },
+  { id: 'bn', code: 'bn-IN', label: 'বাংলা', sub: 'Bengali' },
+  { id: 'gu', code: 'gu-IN', label: 'ગુજરાતી', sub: 'Gujarati' },
+  { id: 'kn', code: 'kn-IN', label: 'ಕನ್ನಡ', sub: 'Kannada' },
+  { id: 'en', code: 'en-IN', label: 'English', sub: 'English' },
 ];
 
-const SPEAKERS_LIST: { id: SpeakerVoice; label: string; desc: string }[] = [
-  { id: 'ritu', label: 'Ritu', desc: 'मधुर महिला (Warm Female)' },
-  { id: 'priya', label: 'Priya', desc: 'स्पष्ट महिला (Clear Female)' },
-  { id: 'aditya', label: 'Aditya', desc: 'गंभीर पुरुष (Deep Male)' },
-  { id: 'rohan', label: 'Rohan', desc: 'मित्रवत पुरुष (Friendly Male)' },
+const VOICE_OPTIONS: { id: SpeakerVoice; label: string; gender: string }[] = [
+  { id: 'ritu', label: 'Ritu (महिला)', gender: 'F' },
+  { id: 'priya', label: 'Priya (महिला)', gender: 'F' },
+  { id: 'aditya', label: 'Aditya (पुरुष)', gender: 'M' },
+  { id: 'rohan', label: 'Rohan (पुरुष)', gender: 'M' },
 ];
 
-const CATEGORY_META: Record<
-  CategoryFilter,
-  { icon: string; hi: string; mr: string; en: string; badgeBg: string; badgeText: string }
-> = {
-  all: {
-    icon: '🌟',
-    hi: 'सभी योजनाएं',
-    mr: 'सर्व योजना',
-    en: 'All Schemes',
-    badgeBg: 'bg-[#FFF3E0] border-[#FFE0B2]',
-    badgeText: 'text-[#E65100]',
-  },
-  farmer: {
-    icon: '🌾',
-    hi: 'किसान व कृषि',
-    mr: 'शेतकरी व कृषी',
-    en: 'Farmers',
-    badgeBg: 'bg-[#E8F5E9] border-[#C8E6C9]',
-    badgeText: 'text-[#1B5E20]',
-  },
-  women: {
-    icon: '🌸',
-    hi: 'महिला कल्याण',
-    mr: 'महिला कल्याण',
-    en: 'Women Welfare',
-    badgeBg: 'bg-pink-50 border-pink-200',
-    badgeText: 'text-pink-800',
-  },
-  health: {
-    icon: '🏥',
-    hi: 'स्वास्थ्य व बीमा',
-    mr: 'आरोग्य व विमा',
-    en: 'Health & Cover',
-    badgeBg: 'bg-sky-50 border-sky-200',
-    badgeText: 'text-sky-800',
-  },
-  housing: {
-    icon: '🏠',
-    hi: 'आवास व बिजली',
-    mr: 'घरकुल व वीज',
-    en: 'Housing & Solar',
-    badgeBg: 'bg-amber-50 border-amber-200',
-    badgeText: 'text-amber-900',
-  },
-  livelihood: {
-    icon: '🛠️',
-    hi: 'कारीगर व रोजगार',
-    mr: 'कारागीर व रोजगार',
-    en: 'Work & Pension',
-    badgeBg: 'bg-purple-50 border-purple-200',
-    badgeText: 'text-purple-900',
-  },
-  education: {
-    icon: '🎓',
-    hi: 'शिक्षा व बेटियां',
-    mr: 'शिक्षण व मुली',
-    en: 'Education & Child',
-    badgeBg: 'bg-indigo-50 border-indigo-200',
-    badgeText: 'text-indigo-900',
-  },
-};
-
-const PERSONA_OPTIONS = [
-  {
-    id: 'farmer',
-    icon: '👨‍🌾',
-    hi: 'किसान / पशुपालक',
-    mr: 'शेतकरी / पशुपालक',
-    en: 'Farmer & Cultivator',
-    categories: ['farmer', 'housing', 'health'],
-  },
-  {
-    id: 'women',
-    icon: '👩',
-    hi: 'महिला / गृहिणी',
-    mr: 'महिला / गृहिणी',
-    en: 'Woman / Homemaker',
-    categories: ['women', 'health', 'housing', 'education'],
-  },
-  {
-    id: 'worker',
-    icon: '🛠️',
-    hi: 'कारीगर / मजदूर / विक्रेता',
-    mr: 'कारागीर / कामगार / फेरीवाले',
-    en: 'Artisan / Worker / Vendor',
-    categories: ['livelihood', 'health', 'housing'],
-  },
-  {
-    id: 'student',
-    icon: '🎓',
-    hi: 'छात्र / बेटी के माता-पिता',
-    mr: 'विद्यार्थी / मुलीचे पालक',
-    en: 'Student / Girl Child Parent',
-    categories: ['education', 'health'],
-  },
-  {
-    id: 'senior',
-    icon: '👴',
-    hi: 'वरिष्ठ नागरिक (60+ वर्ष)',
-    mr: 'ज्येष्ठ नागरिक (६०+ वर्षे)',
-    en: 'Senior Citizen (60+ Yrs)',
-    categories: ['health', 'livelihood'],
-  },
+const DOC_OPTIONS = [
+  { id: 'aadhaar', hi: 'आधार कार्ड', mr: 'आधार कार्ड', en: 'Aadhaar Card' },
+  { id: 'bank', hi: 'बैंक पासबुक', mr: 'बँक पासबुक', en: 'Bank Passbook' },
+  { id: 'ration', hi: 'राशन कार्ड', mr: 'रेशन कार्ड', en: 'Ration Card' },
+  { id: 'land', hi: '7/12 जमीन कागज', mr: '7/12 जमीन उतारा', en: '7/12 Land Record' },
+  { id: 'income', hi: 'आय प्रमाण पत्र', mr: 'उत्पन्नाचा दाखला', en: 'Income Certificate' },
+  { id: 'mobile', hi: 'आधार लिंक मोबाइल', mr: 'आधार लिंक मोबाईल', en: 'Linked Mobile No.' },
+  { id: 'caste', hi: 'जाति प्रमाण पत्र', mr: 'जात प्रमाणपत्र', en: 'Caste Certificate' },
+  { id: 'photo', hi: 'पासपोर्ट फोटो', mr: 'पासपोर्ट फोटो', en: 'Passport Photo' },
 ];
 
-const NEED_OPTIONS = [
-  {
-    id: 'cash',
-    icon: '💰',
-    hi: 'सीधी आर्थिक मदद / पेंशन',
-    mr: 'थेट आर्थिक मदत / पेन्शन',
-    en: 'Direct Cash / Pension',
-    keywords: ['6000', '1500', '5000', 'pension', '100 days'],
-  },
-  {
-    id: 'health',
-    icon: '🏥',
-    hi: 'मुफ्त इलाज, दवाई व बीमा',
-    mr: 'मोफत उपचार, औषधे व विमा',
-    en: 'Free Treatment & Insurance',
-    keywords: ['ilaj', 'medicine', 'insurance', 'bima', '5 lakh'],
-  },
-  {
-    id: 'house',
-    icon: '🏠',
-    hi: 'पक्का मकान, गैस व मुफ्त बिजली',
-    mr: 'पक्के घर, गॅस व मोफत वीज',
-    en: 'House, Gas & Solar Power',
-    keywords: ['awas', 'solar', 'bijli', 'gas', 'ujjwala'],
-  },
-  {
-    id: 'loan',
-    icon: '💳',
-    hi: 'काम, खेती या पढ़ाई के लिए लोन/मदद',
-    mr: 'व्यवसाय, शेती किंवा शिक्षणासाठी कर्ज',
-    en: 'Business, Farm Loan & Education',
-    keywords: ['loan', 'kcc', 'vishwakarma', 'svanidhi', 'scholarship', 'sukanya', 'lakhpati'],
-  },
-];
-
-const DOCUMENT_CHECKLIST_ITEMS = [
-  { id: 'aadhaar', icon: '🪪', hi: 'आधार कार्ड (Aadhaar)', mr: 'आधार कार्ड (Aadhaar)', en: 'Aadhaar Card' },
-  { id: 'bank', icon: '🏦', hi: 'बैंक पासबुक (DBT सक्रिय)', mr: 'बँक पासबुक (DBT लिंक)', en: 'Bank Passbook (DBT)' },
-  { id: 'ration', icon: '📒', hi: 'राशन कार्ड (पीला/केशरी/BPL)', mr: 'रेशन कार्ड (पिवळे/केशरी)', en: 'Ration Card' },
-  { id: 'land', icon: '🌾', hi: 'जमीन खतौनी / 7/12 उतारा', mr: '७/१२ व ८-अ उतारा', en: 'Land Record (7/12 / Khatauni)' },
-  { id: 'electricity', icon: '💡', hi: 'बिजली का बिल (Electricity Bill)', mr: 'वीज बिल (Electricity Bill)', en: 'Electricity Bill' },
-  { id: 'income', icon: '📄', hi: 'आय प्रमाण पत्र (Income Cert)', mr: 'उत्पन्नाचा दाखला', en: 'Income Certificate' },
-  { id: 'birth', icon: '👶', hi: 'बच्ची का जन्म प्रमाण पत्र', mr: 'मुलीचा जन्माचा दाखला', en: 'Child Birth Certificate' },
-  { id: 'eshram', icon: '🛠️', hi: 'ई-श्रम / मनरेगा जॉब कार्ड', mr: 'ई-श्रम / मनरेगा जॉब कार्ड', en: 'e-Shram / Job Card' },
+const OCCUPATION_TILES: {
+  id: CitizenOccupation;
+  iconId: string;
+  hi: string;
+  en: string;
+}[] = [
+  { id: 'farmer', iconId: 'tractor_harvest', hi: 'किसान / खेती', en: 'Farmer' },
+  { id: 'homemaker', iconId: 'women_empowerment', hi: 'गृहिणी / महिला', en: 'Homemaker / Woman' },
+  { id: 'laborer', iconId: 'rural_work', hi: 'मजदूर / निर्माण श्रमिक', en: 'Daily Wage Worker' },
+  { id: 'vendor', iconId: 'street_cart', hi: 'रेहड़ी-पटरी / दुकानदार', en: 'Street Vendor / Shop' },
+  { id: 'artisan', iconId: 'artisan_tools', hi: 'कारीगर / विश्वकर्मा', en: 'Artisan / Craftsperson' },
+  { id: 'student', iconId: 'graduation_cap', hi: 'छात्र / युवा', en: 'Student / Youth' },
+  { id: 'entrepreneur', iconId: 'mudra_bank', hi: 'स्वरोजगार / उद्यमी', en: 'Micro-Business' },
+  { id: 'senior', iconId: 'pension_shield', hi: 'वरिष्ठ नागरिक (60+)', en: 'Senior Citizen 60+' },
 ];
 
 function SarkariEmblem() {
   return (
     <svg
-      className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 drop-shadow-xs"
-      viewBox="0 0 128 128"
+      width="48"
+      height="48"
+      viewBox="0 0 64 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className="flex-shrink-0 rounded-2xl shadow-sm"
       aria-label="Sarkari Sahayak Emblem"
     >
-      <rect x="6" y="6" width="116" height="116" rx="28" fill="#FFFDF9" stroke="#E6D7C3" strokeWidth="4" />
-      <path
-        d="M16 34C16 24.0589 24.0589 16 34 16H94C103.941 16 112 24.0589 112 34V42C82 34 46 34 16 42V34Z"
-        fill="#F57C00"
-      />
-      <path
-        d="M16 86C46 94 82 94 112 86V94C112 103.941 103.941 112 94 112H34C24.0589 112 16 103.941 16 94V86Z"
-        fill="#1B5E20"
-      />
-      <circle cx="64" cy="64" r="27" stroke="#1A237E" strokeWidth="2.5" strokeDasharray="4 3" opacity="0.4" />
-      <circle cx="64" cy="64" r="21" fill="#F57C00" />
-      <rect x="58" y="50" width="12" height="18" rx="6" fill="#FFFFFF" />
-      <path
-        d="M52 61C52 67.6274 57.3726 73 64 73C70.6274 73 76 67.6274 76 61"
-        stroke="#FFFFFF"
-        strokeWidth="3.5"
-        strokeLinecap="round"
-      />
-      <path d="M64 73V79M58 79H70" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" />
-      <path d="M30 58V70" stroke="#F57C00" strokeWidth="4" strokeLinecap="round" />
-      <path d="M22 61V67" stroke="#1B5E20" strokeWidth="4" strokeLinecap="round" />
-      <path d="M98 58V70" stroke="#F57C00" strokeWidth="4" strokeLinecap="round" />
-      <path d="M106 61V67" stroke="#1B5E20" strokeWidth="4" strokeLinecap="round" />
+      <rect width="64" height="64" rx="16" fill="#1E1E1E" />
+      <path d="M0 10C0 4.47715 4.47715 0 10 0H54C59.5228 0 64 4.47715 64 10V11H0V10Z" fill="#FF9933" />
+      <rect y="11" width="64" height="3.5" fill="#FFFFFF" />
+      <rect y="14.5" width="64" height="3.5" fill="#138808" />
+      <circle cx="32" cy="37" r="19" fill="#FFF8EE" stroke="#F57C00" strokeWidth="2.5" />
+      <circle cx="32" cy="37" r="15.5" stroke="#1E3A8A" strokeWidth="1" strokeDasharray="2 2.2" />
+      <rect x="28" y="25" width="8" height="14" rx="4" fill="#F57C00" />
+      <path d="M23 32V34C23 38.9706 27.0294 43 32 43C36.9706 43 41 38.9706 41 34V32" stroke="#1B5E20" strokeWidth="2.8" strokeLinecap="round" />
+      <path d="M32 43V49M27 49H37" stroke="#1B5E20" strokeWidth="2.8" strokeLinecap="round" />
+      <path d="M19 31V37" stroke="#FF9933" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M45 31V37" stroke="#FF9933" strokeWidth="2.4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -258,1796 +149,1828 @@ function SarkariEmblem() {
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isDemoParam = searchParams.get('demo') === '1';
+  const initialDemo = searchParams.get('demo') === '1';
 
-  // Core UI & Theme State
-  const [theme, setTheme] = useState<CivicTheme>('theme-warmth');
-  const [activeTab, setActiveTab] = useState<ActiveTab>('schemes');
-  const [langCode, setLangCode] = useState<IndicLangCode>('hi-IN');
+  // Intro Splash & User Manual Modal states
+  const [showIntro, setShowIntro] = useState<boolean>(true);
+  const [isManualOpen, setIsManualOpen] = useState<boolean>(false);
+
+  // Theme, Language, Speaker, and Feature Tabs
+  const [themeMode, setThemeMode] = useState<ThemeMode>('theme-warmth');
+  const [lang, setLang] = useState<IndicLang>('hi');
   const [speaker, setSpeaker] = useState<SpeakerVoice>('ritu');
-  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<ActiveFeatureTab>('schemes');
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
+  const [sortByProfileMatch, setSortByProfileMatch] = useState<boolean>(true);
 
-  // Voice & AI State
+  // Persistent Citizen Profile ("Character Build") stored in localStorage
+  const [citizenProfile, setCitizenProfile] = useState<CitizenProfile>(DEFAULT_CITIZEN_PROFILE);
+
+  // Live Sarvam Mayura translated strings for schemes when lang is ta/te/bn/gu/kn
+  const [translatedMap, setTranslatedMap] = useState<
+    Record<string, Record<string, { name: string; tagline: string; badge: string }>>
+  >({});
+  const [isTranslatingFeed, setIsTranslatingFeed] = useState(false);
+
+  // Sarvam Active API Telemetry Badge for Judges
+  const [lastSarvamCall, setLastSarvamCall] = useState<string>(
+    'Ready: saaras:v3 (STT) • sarvam-105b (LLM) • mayura:v1 (Translate) • bulbul:v3 (TTS)'
+  );
+
+  // Voice & Chat states
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(initialDemo);
   const [micState, setMicState] = useState<MicState>('idle');
-  const [recordTimer, setRecordTimer] = useState<number>(0);
+  const [recordSeconds, setRecordSeconds] = useState<number>(0);
   const [transcript, setTranscript] = useState<string>('');
-  const [answer, setAnswer] = useState<AnswerCardData | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [answer, setAnswer] = useState<ChatResponse | null>(null);
+  const [audioDataUrl, setAudioDataUrl] = useState<string | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
-  const [activeSpeakingSchemeId, setActiveSpeakingSchemeId] = useState<string | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showTextInput, setShowTextInput] = useState<boolean>(false);
-  const [typedText, setTypedText] = useState<string>('');
-  const [isDemoMode, setIsDemoMode] = useState<boolean>(isDemoParam);
+  const [textQuery, setTextQuery] = useState<string>('');
+  const [errorBanner, setErrorBanner] = useState<string | null>(null);
 
-  // Sarvam API Live Telemetry for Judges
-  const [lastApiTrace, setLastApiTrace] = useState<string[]>([
-    'STT: saaras:v3',
-    'LLM: sarvam-105b-conversations',
-    'Translate: mayura:v1',
-    'TTS: bulbul:v3 (ritu)',
-  ]);
+  // Card / Manual quick-listen state
+  const [playingCardId, setPlayingCardId] = useState<string | null>(null);
+  const [loadingCardId, setLoadingCardId] = useState<string | null>(null);
 
-  // Eligibility Wizard State
-  const [selectedPersona, setSelectedPersona] = useState<string>('farmer');
-  const [selectedNeed, setSelectedNeed] = useState<string>('cash');
+  // Eligibility Wizard AI explanation states
+  const [wizAiAdvisory, setWizAiAdvisory] = useState<string>('');
+  const [isGeneratingWizAi, setIsGeneratingWizAi] = useState(false);
 
-  // Document Readiness Checker State
-  const [ownedDocs, setOwnedDocs] = useState<string[]>(['aadhaar', 'bank', 'ration']);
-  const [uploadedDocNote, setUploadedDocNote] = useState<string>('');
-  const [uploadedFileName, setUploadedFileName] = useState<string>('');
-  const [docReport, setDocReport] = useState<any | null>(null);
-  const [isAnalyzingDocs, setIsAnalyzingDocs] = useState<boolean>(false);
+  // Document Readiness Checker states
+  const [docNoteText, setDocNoteText] = useState<string>('');
+  const [docCheckResult, setDocCheckResult] = useState<any | null>(null);
+  const [isCheckingDocs, setIsCheckingDocs] = useState(false);
 
-  // Derived Base Language ('hi' | 'mr' | 'en') for static UI labels
-  const currentLangMeta = LANGUAGES_LIST.find((l) => l.code === langCode) || LANGUAGES_LIST[0];
-  const lang: BaseLang = currentLangMeta.base;
-
-  // References
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const recordStartTimeRef = useRef<number>(0);
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
-  const answerPanelRef = useRef<HTMLDivElement | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
+  const cardAudioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    if (isDemoParam) setIsDemoMode(true);
-  }, [isDemoParam]);
+  const currentLangObj = LANG_OPTIONS.find((l) => l.id === lang) || LANG_OPTIONS[0];
 
+  // Load Citizen Profile from localStorage on mount & check intro session state
   useEffect(() => {
-    return () => {
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-      if (currentAudioRef.current) currentAudioRef.current.pause();
-    };
+    const loaded = loadCitizenProfile();
+    setCitizenProfile(loaded);
+
+    const introSeen = sessionStorage.getItem('sarkari_sahayak_intro_seen_v2');
+    if (introSeen === '1') {
+      setShowIntro(false);
+    }
   }, []);
 
-  // Helper: Play Audio Data URL
-  const playAudio = (dataUrl: string) => {
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-    }
-    const audio = new Audio(dataUrl);
-    currentAudioRef.current = audio;
+  const handleCompleteIntro = () => {
+    sessionStorage.setItem('sarkari_sahayak_intro_seen_v2', '1');
+    setShowIntro(false);
+  };
 
-    audio.onplay = () => {
-      setIsPlayingAudio(true);
-      setMicState('speaking');
-    };
-    audio.onended = () => {
-      setIsPlayingAudio(false);
-      setActiveSpeakingSchemeId(null);
-      setMicState('idle');
-    };
-    audio.onerror = () => {
-      setIsPlayingAudio(false);
-      setActiveSpeakingSchemeId(null);
-      setMicState('idle');
-    };
-
-    audio.play().catch((err) => {
-      console.warn('Autoplay prevented by browser policy:', err);
-      setIsPlayingAudio(false);
-      setActiveSpeakingSchemeId(null);
-      setMicState('idle');
+  const updateCitizenProfile = (patch: Partial<CitizenProfile>) => {
+    setCitizenProfile((prev) => {
+      const next = saveCitizenProfile({ ...prev, ...patch });
+      return next;
     });
   };
 
-  const toggleAudio = () => {
-    if (!currentAudioRef.current && audioUrl) {
-      playAudio(audioUrl);
-      return;
-    }
-    if (currentAudioRef.current) {
-      if (isPlayingAudio) {
-        currentAudioRef.current.pause();
-        setIsPlayingAudio(false);
-        setActiveSpeakingSchemeId(null);
-        setMicState('idle');
-      } else {
-        currentAudioRef.current
-          .play()
-          .then(() => {
-            setIsPlayingAudio(true);
-            setMicState('speaking');
-          })
-          .catch(console.error);
-      }
-    }
+  const handleResetProfile = () => {
+    const fresh = saveCitizenProfile(DEFAULT_CITIZEN_PROFILE);
+    setCitizenProfile(fresh);
   };
 
-  // Helper: Speak any text in the selected Indic language via Sarvam Mayura (if needed) + Sarvam Bulbul v3
-  const speakTextWithSarvam = async (
-    rawText: string,
-    sourceLangCode: string = 'hi-IN',
-    tracePrefix: string[] = []
-  ) => {
-    try {
-      setMicState('thinking');
-      let textToSpeak = rawText;
-      const trace = [...tracePrefix];
+  useEffect(() => {
+    if (searchParams.get('demo') === '1') {
+      setIsDemoMode(true);
+    }
+  }, [searchParams]);
 
-      // If target language differs from source language, translate using Sarvam Mayura (/api/translate)
-      if (langCode !== sourceLangCode && !['hi-IN', 'mr-IN', 'en-IN'].includes(langCode)) {
-        const transRes = await fetch('/api/translate', {
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (audioPlayerRef.current) audioPlayerRef.current.pause();
+      if (cardAudioRef.current) cardAudioRef.current.pause();
+    };
+  }, []);
+
+  // Evaluate all 26 schemes against the stored Citizen Profile ("Character Build")
+  const evaluatedSchemes = useMemo(() => {
+    const map: Record<string, ReturnType<typeof evaluateSchemeForCitizen>> = {};
+    for (const s of schemesData as any[]) {
+      map[s.id] = evaluateSchemeForCitizen(s, citizenProfile);
+    }
+    return map;
+  }, [citizenProfile]);
+
+  // Translate scheme cards dynamically via Sarvam Mayura (mayura:v1) when user picks Tamil, Telugu, Bengali, Gujarati, or Kannada
+  useEffect(() => {
+    if (lang === 'hi' || lang === 'mr' || lang === 'en') return;
+    if (translatedMap[lang]) return;
+
+    const translateSchemesToIndic = async () => {
+      try {
+        setIsTranslatingFeed(true);
+        setLastSarvamCall(`Calling Sarvam mayura:v1 (/api/translate) → ${currentLangObj.code}...`);
+        const textsToTranslate: string[] = [];
+        for (const s of schemesData as any[]) {
+          textsToTranslate.push(s.name.en);
+          textsToTranslate.push(s.tagline.en);
+          textsToTranslate.push(s.benefitBadge?.en || s.benefits[0]);
+        }
+
+        const res = await fetch('/api/translate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            text: rawText,
-            sourceLanguageCode: sourceLangCode,
-            targetLanguageCode: langCode,
+            texts: textsToTranslate,
+            sourceLanguageCode: 'en-IN',
+            targetLanguageCode: currentLangObj.code,
           }),
         });
-        if (transRes.ok) {
-          const transData = await transRes.json();
-          if (transData.translatedText) {
-            textToSpeak = transData.translatedText;
-            trace.push(`Translate: mayura:v1 (${langCode})`);
-          }
+
+        if (res.ok) {
+          const data = await res.json();
+          const arr: string[] = data.translatedTexts || [];
+          const langMap: Record<string, { name: string; tagline: string; badge: string }> = {};
+          (schemesData as any[]).forEach((s, idx) => {
+            const base = idx * 3;
+            langMap[s.id] = {
+              name: arr[base] || s.name.hi,
+              tagline: arr[base + 1] || s.tagline.hi,
+              badge: arr[base + 2] || s.benefitBadge?.hi || s.benefits[0],
+            };
+          });
+          setTranslatedMap((prev) => ({ ...prev, [lang]: langMap }));
+          setLastSarvamCall(
+            `Sarvam mayura:v1 translated ${schemesData.length} schemes to ${currentLangObj.code}`
+          );
         }
-      }
-
-      const ttsRes = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: textToSpeak,
-          languageCode: langCode,
-          speaker: speaker,
-        }),
-      });
-
-      if (ttsRes.ok) {
-        const ttsData = await ttsRes.json();
-        trace.push(`TTS: bulbul:v3 (${speaker}, ${langCode})`);
-        setLastApiTrace(trace);
-        if (ttsData.dataUrl) {
-          setAudioUrl(ttsData.dataUrl);
-          playAudio(ttsData.dataUrl);
-          return textToSpeak;
-        }
-      }
-      setMicState('idle');
-      return textToSpeak;
-    } catch {
-      setMicState('idle');
-      return rawText;
-    }
-  };
-
-  // Welcome Guide Audio
-  const playWelcomeGuide = async () => {
-    const baseWelcome =
-      lang === 'mr'
-        ? 'नमस्कार! सरकारी सहाय्यक मध्ये आपले स्वागत आहे. तुम्ही १८ सरकारी योजना पाहू शकता, तुमची पात्रता तपासू शकता आणि कागदपत्रांची पडताळणी करू शकता.'
-        : lang === 'en'
-        ? 'Welcome to Sarkari Sahayak! You can explore 18 official welfare schemes, check your eligibility in 3 steps, or verify your documents using Sarvam AI.'
-        : 'नमस्ते! सरकारी सहायक में आपका स्वागत है। यहाँ आप 18 सरकारी योजनाओं की जानकारी सुन सकते हैं, अपनी पात्रता जांच सकते हैं और दस्तावेजों की जांच कर सकते हैं।';
-
-    const srcCode = lang === 'mr' ? 'mr-IN' : lang === 'en' ? 'en-IN' : 'hi-IN';
-    await speakTextWithSarvam(baseWelcome, srcCode, ['Guide: Sarvam Voice Helper']);
-  };
-
-  // Start Audio Recording
-  const startRecording = async (e: React.PointerEvent) => {
-    e.preventDefault();
-    setErrorMsg(null);
-
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      setIsPlayingAudio(false);
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioChunksRef.current = [];
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.start();
-      recordStartTimeRef.current = Date.now();
-      setMicState('recording');
-      setRecordTimer(0);
-
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-      timerIntervalRef.current = setInterval(() => {
-        setRecordTimer((prev) => prev + 1);
-      }, 1000);
-    } catch (err: any) {
-      console.error('Microphone access denied:', err);
-      setErrorMsg('माइक्रोफ़ोन की अनुमति नहीं मिली। कृपया नीचे लिखकर पूछें या योजना पर टैप करें।');
-      setShowTextInput(true);
-      setMicState('idle');
-    }
-  };
-
-  // Stop Audio Recording & Process Voice Loop
-  const stopRecording = async (e: React.PointerEvent) => {
-    e.preventDefault();
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-      timerIntervalRef.current = null;
-    }
-
-    const duration = Date.now() - recordStartTimeRef.current;
-    if (duration < 600) {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop();
-        mediaRecorderRef.current.stream.getTracks().forEach((t) => t.stop());
-      }
-      setMicState('idle');
-      return;
-    }
-
-    if (!mediaRecorderRef.current || mediaRecorderRef.current.state === 'inactive') {
-      return;
-    }
-
-    setMicState('thinking');
-
-    mediaRecorderRef.current.onstop = async () => {
-      try {
-        const rawBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        mediaRecorderRef.current?.stream.getTracks().forEach((t) => t.stop());
-
-        let wavBlob: Blob;
-        try {
-          wavBlob = await audioBlobToWav(rawBlob);
-        } catch (wavErr) {
-          console.warn('WAV conversion fallback to raw blob:', wavErr);
-          wavBlob = rawBlob;
-        }
-
-        const formData = new FormData();
-        formData.append('file', wavBlob, 'audio.wav');
-        formData.append('language_hint', langCode);
-
-        const sttRes = await fetch('/api/stt', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!sttRes.ok) {
-          throw new Error('आवाज पहचानी नहीं जा सकी (Speech not recognized)');
-        }
-
-        const sttData = await sttRes.json();
-        const userText = sttData.transcript?.trim();
-
-        if (!userText) {
-          throw new Error('कोई आवाज सुनाई नहीं दी। कृपया फिर से बोलें।');
-        }
-
-        setTranscript(userText);
-        await handleProcessQuery(userText, sttData.languageCode || langCode, [
-          `STT: saaras:v3 (${sttData.languageCode || langCode})`,
-        ]);
-      } catch (err: any) {
-        console.error('Voice loop error:', err);
-        setErrorMsg(err.message || 'त्रुटि हुई। कृपया दोबारा प्रयास करें या लिखकर पूछें।');
-        setMicState('idle');
+      } catch (e) {
+        console.error('Mayura feed translation error:', e);
+      } finally {
+        setIsTranslatingFeed(false);
       }
     };
 
-    mediaRecorderRef.current.stop();
+    translateSchemesToIndic();
+  }, [lang, currentLangObj.code, translatedMap]);
+
+  const getSchemeDisplay = (scheme: any) => {
+    if (lang === 'hi' || lang === 'mr' || lang === 'en') {
+      return {
+        name: scheme.name[lang],
+        tagline: scheme.tagline[lang],
+        badge:
+          scheme.benefitBadge?.[lang] || scheme.benefitBadge?.hi || scheme.benefits[0],
+      };
+    }
+    const t = translatedMap[lang]?.[scheme.id];
+    return {
+      name: t?.name || scheme.name.hi,
+      tagline: t?.tagline || scheme.tagline.hi,
+      badge: t?.badge || scheme.benefitBadge?.hi || scheme.benefits[0],
+    };
   };
 
-  // Process text through LLM (/api/chat), Mayura (/api/translate), and Bulbul (/api/tts)
-  const handleProcessQuery = async (
-    queryText: string,
-    targetLangCode: string,
-    initialTrace: string[] = []
-  ) => {
-    setMicState('thinking');
-    setErrorMsg(null);
-    const trace = [...initialTrace];
+  const stopAllAudio = () => {
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+      setIsPlayingAudio(false);
+    }
+    if (cardAudioRef.current) {
+      cardAudioRef.current.pause();
+      setPlayingCardId(null);
+    }
+    if (micState === 'speaking') {
+      setMicState('idle');
+    }
+  };
+
+  const playAudioFromDataUrl = async (dataUrl: string) => {
+    try {
+      stopAllAudio();
+      const audio = new Audio(dataUrl);
+      audioPlayerRef.current = audio;
+      setIsPlayingAudio(true);
+      setMicState('speaking');
+
+      audio.onended = () => {
+        setIsPlayingAudio(false);
+        setMicState('idle');
+      };
+      audio.onerror = () => {
+        setIsPlayingAudio(false);
+        setMicState('idle');
+      };
+
+      await audio.play();
+    } catch (err) {
+      console.warn('Autoplay blocked or failed:', err);
+      setIsPlayingAudio(false);
+      setMicState('idle');
+    }
+  };
+
+  const speakAnyText = async (cardKey: string, spokenText: string) => {
+    if (playingCardId === cardKey && cardAudioRef.current) {
+      cardAudioRef.current.pause();
+      setPlayingCardId(null);
+      return;
+    }
 
     try {
+      stopAllAudio();
+      setLoadingCardId(cardKey);
+      setLastSarvamCall(
+        `Calling Sarvam bulbul:v3 (/api/tts, speaker: ${speaker}, lang: ${currentLangObj.code})...`
+      );
+
+      let finalSpoken = spokenText;
+      if (lang !== 'hi' && lang !== 'mr' && lang !== 'en') {
+        const trRes = await fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: spokenText,
+            sourceLanguageCode: 'hi-IN',
+            targetLanguageCode: currentLangObj.code,
+          }),
+        });
+        if (trRes.ok) {
+          const trData = await trRes.json();
+          if (trData.translatedText) finalSpoken = trData.translatedText;
+        }
+      }
+
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: finalSpoken,
+          languageCode: currentLangObj.code,
+          speaker,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setLastSarvamCall(
+          `Sarvam bulbul:v3 audio ready (speaker: ${speaker}, ${currentLangObj.code})`
+        );
+        if (data.dataUrl) {
+          const audio = new Audio(data.dataUrl);
+          cardAudioRef.current = audio;
+          setPlayingCardId(cardKey);
+          audio.onended = () => setPlayingCardId(null);
+          audio.onerror = () => setPlayingCardId(null);
+          await audio.play();
+        }
+      }
+    } catch (e) {
+      console.error('TTS error:', e);
+    } finally {
+      setLoadingCardId(null);
+    }
+  };
+
+  const handleCardListen = async (e: React.MouseEvent, scheme: any) => {
+    e.stopPropagation();
+    const disp = getSchemeDisplay(scheme);
+    const benefitsList: string[] =
+      scheme.benefitsI18n?.[lang === 'mr' || lang === 'en' ? lang : 'hi'] || scheme.benefits;
+    const spokenSummary = `${disp.name}। ${disp.tagline}। ${benefitsList[0] || ''}`;
+    await speakAnyText(scheme.id, spokenSummary);
+  };
+
+  const processQuery = async (userText: string, detectedLanguageCode?: string) => {
+    setErrorBanner(null);
+    setTranscript(userText);
+    setMicState('thinking');
+    setAudioDataUrl(null);
+    stopAllAudio();
+
+    const targetLangCode = detectedLanguageCode || currentLangObj.code;
+
+    if (isDemoMode) {
+      await new Promise((r) => setTimeout(r, 450));
+      const lower = userText.toLowerCase();
+      const matchedEntry =
+        (demoCache as any[]).find(
+          (entry) =>
+            lower.includes(entry.schemeId?.replace('-', ' ')) ||
+            lower.includes(entry.query?.toLowerCase().slice(0, 10))
+        ) || (demoCache as any[])[0];
+
+      const cachedResponse: ChatResponse = {
+        schemeId: matchedEntry.schemeId,
+        schemeName: matchedEntry.card.title,
+        spokenAnswer: matchedEntry.spokenText,
+        eligibility: matchedEntry.card.eligibility,
+        benefits: matchedEntry.card.benefits,
+        documents: matchedEntry.card.documents,
+        officialLink: 'https://www.myscheme.gov.in',
+        confidence: 'high',
+        demoCached: true,
+      };
+      setAnswer(cachedResponse);
+      setLastSarvamCall(
+        `Demo Cache matched → Calling Sarvam bulbul:v3 (${speaker}) for audio...`
+      );
+
+      try {
+        const ttsRes = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: cachedResponse.spokenAnswer,
+            languageCode: targetLangCode,
+            speaker,
+          }),
+        });
+        if (ttsRes.ok) {
+          const ttsData = await ttsRes.json();
+          if (ttsData.dataUrl) {
+            setAudioDataUrl(ttsData.dataUrl);
+            await playAudioFromDataUrl(ttsData.dataUrl);
+            return;
+          }
+        }
+      } catch {
+        // ignore TTS failure in demo mode
+      }
+      setMicState('idle');
+      return;
+    }
+
+    try {
+      setLastSarvamCall(
+        `Calling Sarvam sarvam-105b-conversations (/api/chat) in ${targetLangCode}...`
+      );
       const chatRes = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          transcript: queryText,
-          languageCode: targetLangCode,
-          isDemo: isDemoMode,
+          transcript: userText,
+          language: targetLangCode,
         }),
       });
 
       if (!chatRes.ok) {
-        throw new Error('जवाब प्राप्त करने में समस्या हुई।');
+        throw new Error('Chat request failed');
       }
 
-      const chatData: AnswerCardData = await chatRes.json();
-      trace.push(`LLM: ${chatData.modelUsed || 'sarvam-105b-conversations'}`);
-
-      // If user selected Tamil, Telugu, Bengali, Gujarati, or Kannada and response came from fallback/Hindi, translate via Sarvam Mayura!
-      if (!['hi-IN', 'mr-IN', 'en-IN'].includes(langCode)) {
-        try {
-          const transRes = await fetch('/api/translate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              texts: [
-                chatData.spokenText,
-                chatData.card.title,
-                ...(chatData.card.benefits || []).slice(0, 2),
-              ],
-              sourceLanguageCode: 'hi-IN',
-              targetLanguageCode: langCode,
-            }),
-          });
-          if (transRes.ok) {
-            const transData = await transRes.json();
-            if (Array.isArray(transData.translatedTexts) && transData.translatedTexts.length >= 2) {
-              chatData.spokenText = transData.translatedTexts[0];
-              chatData.card.title = transData.translatedTexts[1];
-              if (transData.translatedTexts.length > 2) {
-                chatData.card.benefits = transData.translatedTexts.slice(2);
-              }
-              trace.push(`Translate: mayura:v1 (${langCode})`);
-            }
-          }
-        } catch (e) {
-          console.warn('Optional translation step skipped:', e);
-        }
-      }
-
+      const chatData: ChatResponse = await chatRes.json();
       setAnswer(chatData);
 
-      setTimeout(() => {
-        if (window.innerWidth < 1024 && answerPanelRef.current) {
-          answerPanelRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-
-      if (chatData.spokenText) {
+      if (chatData.spokenAnswer) {
         try {
+          setLastSarvamCall(
+            `Calling Sarvam bulbul:v3 (/api/tts, speaker: ${speaker}) for spoken response...`
+          );
           const ttsRes = await fetch('/api/tts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              text: chatData.spokenText,
-              languageCode: langCode,
-              speaker: speaker,
+              text: chatData.spokenAnswer,
+              languageCode: targetLangCode,
+              speaker,
             }),
           });
 
           if (ttsRes.ok) {
             const ttsData = await ttsRes.json();
-            trace.push(`TTS: bulbul:v3 (${speaker}, ${langCode})`);
-            setLastApiTrace(trace);
+            setLastSarvamCall(
+              `Completed pipeline: saaras:v3 → sarvam-105b-conversations → bulbul:v3 (${speaker})`
+            );
             if (ttsData.dataUrl) {
-              setAudioUrl(ttsData.dataUrl);
-              playAudio(ttsData.dataUrl);
+              setAudioDataUrl(ttsData.dataUrl);
+              await playAudioFromDataUrl(ttsData.dataUrl);
               return;
             }
           }
         } catch (ttsErr) {
-          console.warn('TTS playback error, continuing in text mode:', ttsErr);
+          console.warn('TTS failed, showing text only:', ttsErr);
         }
       }
 
-      setLastApiTrace(trace);
-      setActiveSpeakingSchemeId(null);
       setMicState('idle');
-    } catch (err: any) {
-      console.error('Query processing error:', err);
-      setErrorMsg(err.message || 'त्रुटि हुई।');
-      setActiveSpeakingSchemeId(null);
+    } catch (err) {
+      console.error('Query error:', err);
+      setErrorBanner('नेटवर्क व्यस्त है। आप नीचे अपनी बात लिखकर भी पूछ सकते हैं।');
+      setShowTextInput(true);
       setMicState('idle');
     }
   };
 
-  const handleChipClick = async (query: string) => {
-    setTranscript(query);
-    await handleProcessQuery(query, langCode, ['Input: Quick Voice Chip']);
+  const startRecording = async () => {
+    if (micState === 'thinking') return;
+    stopAllAudio();
+    setErrorBanner(null);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunksRef.current = [];
+
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop());
+        if (timerRef.current) clearInterval(timerRef.current);
+
+        const rawBlob = new Blob(audioChunksRef.current, {
+          type: mediaRecorder.mimeType || 'audio/webm',
+        });
+        if (rawBlob.size < 800) {
+          setMicState('idle');
+          setErrorBanner('आवाज बहुत छोटी थी। कृपया माइक दबाकर थोड़ा लंबा बोलें।');
+          return;
+        }
+
+        setMicState('thinking');
+        try {
+          setLastSarvamCall(
+            'Calling Sarvam saaras:v3 (/api/stt) for code-mixed speech recognition...'
+          );
+          let uploadBlob = rawBlob;
+          try {
+            uploadBlob = await audioBlobToWav(rawBlob);
+          } catch (convErr) {
+            console.warn('WAV conversion fallback to raw blob:', convErr);
+          }
+
+          const formData = new FormData();
+          formData.append('audio', uploadBlob, 'speech.wav');
+
+          const sttRes = await fetch('/api/stt', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!sttRes.ok) {
+            throw new Error('STT failed');
+          }
+
+          const sttData = await sttRes.json();
+          const userTranscript = sttData.transcript?.trim();
+
+          if (!userTranscript) {
+            setMicState('idle');
+            setErrorBanner('आवाज साफ नहीं सुनाई दी। कृपया फिर से बोलें या टाइप करें।');
+            setShowTextInput(true);
+            return;
+          }
+
+          setLastSarvamCall(
+            `Sarvam saaras:v3 transcribed (${sttData.languageCode || 'hi-IN'}): "${userTranscript}"`
+          );
+          await processQuery(userTranscript, sttData.languageCode || currentLangObj.code);
+        } catch (err) {
+          console.error('STT processing error:', err);
+          setMicState('idle');
+          setErrorBanner('माइक से आवाज समझने में समस्या हुई। कृपया नीचे टाइप करके पूछें।');
+          setShowTextInput(true);
+        }
+      };
+
+      mediaRecorder.start();
+      setMicState('recording');
+      setRecordSeconds(0);
+
+      timerRef.current = setInterval(() => {
+        setRecordSeconds((prev) => {
+          if (prev >= 10) {
+            stopRecording();
+            return 10;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    } catch (err) {
+      console.warn('Microphone permission denied or unavailable:', err);
+      setErrorBanner('माइक की अनुमति नहीं मिली। कृपया नीचे अपने सवाल टाइप करें।');
+      setShowTextInput(true);
+      setMicState('idle');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
   };
 
   const handleTextSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!typedText.trim()) return;
-    const query = typedText.trim();
-    setTypedText('');
-    setShowTextInput(false);
-    setTranscript(query);
-    await handleProcessQuery(query, langCode, ['Input: Citizen Text Query']);
+    if (!textQuery.trim()) return;
+    const q = textQuery.trim();
+    setTextQuery('');
+    await processQuery(q);
   };
 
-  // Instant Listen & Translate for any scheme card
-  const handleSchemeListen = async (schemeId: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    const s = schemesData.find((item) => item.id === schemeId) as any;
-    if (!s) return;
-
-    if (activeSpeakingSchemeId === schemeId && isPlayingAudio && currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      setIsPlayingAudio(false);
-      setActiveSpeakingSchemeId(null);
-      setMicState('idle');
-      return;
-    }
-
-    const eligList = s.eligibilityI18n?.[lang] || s.eligibility;
-    const benList = s.benefitsI18n?.[lang] || s.benefits;
-    const docList = s.documentsI18n?.[lang] || s.documents;
-
-    let spokenSummary =
-      lang === 'mr'
-        ? `${s.name.mr}। ${s.tagline.mr}। मुख्य लाभ: ${benList[0]}। आवश्यक कागदपत्रे: ${docList.slice(0, 2).join(', ')}।`
-        : lang === 'en'
-        ? `${s.name.en}. ${s.tagline.en}. Key benefit: ${benList[0]}. Required documents: ${docList.slice(0, 2).join(', ')}.`
-        : `${s.name.hi}। ${s.tagline.hi}। मुख्य लाभ: ${benList[0]}। जरूरी दस्तावेज: ${docList.slice(0, 2).join(', ')}।`;
-
-    let cardTitle = s.name[lang];
-    const srcLangCode = lang === 'mr' ? 'mr-IN' : lang === 'en' ? 'en-IN' : 'hi-IN';
-
-    setActiveSpeakingSchemeId(schemeId);
-    setMicState('thinking');
-
-    const trace: string[] = ['RAG: Verified Scheme JSON'];
-
-    // If user chose Tamil, Telugu, Bengali, Gujarati, or Kannada, translate live via Sarvam Mayura (/api/translate)!
-    if (!['hi-IN', 'mr-IN', 'en-IN'].includes(langCode)) {
-      try {
-        const transRes = await fetch('/api/translate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            texts: [spokenSummary, cardTitle],
-            sourceLanguageCode: srcLangCode,
-            targetLanguageCode: langCode,
-          }),
-        });
-        if (transRes.ok) {
-          const transData = await transRes.json();
-          if (Array.isArray(transData.translatedTexts)) {
-            spokenSummary = transData.translatedTexts[0] || spokenSummary;
-            cardTitle = transData.translatedTexts[1] || cardTitle;
-            trace.push(`Translate: mayura:v1 (${langCode})`);
-          }
-        }
-      } catch (err) {
-        console.warn('Scheme listen translate fallback:', err);
-      }
-    }
-
-    setTranscript(cardTitle);
-    setAnswer({
-      schemeId: s.id,
-      spokenText: spokenSummary,
-      card: {
-        title: cardTitle,
-        eligibility: eligList,
-        benefits: benList,
-        documents: docList,
-      },
-      languageCode: langCode,
+  // Filtered and optionally profile-sorted schemes
+  const filteredSchemes = useMemo(() => {
+    const base = (schemesData as any[]).filter((s) =>
+      categoryFilter === 'all' ? true : s.category === categoryFilter
+    );
+    if (!sortByProfileMatch) return base;
+    return [...base].sort((a, b) => {
+      const scoreA = evaluatedSchemes[a.id]?.matchScore || 0;
+      const scoreB = evaluatedSchemes[b.id]?.matchScore || 0;
+      return scoreB - scoreA;
     });
+  }, [categoryFilter, sortByProfileMatch, evaluatedSchemes]);
 
-    setTimeout(() => {
-      if (window.innerWidth < 1024 && answerPanelRef.current) {
-        answerPanelRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+  // Top matched schemes for the Citizen Profile / Eligibility Wizard
+  const wizardMatchedSchemes = useMemo(() => {
+    return [...(schemesData as any[])]
+      .sort((a, b) => {
+        const scoreA = evaluatedSchemes[a.id]?.matchScore || 0;
+        const scoreB = evaluatedSchemes[b.id]?.matchScore || 0;
+        return scoreB - scoreA;
+      })
+      .filter((s) => (evaluatedSchemes[s.id]?.matchScore || 0) >= 60);
+  }, [evaluatedSchemes]);
 
+  const handleGenerateWizardAiAdvisory = async () => {
     try {
-      const ttsRes = await fetch('/api/tts', {
+      setIsGeneratingWizAi(true);
+      setLastSarvamCall(
+        'Calling Sarvam sarvam-105b-conversations for personalized Citizen Profile eligibility advisory...'
+      );
+      const profilePrompt = `मेरी नागरिक प्रोफ़ाइल: पेशा ${citizenProfile.occupation}, आयु ${citizenProfile.age} वर्ष, लिंग ${citizenProfile.gender}, वार्षिक आय ₹${citizenProfile.annualIncome}, क्षेत्र ${citizenProfile.area}, राज्य ${citizenProfile.state}। मेरे लिए सबसे अच्छी सरकारी योजनाएं कौन सी हैं?`;
+
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text: spokenSummary,
-          languageCode: langCode,
-          speaker: speaker,
+          transcript: profilePrompt,
+          language: currentLangObj.code,
         }),
       });
-      if (ttsRes.ok) {
-        const ttsData = await ttsRes.json();
-        trace.push(`TTS: bulbul:v3 (${speaker}, ${langCode})`);
-        setLastApiTrace(trace);
-        if (ttsData.dataUrl) {
-          setAudioUrl(ttsData.dataUrl);
-          playAudio(ttsData.dataUrl);
-          return;
-        }
+
+      if (res.ok) {
+        const data: ChatResponse = await res.json();
+        setWizAiAdvisory(data.spokenAnswer);
+        await speakAnyText('wizard-advisory', data.spokenAnswer);
       }
-      setActiveSpeakingSchemeId(null);
-      setMicState('idle');
-    } catch {
-      setActiveSpeakingSchemeId(null);
-      setMicState('idle');
+    } catch (e) {
+      console.error('Wizard AI error:', e);
+    } finally {
+      setIsGeneratingWizAi(false);
     }
   };
 
-  // Run Document Readiness Check via /api/doc-check + Sarvam TTS
-  const handleRunDocCheck = async (speakResult: boolean = true) => {
+  // Toggle owned document & persist in Citizen Profile
+  const toggleDoc = (docId: string) => {
+    const exists = citizenProfile.ownedDocs.includes(docId);
+    const nextDocs = exists
+      ? citizenProfile.ownedDocs.filter((d) => d !== docId)
+      : [...citizenProfile.ownedDocs, docId];
+    updateCitizenProfile({ ownedDocs: nextDocs });
+  };
+
+  const runDocReadinessCheck = async () => {
     try {
-      setIsAnalyzingDocs(true);
+      setIsCheckingDocs(true);
+      setLastSarvamCall(
+        `Calling /api/doc-check + Sarvam mayura:v1 (${currentLangObj.code}) to verify document readiness...`
+      );
       const res = await fetch('/api/doc-check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ownedDocs,
-          uploadedNote: uploadedDocNote,
-          languageCode: langCode,
+          ownedDocs: citizenProfile.ownedDocs,
+          uploadedNoteText: docNoteText,
+          targetLanguageCode: currentLangObj.code,
         }),
       });
       if (res.ok) {
         const data = await res.json();
-        setDocReport(data);
-        if (speakResult && data.spokenSummary) {
-          await speakTextWithSarvam(data.spokenSummary, langCode, [
-            `DocAI: ${data.modelUsed || 'sarvam-doc-intelligence'}`,
-          ]);
-        }
+        setDocCheckResult(data);
+        setLastSarvamCall(
+          `Document Readiness verified (${data.readySchemes?.length || 0} ready, ${
+            data.almostReadySchemes?.length || 0
+          } almost ready) • Translated via ${data.modelUsed}`
+        );
       }
     } catch (e) {
-      console.error(e);
+      console.error('Doc check error:', e);
     } finally {
-      setIsAnalyzingDocs(false);
+      setIsCheckingDocs(false);
     }
   };
 
-  // Auto-calculate doc report on first open of docs tab
   useEffect(() => {
-    if (activeTab === 'docs' && !docReport) {
-      handleRunDocCheck(false);
+    if (activeTab === 'doccheck') {
+      runDocReadinessCheck();
     }
-  }, [activeTab]);
+  }, [activeTab, citizenProfile.ownedDocs, lang]);
 
-  // Handle simulated/real file upload for Document Intelligence
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDocFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploadedFileName(file.name);
-    const fname = file.name.toLowerCase();
-    const newlyDetected = [...ownedDocs];
-    if (fname.includes('aadhaar') || fname.includes('uid')) {
-      if (!newlyDetected.includes('aadhaar')) newlyDetected.push('aadhaar');
-    } else if (fname.includes('7-12') || fname.includes('land') || fname.includes('khatauni')) {
-      if (!newlyDetected.includes('land')) newlyDetected.push('land');
-    } else if (fname.includes('bill') || fname.includes('bijli') || fname.includes('solar')) {
-      if (!newlyDetected.includes('electricity')) newlyDetected.push('electricity');
-    } else if (!newlyDetected.includes('land')) {
-      newlyDetected.push('land');
-    }
-    setOwnedDocs(newlyDetected);
-    setUploadedDocNote(`Uploaded document verified: ${file.name} (Aadhaar + Land 7/12 Khatauni detected)`);
-  };
+    const baseName = file.name.toLowerCase();
+    let inferred = `Uploaded file: ${file.name}. `;
+    if (baseName.includes('aadhar') || baseName.includes('aadhaar')) inferred += 'aadhaar card ';
+    if (baseName.includes('ration')) inferred += 'ration card ';
+    if (baseName.includes('bank') || baseName.includes('passbook')) inferred += 'bank passbook ';
+    if (baseName.includes('7-12') || baseName.includes('satbara') || baseName.includes('land'))
+      inferred += '7/12 land ';
+    if (baseName.includes('income')) inferred += 'income certificate ';
 
-  // Filtered schemes for Browse tab
-  const filteredSchemes = schemesData.filter((s: any) => {
-    const matchesCategory = selectedCategory === 'all' || s.category === selectedCategory;
-    if (!matchesCategory) return false;
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase().trim();
-    return (
-      s.name.en.toLowerCase().includes(q) ||
-      s.name.hi.includes(q) ||
-      s.name.mr.includes(q) ||
-      s.tagline.en.toLowerCase().includes(q) ||
-      s.tagline.hi.includes(q) ||
-      s.tagline.mr.includes(q) ||
-      s.keywords.some((k: string) => k.toLowerCase().includes(q))
-    );
-  });
-
-  // Filtered schemes for 3-Step Eligibility Wizard
-  const wizardMatchedSchemes = schemesData.filter((s: any) => {
-    const personaObj = PERSONA_OPTIONS.find((p) => p.id === selectedPersona) || PERSONA_OPTIONS[0];
-    const needObj = NEED_OPTIONS.find((n) => n.id === selectedNeed) || NEED_OPTIONS[0];
-
-    const matchesPersona = personaObj.categories.includes(s.category);
-    const matchesNeed = needObj.keywords.some(
-      (kw) =>
-        s.id.includes(kw) ||
-        s.keywords.some((k: string) => k.toLowerCase().includes(kw)) ||
-        s.tagline.en.toLowerCase().includes(kw)
-    );
-    return matchesPersona && matchesNeed;
-  });
-
-  const finalWizardSchemes =
-    wizardMatchedSchemes.length > 0
-      ? wizardMatchedSchemes
-      : schemesData.filter((s: any) => {
-          const personaObj =
-            PERSONA_OPTIONS.find((p) => p.id === selectedPersona) || PERSONA_OPTIONS[0];
-          return personaObj.categories.includes(s.category);
-        });
-
-  const handleSpeakWizardReport = async () => {
-    const names = finalWizardSchemes
-      .slice(0, 4)
-      .map((s: any) => s.name[lang])
-      .join(', ');
-    const reportText =
-      lang === 'mr'
-        ? `तुमच्या प्रोफाइलनुसार तुम्ही ${finalWizardSchemes.length} सरकारी योजनांसाठी पात्र आहात: ${names}. अधिक माहितीसाठी कोणत्याही योजनेवर टॅप करा.`
-        : lang === 'en'
-        ? `Based on your profile, you are eligible for ${finalWizardSchemes.length} government schemes including ${names}. Tap any scheme to apply.`
-        : `आपकी जानकारी के अनुसार आप ${finalWizardSchemes.length} सरकारी योजनाओं के लिए तुरंत पात्र हैं, जिनमें ${names} शामिल हैं।`;
-
-    const srcCode = lang === 'mr' ? 'mr-IN' : lang === 'en' ? 'en-IN' : 'hi-IN';
-    await speakTextWithSarvam(reportText, srcCode, ['Wizard: Sarvam Eligibility Engine']);
-  };
-
-  const getCategoryCount = (cat: CategoryFilter) => {
-    if (cat === 'all') return schemesData.length;
-    return schemesData.filter((s) => s.category === cat).length;
+    setDocNoteText((prev) => `${prev} ${inferred}`.trim());
+    setTimeout(() => runDocReadinessCheck(), 200);
   };
 
   return (
-    <div className={`${theme} min-h-screen flex flex-col justify-between pb-32 lg:pb-14 transition-colors duration-200`}>
-      {/* Top Tricolor Civic Ribbon */}
-      <div className="h-1.5 w-full tricolor-ribbon" />
+    <div className={`${themeMode} min-h-screen flex flex-col justify-between transition-colors duration-200`}>
+      {/* 3D Perspective Starting Intro Splash Animation */}
+      {showIntro && (
+        <IntroSplash forceOpen={showIntro} onComplete={handleCompleteIntro} />
+      )}
 
-      {/* Top Sticky Header */}
-      <header className="bg-[var(--bg-card)]/95 backdrop-blur-md border-b border-[var(--border-card)] sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col gap-3">
-          {/* Row 1: Logo + Theme Switcher + Voice Guide */}
+      {/* Interactive User Manual & Database Guide Modal */}
+      <UserManualModal
+        isOpen={isManualOpen}
+        onClose={() => setIsManualOpen(false)}
+        profile={citizenProfile}
+        onResetProfile={handleResetProfile}
+        onPlayManualAudio={(text) => speakAnyText('user-manual-audio', text)}
+        isPlayingAudio={playingCardId === 'user-manual-audio'}
+        isLoadingAudio={loadingCardId === 'user-manual-audio'}
+        onReplayIntro={() => setShowIntro(true)}
+      />
+
+      {/* Top Tricolor Accent Ribbon */}
+      <div className="h-1.5 w-full tricolor-ribbon sticky top-0 z-40" />
+
+      {/* Top Sticky Navigation Header */}
+      <header className="sticky top-1.5 z-30 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#E6D7C3]">
+        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-2.5">
+          {/* Row 1: Brand + User Manual Button + Theme Switcher + Voice Persona */}
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div
-              onClick={() => {
-                setActiveTab('schemes');
-                setSelectedCategory('all');
-                setSearchQuery('');
-              }}
-              className="flex items-center gap-3.5 cursor-pointer group"
-            >
-              <SarkariEmblem />
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowIntro(true)}
+                title="Replay 3D Intro Animation"
+                className="hover:scale-105 transition-transform"
+              >
+                <SarkariEmblem />
+              </button>
               <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-extrabold text-[var(--text-main)] tracking-tight group-hover:text-[var(--accent-primary)] transition-colors">
-                    Sarkari Sahayak
-                  </h1>
-                  <span className="text-sm sm:text-base font-bold bg-[var(--pill-bg)] text-[var(--pill-text)] px-2.5 py-0.5 rounded-lg border border-[var(--pill-border)]">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#1E1E1E] leading-none">
                     सरकारी सहायक
-                  </span>
-                  <span className="hidden sm:inline-flex items-center gap-1 text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-[#E8F5E9] text-[#1B5E20] border border-[#A5D6A7]">
-                    <Cpu className="w-3.5 h-3.5" /> Powered by Sarvam AI
+                  </h1>
+                  <span className="text-xs sm:text-sm font-bold text-saffron bg-[#FFF3E0] px-2.5 py-0.5 rounded-lg border border-[#FFE0B2]">
+                    Sarkari Sahayak
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-[var(--text-muted)] font-medium mt-0.5">
-                  {lang === 'mr'
-                    ? 'बोलून जाणा १८ सरकारी योजना • ८ भारतीय भाषा व आवाज सहाय्यक'
-                    : lang === 'en'
-                    ? 'Voice-First Citizen Welfare Assistant • 18 Official Schemes • 8 Indic Languages'
-                    : 'बोलकर जानें 18 सरकारी योजनाएं • 8 भारतीय भाषाएं • सर्वम एआई आवाज सहायक'}
+                <p className="text-xs sm:text-sm text-[#545454] font-medium mt-1">
+                  26+ आधिकारिक सरकारी योजनाएं • Sarvam AI Sovereign Voice Stack
                 </p>
               </div>
             </div>
 
-            {/* Right Controls: Audio Guide + 3-Way Stitch Theme Selector */}
-            <div className="flex items-center flex-wrap gap-2">
+            {/* Action Bar: User Manual Button + Theme Switcher + Voice Selector */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Interactive User Manual Button */}
               <button
-                onClick={playWelcomeGuide}
-                className="min-h-[40px] px-3.5 py-1.5 rounded-xl bg-[#E8F5E9] hover:bg-[#C8E6C9] border border-[#A5D6A7] text-[#1B5E20] text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-2xs active:scale-95 transition-all"
+                onClick={() => setIsManualOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-[#1E3A8A] hover:bg-[#172554] text-white text-xs sm:text-sm font-extrabold flex items-center gap-2 shadow-xs transition-all active:scale-95"
               >
-                <Volume2 className="w-4 h-4 flex-shrink-0" />
-                <span>
-                  {lang === 'mr' ? 'कसे वापरावे? ऐका' : lang === 'en' ? 'Audio Guide' : 'कैसे चलाएं? सुनें'}
-                </span>
+                <BookOpen className="w-4 h-4 text-amber-300" />
+                <span>उपयोग पुस्तिका (User Manual)</span>
               </button>
 
-              {/* 3-Way Theme Switcher (Assessed via Stitch MCP) */}
-              <div className="flex items-center bg-[var(--bg-canvas)] p-1 rounded-xl border border-[var(--border-card)] text-xs font-bold">
-                <Palette className="w-4 h-4 text-[var(--text-muted)] mx-1.5 hidden sm:block" />
-                <button
-                  onClick={() => setTheme('theme-warmth')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
-                    theme === 'theme-warmth'
-                      ? 'bg-[#F57C00] text-white shadow-2xs'
-                      : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
-                  }`}
-                  title="Civic Warmth (Saffron & Forest Green)"
+              {/* Stitch-Assessed 3-Theme Switcher */}
+              <div className="flex items-center bg-white rounded-xl p-1 border border-[#E6D7C3] shadow-2xs">
+                <Palette className="w-4 h-4 text-saffron ml-1.5 mr-1 hidden sm:block" />
+                {[
+                  { id: 'theme-warmth', label: 'केसरिया (Warm)' },
+                  { id: 'theme-sovereign', label: 'अशोक नेवी (Navy)' },
+                  { id: 'theme-daylight', label: 'धूप मोड (High Contrast)' },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setThemeMode(t.id as ThemeMode)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all ${
+                      themeMode === t.id
+                        ? 'bg-saffron text-white shadow-2xs'
+                        : 'text-[#545454] hover:text-[#1E1E1E]'
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Bulbul v3 Voice Persona Selector */}
+              <div className="flex items-center bg-white rounded-xl px-2.5 py-1 border border-[#E6D7C3] shadow-2xs gap-1.5">
+                <Volume2 className="w-4 h-4 text-[#1B5E20]" />
+                <span className="text-[11px] font-bold text-[#545454]">आवाज:</span>
+                <select
+                  value={speaker}
+                  onChange={(e) => setSpeaker(e.target.value as SpeakerVoice)}
+                  aria-label="Select Sarvam Bulbul TTS Voice"
+                  className="text-xs font-extrabold text-[#1E1E1E] bg-transparent focus:outline-none cursor-pointer"
                 >
-                  🌅 केसरिया
-                </button>
-                <button
-                  onClick={() => setTheme('theme-sovereign')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
-                    theme === 'theme-sovereign'
-                      ? 'bg-[#1A237E] text-white shadow-2xs'
-                      : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
-                  }`}
-                  title="Sovereign Navy & Gold (Institutional Trust)"
-                >
-                  🏛️ अशोक नेवी
-                </button>
-                <button
-                  onClick={() => setTheme('theme-daylight')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
-                    theme === 'theme-daylight'
-                      ? 'bg-[#111827] text-white shadow-2xs'
-                      : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
-                  }`}
-                  title="High-Contrast Daylight AAA (Outdoor Sunlight)"
-                >
-                  ☀️ धूप मोड
-                </button>
+                  {VOICE_OPTIONS.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
 
-          {/* Row 2: 8-Language Sarvam Mayura Bar + Bulbul v3 Voice Persona Selector */}
-          <div className="pt-2 border-t border-[var(--border-card)]/60 flex flex-wrap items-center justify-between gap-2.5">
-            {/* 8 Indic Languages powered by Sarvam Mayura + Bulbul */}
+          {/* Row 2: 8-Language Sarvam Mayura Bar + Active Sarvam Model Telemetry */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-[#E6D7C3]/60">
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-              <span className="inline-flex items-center gap-1 text-xs font-bold text-[var(--text-muted)] mr-1 whitespace-nowrap">
-                <Languages className="w-4 h-4 text-[var(--accent-primary)]" />
-                भाषा (Mayura AI):
+              <span className="inline-flex items-center gap-1 text-xs font-extrabold text-[#1E1E1E] mr-1 shrink-0">
+                <Languages className="w-4 h-4 text-saffron" />
+                भाषा (Mayura v1):
               </span>
-              {LANGUAGES_LIST.map((item) => {
-                const isSelected = langCode === item.code;
-                return (
-                  <button
-                    key={item.code}
-                    onClick={() => setLangCode(item.code)}
-                    className={`min-h-[34px] px-2.5 py-1 rounded-lg text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
-                      isSelected
-                        ? 'bg-[var(--accent-primary)] text-white shadow-2xs'
-                        : 'bg-[var(--bg-canvas)] text-[var(--text-main)] border border-[var(--border-card)] hover:border-[var(--accent-primary)]'
-                    }`}
-                  >
-                    {item.native}
-                  </button>
-                );
-              })}
+              {LANG_OPTIONS.map((l) => (
+                <button
+                  key={l.id}
+                  onClick={() => setLang(l.id)}
+                  className={`px-3 py-1 rounded-xl text-xs font-extrabold transition-all shrink-0 ${
+                    lang === l.id
+                      ? 'bg-saffron text-white shadow-xs'
+                      : 'bg-white text-[#545454] border border-[#E6D7C3] hover:border-saffron'
+                  }`}
+                >
+                  {l.label}
+                </button>
+              ))}
+              {isTranslatingFeed && (
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-saffron ml-1">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Mayura Translating...
+                </span>
+              )}
             </div>
 
-            {/* Bulbul v3 Voice Persona Selector */}
-            <div className="flex items-center gap-1.5 text-xs">
-              <span className="font-bold text-[var(--text-muted)] whitespace-nowrap">
-                🔊 स्वर (Bulbul v3):
-              </span>
-              <div className="flex bg-[var(--bg-canvas)] rounded-lg p-0.5 border border-[var(--border-card)]">
-                {SPEAKERS_LIST.map((sp) => (
-                  <button
-                    key={sp.id}
-                    onClick={() => setSpeaker(sp.id)}
-                    title={sp.desc}
-                    className={`px-2 py-1 rounded-md font-bold transition-all ${
-                      speaker === sp.id
-                        ? 'bg-[#1B5E20] text-white'
-                        : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
-                    }`}
-                  >
-                    {sp.label}
-                  </button>
-                ))}
-              </div>
+            {/* Live Sarvam AI Telemetry Pill for Hackathon Judges */}
+            <div className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-amber-300 text-[11px] font-mono font-semibold shadow-2xs max-w-md truncate">
+              <Cpu className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate">{lastSarvamCall}</span>
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content Container */}
-      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
-        {/* Error / Alert Toast */}
-        {errorMsg && (
-          <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-2xl flex items-start gap-3 text-red-900 text-sm shadow-sm">
-            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-600" />
-            <div className="flex-1 font-semibold">{errorMsg}</div>
-            <button
-              onClick={() => setErrorMsg(null)}
-              className="text-xs font-bold underline ml-2 hover:text-red-950"
-            >
-              हटाएं
-            </button>
-          </div>
-        )}
-
-        {/* Primary Feature Navigation Tabs (3 Core Citizen Tools) */}
-        <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-12">
+        {/* 3 Real-Life Illustrated Primary Feature Navigation Cards (NO EMOJIS) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-6">
           <button
             onClick={() => setActiveTab('schemes')}
-            className={`min-h-[56px] p-3.5 rounded-2xl border-2 font-extrabold text-left flex items-center gap-3 transition-all ${
+            className={`flex items-center gap-3.5 p-4 rounded-2xl border-2 text-left transition-all ${
               activeTab === 'schemes'
-                ? 'bg-[var(--accent-primary)] text-white border-[var(--accent-primary)] shadow-md'
-                : 'bg-[var(--bg-card)] text-[var(--text-main)] border-[var(--border-card)] hover:border-[var(--accent-primary)]'
+                ? 'bg-saffron text-white border-saffron shadow-md'
+                : 'bg-[#FFFDF9] text-[#1E1E1E] border-[#E6D7C3] hover:border-saffron'
             }`}
           >
-            <span className="text-2xl p-2 bg-white/20 rounded-xl">📋</span>
+            <div
+              className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
+                activeTab === 'schemes' ? 'bg-white/20' : 'bg-[#FFF3E0]'
+              }`}
+            >
+              <SchemesRegisterIcon className="w-11 h-11" />
+            </div>
             <div>
-              <div className="text-base leading-tight">
-                {lang === 'mr' ? 'सर्व १८ सरकारी योजना' : lang === 'en' ? 'All 18 Official Schemes' : 'सभी 18 सरकारी योजनाएं'}
+              <div className="text-base sm:text-lg font-extrabold leading-snug">
+                सभी {schemesData.length} सरकारी योजनाएं
               </div>
-              <div className={`text-xs font-medium ${activeTab === 'schemes' ? 'text-white/90' : 'text-[var(--text-muted)]'}`}>
-                {lang === 'mr' ? 'श्रेणीनुसार पहा आणि ऐका' : lang === 'en' ? 'Browse & Listen in 8 Languages' : 'श्रेणी के अनुसार देखें और आवाज में सुनें'}
+              <div
+                className={`text-xs font-semibold mt-0.5 ${
+                  activeTab === 'schemes' ? 'text-white/90' : 'text-[#545454]'
+                }`}
+              >
+                श्रेणी व प्रोफ़ाइल मैच के अनुसार देखें और आवाज में सुनें
               </div>
             </div>
           </button>
 
           <button
             onClick={() => setActiveTab('wizard')}
-            className={`min-h-[56px] p-3.5 rounded-2xl border-2 font-extrabold text-left flex items-center gap-3 transition-all ${
+            className={`flex items-center gap-3.5 p-4 rounded-2xl border-2 text-left transition-all ${
               activeTab === 'wizard'
-                ? 'bg-[var(--accent-primary)] text-white border-[var(--accent-primary)] shadow-md'
-                : 'bg-[var(--bg-card)] text-[var(--text-main)] border-[var(--border-card)] hover:border-[var(--accent-primary)]'
+                ? 'bg-saffron text-white border-saffron shadow-md'
+                : 'bg-[#FFFDF9] text-[#1E1E1E] border-[#E6D7C3] hover:border-saffron'
             }`}
           >
-            <span className="text-2xl p-2 bg-white/20 rounded-xl">🎯</span>
+            <div
+              className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
+                activeTab === 'wizard' ? 'bg-white/20' : 'bg-[#E8F5E9]'
+              }`}
+            >
+              <CitizenProfileCheckIcon className="w-11 h-11" />
+            </div>
             <div>
-              <div className="text-base leading-tight">
-                {lang === 'mr' ? 'पात्रता तपासा (3-Step)' : lang === 'en' ? 'Check Eligibility (3-Step)' : 'पात्रता जांचें (3-Step Wizard)'}
+              <div className="text-base sm:text-lg font-extrabold leading-snug">
+                नागरिक प्रोफ़ाइल व पात्रता
               </div>
-              <div className={`text-xs font-medium ${activeTab === 'wizard' ? 'text-white/90' : 'text-[var(--text-muted)]'}`}>
-                {lang === 'mr' ? 'तुमच्यासाठी कोणत्या योजना आहेत?' : lang === 'en' ? 'Find schemes matching you' : 'जानें आपके लिए कौन सी योजनाएं हैं'}
+              <div
+                className={`text-xs font-semibold mt-0.5 ${
+                  activeTab === 'wizard' ? 'text-white/90' : 'text-[#545454]'
+                }`}
+              >
+                अपनी प्रोफ़ाइल (Character Build) बनाएं व % मैच जानें
               </div>
             </div>
           </button>
 
           <button
-            onClick={() => setActiveTab('docs')}
-            className={`min-h-[56px] p-3.5 rounded-2xl border-2 font-extrabold text-left flex items-center gap-3 transition-all ${
-              activeTab === 'docs'
-                ? 'bg-[var(--accent-primary)] text-white border-[var(--accent-primary)] shadow-md'
-                : 'bg-[var(--bg-card)] text-[var(--text-main)] border-[var(--border-card)] hover:border-[var(--accent-primary)]'
+            onClick={() => setActiveTab('doccheck')}
+            className={`flex items-center gap-3.5 p-4 rounded-2xl border-2 text-left transition-all ${
+              activeTab === 'doccheck'
+                ? 'bg-saffron text-white border-saffron shadow-md'
+                : 'bg-[#FFFDF9] text-[#1E1E1E] border-[#E6D7C3] hover:border-saffron'
             }`}
           >
-            <span className="text-2xl p-2 bg-white/20 rounded-xl">📄</span>
+            <div
+              className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
+                activeTab === 'doccheck' ? 'bg-white/20' : 'bg-[#FFF3E0]'
+              }`}
+            >
+              <DocumentFolderIcon className="w-11 h-11" />
+            </div>
             <div>
-              <div className="text-base leading-tight">
-                {lang === 'mr' ? 'कागदपत्रे तपासा (Doc AI)' : lang === 'en' ? 'Document Readiness Check' : 'दस्तावेज़ जांचें (Doc Readiness)'}
+              <div className="text-base sm:text-lg font-extrabold leading-snug">
+                दस्तावेज़ जांचें (Doc Readiness)
               </div>
-              <div className={`text-xs font-medium ${activeTab === 'docs' ? 'text-white/90' : 'text-[var(--text-muted)]'}`}>
-                {lang === 'mr' ? 'आधार/रेशनवरून पात्र योजना पहा' : lang === 'en' ? 'Check what you can apply for today' : 'अपने कागजात चुनें और तुरंत पात्रता जानें'}
+              <div
+                className={`text-xs font-semibold mt-0.5 ${
+                  activeTab === 'doccheck' ? 'text-white/90' : 'text-[#545454]'
+                }`}
+              >
+                अपने कागजात चुनें और तुरंत आवेदन योग्यता जानें
               </div>
             </div>
           </button>
         </div>
 
-        {/* Main 12-Column Responsive Grid */}
+        {/* Main 12-Col Responsive Split Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* Left 7/8 Columns: Dynamic Tab Content */}
-          <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
-            {/* TAB 1: ALL 18 SCHEMES */}
-            {activeTab === 'schemes' && (
-              <>
-                {/* Category Filter Pills */}
-                <section>
-                  <div className="flex items-center justify-between mb-2.5">
-                    <span className="text-xs sm:text-sm font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                      {lang === 'mr'
-                        ? 'श्रेणी निवडा (Choose Category):'
-                        : lang === 'en'
-                        ? 'Browse by Category:'
-                        : 'अपनी जरूरत की श्रेणी चुनें (Select Category):'}
-                    </span>
-                    <span className="text-xs font-bold text-[#1B5E20] bg-[#E8F5E9] px-2.5 py-1 rounded-full border border-[#C8E6C9]">
-                      ✓ {schemesData.length} Verified Schemes
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2.5 overflow-x-auto pb-2 no-scrollbar">
-                    {(Object.keys(CATEGORY_META) as CategoryFilter[]).map((cat) => {
-                      const meta = CATEGORY_META[cat];
-                      const isSelected = selectedCategory === cat;
-                      return (
-                        <button
-                          key={cat}
-                          onClick={() => setSelectedCategory(cat)}
-                          className={`min-h-[46px] px-4 py-2 rounded-2xl font-bold text-sm sm:text-base flex items-center gap-2 whitespace-nowrap border-[1.5px] transition-all active:scale-95 ${
-                            isSelected
-                              ? 'bg-[var(--accent-primary)] text-white border-[var(--accent-primary)] shadow-md'
-                              : 'bg-[var(--bg-card)] text-[var(--text-main)] border-[var(--border-card)] hover:border-[var(--accent-primary)]'
-                          }`}
-                        >
-                          <span className="text-xl">{meta.icon}</span>
-                          <span>{meta[lang]}</span>
-                          <span
-                            className={`text-xs px-2 py-0.5 rounded-full font-extrabold ${
-                              isSelected ? 'bg-white/25 text-white' : 'bg-[var(--bg-canvas)] text-[var(--text-muted)]'
-                            }`}
-                          >
-                            {getCategoryCount(cat)}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </section>
-
-                {/* Search & Ask by Typing Bar */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[var(--bg-card)] p-3 rounded-2xl border-[1.5px] border-[var(--border-card)] shadow-2xs">
-                  <div className="relative flex-1 flex items-center">
-                    <Search className="w-5 h-5 text-[var(--text-muted)] ml-3 mr-2 flex-shrink-0" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder={
-                        lang === 'mr'
-                          ? 'योजना शोधा (उदा. किसान, लाडकी बहीण, घरकुल, सोलर, पेन्शन)...'
-                          : lang === 'en'
-                          ? 'Search schemes (e.g. Kisan, Ladki Bahin, Solar, Health, Loan)...'
-                          : 'योजना खोजें (जैसे: किसान, लाडकी बहिन, आवास, सोलर, विश्वकर्मा, पेंशन)...'
-                      }
-                      className="w-full h-11 pr-8 text-base text-[var(--text-main)] placeholder:text-[var(--text-muted)]/70 focus:outline-none bg-transparent"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)]"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() => setShowTextInput(!showTextInput)}
-                    className="min-h-[44px] px-4 py-2 rounded-xl bg-[var(--pill-bg)] text-[var(--pill-text)] font-bold text-sm flex items-center justify-center gap-1.5 border border-[var(--pill-border)] transition-colors"
-                  >
-                    <span>⌨️ {lang === 'mr' ? 'प्रश्न टाईप करा' : lang === 'en' ? 'Ask by Typing' : 'सवाल लिखकर पूछें'}</span>
-                  </button>
-                </div>
-
-                {showTextInput && (
-                  <form
-                    onSubmit={handleTextSubmit}
-                    className="p-4 bg-[var(--bg-card)] rounded-2xl border-2 border-[var(--accent-primary)] shadow-md"
-                  >
-                    <label className="block text-sm font-bold text-[var(--text-main)] mb-2">
-                      अपना सवाल लिखें (Sarvam 105B + Mayura AI):
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={typedText}
-                        onChange={(e) => setTypedText(e.target.value)}
-                        placeholder="जैसे: पीएम विश्वकर्मा योजना में कितना लोन मिलता है?"
-                        className="flex-1 h-12 px-4 border border-[var(--border-card)] rounded-xl text-base bg-white focus:outline-none focus:border-[var(--accent-primary)]"
-                      />
-                      <button
-                        type="submit"
-                        className="h-12 px-6 bg-[var(--accent-primary)] text-white rounded-xl font-bold flex items-center gap-2 shadow-sm"
-                      >
-                        <span>पूछें</span>
-                        <Send className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </form>
-                )}
-
-                {/* Schemes Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {filteredSchemes.map((scheme: any) => {
-                    const catMeta =
-                      CATEGORY_META[scheme.category as CategoryFilter] || CATEGORY_META.all;
-                    const badgeText =
-                      scheme.benefitBadge?.[lang] ||
-                      scheme.benefitBadge?.hi ||
-                      scheme.benefits[0];
-                    const isCurrentlySpeakingThis =
-                      activeSpeakingSchemeId === scheme.id && isPlayingAudio;
-
-                    return (
-                      <div
-                        key={scheme.id}
-                        onClick={() => router.push(`/scheme/${scheme.id}`)}
-                        className="tactile-card rounded-3xl p-5 sm:p-6 flex flex-col justify-between cursor-pointer group"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between gap-2 mb-3.5">
-                            <div className="w-14 h-14 rounded-2xl bg-[var(--pill-bg)] border border-[var(--pill-border)] flex items-center justify-center text-3xl shadow-2xs group-hover:scale-105 transition-transform">
-                              {scheme.icon}
-                            </div>
-
-                            <span
-                              className={`text-xs font-bold px-3 py-1 rounded-full border ${catMeta.badgeBg} ${catMeta.badgeText}`}
-                            >
-                              {catMeta.icon} {catMeta[lang]}
-                            </span>
-                          </div>
-
-                          <div className="mb-3">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#E8F5E9] border border-[#A5D6A7] text-[#1B5E20] text-sm font-extrabold">
-                              <Gift className="w-4 h-4 flex-shrink-0" />
-                              <span>{badgeText}</span>
-                            </span>
-                          </div>
-
-                          <h3 className="text-xl font-extrabold text-[var(--text-main)] leading-snug group-hover:text-[var(--accent-primary)] transition-colors">
-                            {scheme.name[lang]}
-                          </h3>
-
-                          <p className="text-[15px] text-[var(--text-muted)] leading-relaxed mt-2">
-                            {scheme.tagline[lang]}
-                          </p>
-                        </div>
-
-                        <div className="mt-5 pt-4 border-t border-[var(--border-card)]/70 grid grid-cols-2 gap-2.5">
-                          <button
-                            type="button"
-                            onClick={(e) => handleSchemeListen(scheme.id, e)}
-                            className={`min-h-[46px] px-3 py-2 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-95 ${
-                              isCurrentlySpeakingThis
-                                ? 'bg-red-600 text-white shadow-sm'
-                                : 'bg-[var(--pill-bg)] text-[var(--pill-text)] border border-[var(--pill-border)]'
-                            }`}
-                          >
-                            {isCurrentlySpeakingThis ? (
-                              <>
-                                <Square className="w-4 h-4 fill-current flex-shrink-0" />
-                                <span>रोकें (Stop)</span>
-                              </>
-                            ) : (
-                              <>
-                                <Volume2 className="w-4 h-4 flex-shrink-0" />
-                                <span>
-                                  {lang === 'mr' ? 'ऐका' : lang === 'en' ? 'Listen' : 'सुनें'} ({currentLangMeta.native})
-                                </span>
-                              </>
-                            )}
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              router.push(`/scheme/${scheme.id}`);
-                            }}
-                            className="min-h-[46px] px-3 py-2 rounded-xl bg-[#1B5E20] hover:bg-[#2E7D32] text-white font-bold text-sm flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95"
-                          >
-                            <BookOpen className="w-4 h-4 flex-shrink-0" />
-                            <span>
-                              {lang === 'mr' ? 'पूर्ण माहिती' : lang === 'en' ? 'Details' : 'पूरी जानकारी'}
-                            </span>
-                            <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
-            )}
-
-            {/* TAB 2: 3-STEP VISUAL ELIGIBILITY WIZARD */}
-            {activeTab === 'wizard' && (
-              <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border-2 border-[var(--border-card)] shadow-sm space-y-6">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-card)] pb-4">
-                  <div>
-                    <span className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full bg-[var(--pill-bg)] text-[var(--pill-text)] border border-[var(--pill-border)] mb-1.5">
-                      <UserCheck className="w-4 h-4" /> Sarvam AI Smart Eligibility Matcher
-                    </span>
-                    <h2 className="text-2xl font-extrabold text-[var(--text-main)]">
-                      {lang === 'mr'
-                        ? '३ सोप्या टप्प्यांत तुमची पात्रता तपासा'
-                        : lang === 'en'
-                        ? '3-Step Visual Scheme Eligibility Finder'
-                        : '3 आसान चरणों में अपनी पात्र योजनाएं खोजें'}
-                    </h2>
-                  </div>
-
-                  <button
-                    onClick={handleSpeakWizardReport}
-                    className="min-h-[48px] px-5 py-2.5 rounded-2xl bg-[var(--accent-primary)] text-white font-bold text-sm flex items-center gap-2 shadow-sm active:scale-95 transition-all"
-                  >
-                    <Volume2 className="w-5 h-5" />
-                    <span>
-                      {lang === 'mr'
-                        ? 'पात्रता रिपोर्ट ऐका 🔊'
-                        : lang === 'en'
-                        ? 'Hear Eligibility Report 🔊'
-                        : 'पात्रता रिपोर्ट आवाज में सुनें 🔊'}
-                    </span>
-                  </button>
-                </div>
-
-                {/* Step 1: Who am I? */}
-                <div>
-                  <h3 className="text-base sm:text-lg font-extrabold text-[var(--text-main)] mb-3">
-                    चरण 1: आप कौन हैं? (Step 1: Choose Your Profile)
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                    {PERSONA_OPTIONS.map((p) => {
-                      const active = selectedPersona === p.id;
-                      return (
-                        <button
-                          key={p.id}
-                          onClick={() => setSelectedPersona(p.id)}
-                          className={`p-4 rounded-2xl border-2 flex flex-col items-center text-center gap-2 transition-all ${
-                            active
-                              ? 'bg-[var(--pill-bg)] border-[var(--accent-primary)] shadow-sm scale-[1.02]'
-                              : 'bg-white border-[var(--border-card)] hover:border-[var(--accent-primary)]/50'
-                          }`}
-                        >
-                          <span className="text-4xl">{p.icon}</span>
-                          <span className="text-sm font-extrabold text-[var(--text-main)]">
-                            {p[lang]}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Step 2: What is my primary need? */}
-                <div>
-                  <h3 className="text-base sm:text-lg font-extrabold text-[var(--text-main)] mb-3">
-                    चरण 2: आपकी मुख्य जरूरत क्या है? (Step 2: What Support Do You Need?)
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {NEED_OPTIONS.map((n) => {
-                      const active = selectedNeed === n.id;
-                      return (
-                        <button
-                          key={n.id}
-                          onClick={() => setSelectedNeed(n.id)}
-                          className={`p-4 rounded-2xl border-2 flex items-center gap-3.5 text-left transition-all ${
-                            active
-                              ? 'bg-[#E8F5E9] border-[#1B5E20] shadow-sm'
-                              : 'bg-white border-[var(--border-card)] hover:border-[#1B5E20]/50'
-                          }`}
-                        >
-                          <span className="text-3xl p-2 bg-white rounded-xl border border-[var(--border-card)]">
-                            {n.icon}
-                          </span>
-                          <div className="flex-1">
-                            <span className="text-base font-extrabold text-[var(--text-main)] block">
-                              {n[lang]}
-                            </span>
-                          </div>
-                          {active && <CheckCircle2 className="w-6 h-6 text-[#1B5E20] flex-shrink-0" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Step 3: Matched Schemes Result */}
-                <div className="pt-4 border-t border-[var(--border-card)]">
-                  <div className="p-4 rounded-2xl bg-[#E8F5E9] border border-[#A5D6A7] flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-3xl">🎉</span>
-                      <div>
-                        <h4 className="text-lg font-extrabold text-[#1B5E20]">
-                          {lang === 'mr'
-                            ? `तुम्ही ${finalWizardSchemes.length} सरकारी योजनांसाठी पात्र आहात!`
-                            : lang === 'en'
-                            ? `You qualify for ${finalWizardSchemes.length} Government Schemes!`
-                            : `बधाई हो! आप ${finalWizardSchemes.length} सरकारी योजनाओं के लिए पात्र हैं!`}
-                        </h4>
-                        <p className="text-xs sm:text-sm text-[#1B5E20]/90 font-medium">
-                          किसी भी योजना पर &apos;सुनें&apos; दबाएं या सीधे आवेदन विधि देखें
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {finalWizardSchemes.map((scheme: any) => (
-                      <div
-                        key={scheme.id}
-                        className="p-4 rounded-2xl bg-white border-[1.5px] border-[var(--border-card)] flex flex-col justify-between gap-3"
-                      >
-                        <div className="flex items-start gap-3">
-                          <span className="text-3xl p-2 bg-[var(--pill-bg)] rounded-xl">
-                            {scheme.icon}
-                          </span>
-                          <div>
-                            <span className="text-xs font-extrabold text-[#1B5E20] bg-[#E8F5E9] px-2 py-0.5 rounded-md">
-                              {scheme.benefitBadge?.[lang] || scheme.benefitBadge?.hi}
-                            </span>
-                            <h5 className="text-base font-extrabold text-[var(--text-main)] mt-1">
-                              {scheme.name[lang]}
-                            </h5>
-                            <p className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-2">
-                              {scheme.tagline[lang]}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[var(--border-card)]/50">
-                          <button
-                            onClick={(e) => handleSchemeListen(scheme.id, e)}
-                            className="py-2 px-3 rounded-xl bg-[var(--pill-bg)] text-[var(--pill-text)] font-bold text-xs flex items-center justify-center gap-1.5"
-                          >
-                            <Volume2 className="w-4 h-4" />
-                            <span>सुनें ({currentLangMeta.native})</span>
-                          </button>
-                          <button
-                            onClick={() => router.push(`/scheme/${scheme.id}`)}
-                            className="py-2 px-3 rounded-xl bg-[#1B5E20] text-white font-bold text-xs flex items-center justify-center gap-1"
-                          >
-                            <span>आवेदन विधि</span>
-                            <ChevronRight className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 3: DOCUMENT READINESS & RATION/AADHAAR ANALYZER */}
-            {activeTab === 'docs' && (
-              <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border-2 border-[var(--border-card)] shadow-sm space-y-6">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-card)] pb-4">
-                  <div>
-                    <span className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full bg-[var(--pill-bg)] text-[var(--pill-text)] border border-[var(--pill-border)] mb-1.5">
-                      <FileCheck2 className="w-4 h-4" /> Sarvam Document Intelligence & Mayura AI
-                    </span>
-                    <h2 className="text-2xl font-extrabold text-[var(--text-main)]">
-                      {lang === 'mr'
-                        ? 'कागदपत्रे रेडीनेस आणि पात्रता विश्लेषक'
-                        : lang === 'en'
-                        ? 'Document Readiness & Checklist Analyzer'
-                        : 'दस्तावेज़ रेडीनेस एवं पात्रता विश्लेषक'}
-                    </h2>
-                    <p className="text-sm text-[var(--text-muted)] mt-0.5">
-                      आपके पास जो कागजात मौजूद हैं उन पर टिक करें (या दस्तावेज़ की फोटो अपलोड करें)
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => handleRunDocCheck(true)}
-                    disabled={isAnalyzingDocs}
-                    className="min-h-[48px] px-5 py-2.5 rounded-2xl bg-[var(--accent-primary)] text-white font-bold text-sm flex items-center gap-2 shadow-sm active:scale-95 transition-all"
-                  >
-                    <Volume2 className="w-5 h-5" />
-                    <span>
-                      {isAnalyzingDocs
-                        ? 'जांच हो रही है...'
-                        : lang === 'mr'
-                        ? 'कागदपत्र रिपोर्ट ऐका 🔊'
-                        : lang === 'en'
-                        ? 'Analyze & Speak Report 🔊'
-                        : 'दस्तावेज़ रिपोर्ट आवाज में सुनें 🔊'}
-                    </span>
-                  </button>
-                </div>
-
-                {/* Interactive Document Tiles */}
-                <div>
-                  <h3 className="text-base font-extrabold text-[var(--text-main)] mb-3">
-                    आपके पास कौन-कौन से दस्तावेज हैं? (Tap Documents You Have):
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {DOCUMENT_CHECKLIST_ITEMS.map((doc) => {
-                      const isOwned = ownedDocs.includes(doc.id);
-                      return (
-                        <button
-                          key={doc.id}
-                          onClick={() => {
-                            const updated = isOwned
-                              ? ownedDocs.filter((d) => d !== doc.id)
-                              : [...ownedDocs, doc.id];
-                            setOwnedDocs(updated);
-                          }}
-                          className={`min-h-[58px] p-3.5 rounded-2xl border-2 flex items-center justify-between gap-3 text-left transition-all ${
-                            isOwned
-                              ? 'bg-[#E8F5E9] border-[#1B5E20] shadow-2xs'
-                              : 'bg-white border-[var(--border-card)] opacity-80 hover:opacity-100'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">{doc.icon}</span>
-                            <span className="text-sm sm:text-base font-extrabold text-[var(--text-main)]">
-                              {doc[lang]}
-                            </span>
-                          </div>
-                          <span
-                            className={`text-xs font-extrabold px-2.5 py-1 rounded-full ${
-                              isOwned
-                                ? 'bg-[#1B5E20] text-white'
-                                : 'bg-amber-100 text-amber-900'
-                            }`}
-                          >
-                            {isOwned ? '✓ उपलब्ध (Ready)' : '+ जोड़ें'}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Optional Document Upload / Scan Box */}
-                <div className="p-4 rounded-2xl bg-[var(--bg-canvas)] border-2 border-dashed border-[var(--border-card)] flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <Upload className="w-8 h-8 text-[var(--accent-primary)] flex-shrink-0" />
-                    <div>
-                      <h4 className="text-sm font-extrabold text-[var(--text-main)]">
-                        दस्तावेज़ फोटो / रसीद स्कैन करें (Upload Ration / Land / Bill Image)
-                      </h4>
-                      <p className="text-xs text-[var(--text-muted)]">
-                        {uploadedFileName
-                          ? `✅ स्कैन किया गया: ${uploadedFileName}`
-                          : 'राशन कार्ड, 7/12 खतौनी या बिजली बिल की फोटो चुनें'}
-                      </p>
-                    </div>
-                  </div>
-                  <label className="cursor-pointer min-h-[42px] px-4 py-2 rounded-xl bg-white border border-[var(--border-card)] hover:border-[var(--accent-primary)] text-xs font-extrabold text-[var(--text-main)] flex items-center gap-1.5 shadow-2xs">
-                    <span>📷 फाइल चुनें (Upload)</span>
-                    <input
-                      type="file"
-                      accept="image/*,.pdf"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-
-                {/* Readiness Report Output */}
-                {docReport && (
-                  <div className="space-y-5 pt-3 border-t border-[var(--border-card)]">
-                    {/* Spoken Summary Box */}
-                    <div className="p-4 rounded-2xl bg-[var(--pill-bg)] border border-[var(--pill-border)]">
-                      <span className="text-xs font-extrabold text-[var(--pill-text)] uppercase block mb-1">
-                        🔊 Sarvam AI दस्तावेज़ विश्लेषण रिपोर्ट ({currentLangMeta.native}):
-                      </span>
-                      <p className="text-base font-bold text-[var(--text-main)] leading-relaxed">
-                        {docReport.spokenSummary}
-                      </p>
-                    </div>
-
-                    {/* 100% Ready Schemes */}
-                    <div>
-                      <h4 className="text-base font-extrabold text-[#1B5E20] mb-2.5 flex items-center gap-2">
-                        <CheckCircle2 className="w-5 h-5" />
-                        <span>
-                          आज ही आवेदन करने के लिए 100% तैयार योजनाएं ({docReport.readySchemes?.length || 0}):
-                        </span>
-                      </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {(docReport.readySchemes || []).map((s: any) => (
-                          <div
-                            key={s.id}
-                            onClick={() => router.push(`/scheme/${s.id}`)}
-                            className="p-3.5 rounded-2xl bg-white border border-[#A5D6A7] hover:border-[#1B5E20] cursor-pointer flex items-center justify-between gap-2"
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <span className="text-2xl">{s.icon}</span>
-                              <div>
-                                <div className="text-sm font-extrabold text-[var(--text-main)]">
-                                  {s.name}
-                                </div>
-                                <div className="text-xs font-bold text-[#1B5E20]">
-                                  {s.benefitBadge} • सभी कागज़ तैयार ✓
-                                </div>
-                              </div>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-[#1B5E20]" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Almost Ready Schemes (Missing only 1 document) */}
-                    {docReport.almostReadySchemes && docReport.almostReadySchemes.length > 0 && (
-                      <div>
-                        <h4 className="text-base font-extrabold text-amber-800 mb-2.5">
-                          ⚠️ केवल 1 अतिरिक्त दस्तावेज़ से मिलने वाली योजनाएं ({docReport.almostReadySchemes.length}):
-                        </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {docReport.almostReadySchemes.map((s: any) => (
-                            <div
-                              key={s.id}
-                              onClick={() => router.push(`/scheme/${s.id}`)}
-                              className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200 cursor-pointer flex items-center justify-between gap-2"
-                            >
-                              <div className="flex items-center gap-2.5">
-                                <span className="text-2xl">{s.icon}</span>
-                                <div>
-                                  <div className="text-sm font-extrabold text-[var(--text-main)]">
-                                    {s.name}
-                                  </div>
-                                  <div className="text-xs font-bold text-amber-900">
-                                    जरूरी: 📄 {s.missingDoc} बनवाएं
-                                  </div>
-                                </div>
-                              </div>
-                              <ChevronRight className="w-4 h-4 text-amber-800" />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Suggested Voice Questions Section */}
-            <div className="bg-[var(--bg-card)] rounded-3xl p-5 sm:p-6 border-[1.5px] border-[var(--border-card)] shadow-xs">
-              <div className="flex items-center gap-2 mb-3.5">
-                <Radio className="w-5 h-5 text-[var(--accent-primary)]" />
-                <h3 className="text-base sm:text-lg font-bold text-[var(--text-main)]">
-                  {lang === 'mr'
-                    ? 'असे प्रश्न विचारून पहा (टॅप करा):'
-                    : lang === 'en'
-                    ? 'Popular Voice Questions (Tap to Ask in Selected Language):'
-                    : 'आवाज में पूछे जाने वाले प्रमुख सवाल (टैप करके पूछें):'}
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {[
-                  'PM-Kisan ke liye documents kya lagte hain?',
-                  'Ladki Bahin yojana ke benefits kya hain?',
-                  'Ayushman Bharat me kitna muft ilaj milta hai?',
-                  'PM Vishwakarma yojana me silai machine aur loan kaise milega?',
-                  'PM Surya Ghar muft bijli yojana me kitni subsidy milti hai?',
-                  'Atal Pension aur e-Shram card ke kya fayde hain?',
-                ].map((query, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleChipClick(query)}
-                    className="text-left p-3.5 rounded-2xl bg-white border border-[var(--border-card)] text-sm font-semibold text-[var(--text-main)] hover:border-[var(--accent-primary)] hover:bg-[var(--pill-bg)]/40 flex items-center justify-between gap-2 active:scale-[0.99] transition-all"
-                  >
-                    <span>🎙️ &ldquo;{query}&rdquo;</span>
-                    <ChevronRight className="w-4 h-4 text-[var(--accent-primary)] flex-shrink-0" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right 5/4 Columns: Sticky Voice Assistant Hub, Answer Card & Live Sarvam Telemetry */}
-          <div
-            ref={answerPanelRef}
-            className="lg:col-span-5 xl:col-span-4 flex flex-col gap-5 lg:sticky lg:top-28"
-          >
-            {/* Voice Assistant Hub Card */}
-            <div className="bg-[var(--bg-card)] rounded-3xl p-6 border-2 border-[var(--border-card)] shadow-md flex flex-col items-center text-center relative overflow-hidden">
-              <div className="w-full flex items-center justify-between mb-3">
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-[var(--pill-bg)] text-[var(--pill-text)] border border-[var(--pill-border)]">
-                  🎙️ Sarvam Voice Hub ({currentLangMeta.native})
-                </span>
-                <button
-                  onClick={() => setIsDemoMode(!isDemoMode)}
-                  className={`text-xs font-bold px-2.5 py-1 rounded-full border transition-colors ${
-                    isDemoMode
-                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                      : 'bg-[var(--bg-canvas)] text-[var(--text-muted)] border-[var(--border-card)]'
-                  }`}
-                >
-                  {isDemoMode ? '⚡ Offline Demo: ON' : '⚙️ Demo Mode'}
-                </button>
-              </div>
-
-              <h3 className="text-xl font-extrabold text-[var(--text-main)]">
-                {lang === 'mr'
-                  ? 'बोलून प्रश्न विचारा'
-                  : lang === 'en'
-                  ? 'Hold Mic & Speak'
-                  : 'बोलकर सवाल पूछें'}
-              </h3>
-              <p className="text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
-                {lang === 'mr'
-                  ? 'खालील माईक बटण दाबून ठेवा आणि मराठी, हिंदी किंवा इंग्रजीत बोला'
-                  : lang === 'en'
-                  ? 'Press & hold the mic button below and speak in any Indian language or Hinglish'
-                  : 'नीचे माइक बटन दबाकर रखें और अपनी भाषा या हिंग्लिश में सवाल बोलें'}
-              </p>
-
-              {/* Dynamic Mic Status Pill */}
-              <div className="my-4 min-h-[36px] flex items-center justify-center">
-                {micState === 'recording' && (
-                  <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 text-red-800 text-sm font-bold animate-pulse">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
-                    रिकॉर्ड हो रहा है: {recordTimer}s (छोड़ें जवाब पाने के लिए)
-                  </span>
-                )}
-                {micState === 'thinking' && (
-                  <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 text-amber-900 text-sm font-bold">
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-600 animate-bounce" />
-                    Sarvam AI सोच रहा है और अनुवाद कर रहा है...
-                  </span>
-                )}
-                {micState === 'speaking' && (
-                  <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E8F5E9] text-[#1B5E20] text-sm font-bold">
-                    🔊 Bulbul v3 ({speaker}) बोल रहा है...
-                  </span>
-                )}
-                {micState === 'idle' && (
-                  <span className="text-xs font-bold text-[var(--text-muted)] bg-[var(--bg-canvas)] px-3 py-1.5 rounded-full border border-[var(--border-card)]">
-                    👇 दबाकर रखें और बोलें (Hold to Speak)
-                  </span>
-                )}
-              </div>
-
-              {/* Hero Microphone Button */}
-              <div className="relative flex items-center justify-center my-1">
-                {micState === 'recording' && (
-                  <div className="absolute w-28 h-28 rounded-full bg-red-400 opacity-50 animate-pulse-ring" />
-                )}
-
-                <button
-                  onPointerDown={startRecording}
-                  onPointerUp={stopRecording}
-                  onPointerLeave={(e) => {
-                    if (micState === 'recording') stopRecording(e);
-                  }}
-                  disabled={micState === 'thinking'}
-                  className={`relative z-10 w-24 h-24 rounded-full flex flex-col items-center justify-center shadow-xl active:scale-95 transition-all select-none touch-none ${
-                    micState === 'recording'
-                      ? 'bg-red-600 text-white ring-4 ring-red-200'
-                      : micState === 'thinking'
-                      ? 'bg-amber-500 text-white animate-pulse'
-                      : 'bg-[var(--accent-primary)] text-white hover:opacity-95'
-                  }`}
-                  aria-label="Hold to speak"
-                >
-                  <Mic className="w-11 h-11" />
-                </button>
-              </div>
-
-              {/* Live Sarvam AI Telemetry Bar (For Hackathon Judges) */}
-              <div className="mt-5 pt-3.5 border-t border-[var(--border-card)] w-full text-left">
-                <div className="flex items-center justify-between text-[11px] font-extrabold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
-                  <span className="flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
-                    Active Sarvam AI Pipeline
-                  </span>
-                  <span className="text-[#1B5E20]">● 4 APIs Live</span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {lastApiTrace.map((item, i) => (
-                    <span
-                      key={i}
-                      className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-[var(--bg-canvas)] text-[var(--text-main)] border border-[var(--border-card)]"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Answer & Spoken Audio Card */}
+          {/* LEFT COLUMN (7 Cols on Laptop): Active Feature Content */}
+          <div className="lg:col-span-7 order-2 lg:order-1 space-y-5">
+            {/*Voice / Chat Answer Card when user asks a question*/}
             {answer && (
-              <div className="bg-[var(--bg-card)] rounded-3xl p-5 sm:p-6 border-2 border-[var(--accent-primary)] shadow-lg">
-                <div className="mb-4 p-3.5 bg-[var(--bg-canvas)] rounded-2xl border border-[var(--border-card)] flex items-start justify-between gap-2">
+              <div className="bg-[#FFFDF9] rounded-3xl p-6 border-2 border-saffron shadow-md space-y-5 animate-in fade-in duration-200">
+                <div className="flex items-start justify-between gap-3">
                   <div>
-                    <span className="text-xs font-bold text-[var(--text-muted)] block uppercase tracking-wider">
-                      आपका सवाल / चुनी गई योजना:
+                    <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-[#E8F5E9] text-[#1B5E20]">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Sarvam 105B सत्यापित उत्तर {answer.demoCached ? '• (Demo)' : ''}
                     </span>
-                    <p className="text-base sm:text-lg font-extrabold text-[var(--text-main)] mt-0.5">
-                      &ldquo;{transcript}&rdquo;
-                    </p>
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E1E1E] mt-2">
+                      {answer.schemeName}
+                    </h2>
                   </div>
                   <button
                     onClick={() => {
+                      stopAllAudio();
                       setAnswer(null);
                       setTranscript('');
-                      if (currentAudioRef.current) currentAudioRef.current.pause();
-                      setIsPlayingAudio(false);
-                      setActiveSpeakingSchemeId(null);
-                      setMicState('idle');
                     }}
-                    className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-lg"
-                    title="बंद करें"
+                    className="p-2 text-[#545454] hover:text-[#1E1E1E] rounded-full hover:bg-[#FAF7F2]"
+                    aria-label="Close answer"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-6 h-6" />
                   </button>
                 </div>
 
-                {/* Spoken Audio Box */}
-                <div className="p-4 bg-[var(--pill-bg)] rounded-2xl border border-[var(--pill-border)] mb-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-extrabold text-[var(--pill-text)] flex items-center gap-1.5">
-                      <Volume2 className="w-5 h-5" />
-                      सहायक का जवाब ({currentLangMeta.native}):
-                    </span>
-
-                    {isPlayingAudio && (
-                      <div className="flex items-center gap-1 h-5">
-                        <span className="w-1 bg-[var(--accent-primary)] rounded-full wave-bar-1" />
-                        <span className="w-1 bg-[var(--accent-primary)] rounded-full wave-bar-2" />
-                        <span className="w-1 bg-[var(--accent-primary)] rounded-full wave-bar-3" />
-                        <span className="w-1 bg-[var(--accent-primary)] rounded-full wave-bar-4" />
-                      </div>
-                    )}
+                {transcript && (
+                  <div className="bg-[#FAF7F2] rounded-2xl p-3.5 border border-[#E6D7C3]">
+                    <p className="text-xs font-bold text-[#545454] mb-0.5">
+                      आपने पूछा (Transcribed by Sarvam saaras:v3):
+                    </p>
+                    <p className="text-base font-bold text-[#1E1E1E]">&ldquo;{transcript}&rdquo;</p>
                   </div>
+                )}
 
-                  <p className="text-base sm:text-[17px] text-[var(--text-main)] font-medium leading-relaxed mb-3.5">
-                    {answer.spokenText}
+                <div className="bg-[#FFF3E0]/70 rounded-2xl p-4 border border-[#FFE0B2]">
+                  <p className="text-base sm:text-lg font-semibold leading-relaxed text-[#1E1E1E]">
+                    {answer.spokenAnswer}
                   </p>
 
-                  {audioUrl ? (
-                    <button
-                      onClick={toggleAudio}
-                      className="w-full h-12 min-h-[48px] px-4 rounded-xl bg-[var(--accent-primary)] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all"
-                    >
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#FFE0B2]">
+                    {isPlayingAudio ? (
+                      <div className="flex items-center gap-2 text-saffron font-bold text-sm">
+                        <div className="flex items-end gap-1 h-5">
+                          <span className="w-1 bg-saffron rounded-full eq-bar-1" />
+                          <span className="w-1 bg-saffron rounded-full eq-bar-2" />
+                          <span className="w-1 bg-saffron rounded-full eq-bar-3" />
+                          <span className="w-1 bg-saffron rounded-full eq-bar-4" />
+                        </div>
+                        <span>Bulbul v3 ({speaker}) बोल रहा है...</span>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-bold text-[#545454]">
+                        आवाज: Sarvam Bulbul v3 ({speaker})
+                      </span>
+                    )}
+
+                    <div className="flex items-center gap-2">
                       {isPlayingAudio ? (
-                        <>
-                          <Square className="w-4 h-4 fill-white" />
-                          <span>आवाज रोकें (Pause Audio)</span>
-                        </>
+                        <button
+                          onClick={stopAllAudio}
+                          className="h-10 px-4 rounded-xl bg-red-600 text-white text-xs font-bold flex items-center gap-1.5"
+                        >
+                          <Square className="w-3.5 h-3.5 fill-current" />
+                          <span>रोकें</span>
+                        </button>
                       ) : (
-                        <>
-                          <RotateCcw className="w-4 h-4" />
-                          <span>दोबारा सुनें (Replay in {speaker} voice) 🔊</span>
-                        </>
+                        <button
+                          onClick={() =>
+                            audioDataUrl
+                              ? playAudioFromDataUrl(audioDataUrl)
+                              : speakAnyText('answer-replay', answer.spokenAnswer)
+                          }
+                          className="h-10 px-4 rounded-xl bg-saffron text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>दोबारा सुनें</span>
+                        </button>
                       )}
-                    </button>
-                  ) : (
-                    <span className="text-xs text-[var(--text-muted)] italic">
-                      आवाज तैयार हो रही है...
-                    </span>
-                  )}
+                    </div>
+                  </div>
                 </div>
 
-                <h3 className="text-lg font-extrabold text-[var(--text-main)] mb-3">
-                  {answer.card.title}
-                </h3>
-
-                <div className="space-y-3">
-                  {answer.card.benefits && answer.card.benefits.length > 0 && (
-                    <div className="p-3.5 bg-[#E8F5E9]/70 rounded-2xl border border-[#A5D6A7]">
-                      <div className="flex items-center gap-2 mb-1.5 text-[#1B5E20] font-extrabold text-sm">
-                        <Gift className="w-4 h-4" />
-                        <span>मिलने वाले लाभ (Benefits)</span>
-                      </div>
-                      <ul className="space-y-1.5">
-                        {answer.card.benefits.map((item, i) => (
-                          <li key={i} className="text-sm sm:text-[15px] text-[var(--text-main)] flex items-start gap-2">
-                            <span className="text-[#1B5E20] font-bold">✦</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
+                {/* Benefits / Eligibility / Docs */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="rounded-2xl bg-[#E8F5E9]/70 border border-[#C8E6C9] p-4">
+                    <div className="flex items-center gap-2 text-[#1B5E20] font-extrabold text-sm mb-2">
+                      <Gift className="w-4 h-4" />
+                      <span>मुख्य लाभ (Benefits)</span>
                     </div>
-                  )}
+                    <ul className="space-y-1.5">
+                      {answer.benefits.map((item, idx) => (
+                        <li key={idx} className="text-sm text-[#1E1E1E] flex items-start gap-2">
+                          <span className="text-[#1B5E20] font-bold">•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                  {answer.card.eligibility && answer.card.eligibility.length > 0 && (
-                    <div className="p-3.5 bg-white rounded-2xl border border-[var(--border-card)]">
-                      <div className="flex items-center gap-2 mb-1.5 text-[var(--pill-text)] font-extrabold text-sm">
-                        <CheckCircle2 className="w-4 h-4" />
-                        <span>पात्रता (Eligibility)</span>
-                      </div>
-                      <ul className="space-y-1.5">
-                        {answer.card.eligibility.map((item, i) => (
-                          <li key={i} className="text-sm sm:text-[15px] text-[var(--text-main)] flex items-start gap-2">
-                            <span className="text-[var(--accent-primary)] font-bold">✔</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
+                  <div className="rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3] p-4">
+                    <div className="flex items-center gap-2 text-saffron font-extrabold text-sm mb-2">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>पात्रता (Eligibility)</span>
                     </div>
-                  )}
-
-                  {answer.card.documents && answer.card.documents.length > 0 && (
-                    <div className="p-3.5 bg-white rounded-2xl border border-[var(--border-card)]">
-                      <div className="flex items-center gap-2 mb-2 text-amber-900 font-extrabold text-sm">
-                        <FileText className="w-4 h-4" />
-                        <span>जरूरी दस्तावेज (Documents)</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {answer.card.documents.map((doc, i) => (
-                          <span
-                            key={i}
-                            className="text-xs font-bold px-2.5 py-1 bg-[var(--pill-bg)] text-[var(--pill-text)] rounded-lg border border-[var(--pill-border)]"
-                          >
-                            📄 {doc}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                    <ul className="space-y-1.5">
+                      {answer.eligibility.map((item, idx) => (
+                        <li key={idx} className="text-sm text-[#1E1E1E] flex items-start gap-2">
+                          <span className="text-saffron font-bold">✓</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
 
                 {answer.schemeId && (
                   <button
                     onClick={() => router.push(`/scheme/${answer.schemeId}`)}
-                    className="mt-4 w-full h-13 min-h-[52px] rounded-2xl bg-[#1B5E20] hover:bg-[#2E7D32] text-white font-bold text-base flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all"
+                    className="w-full h-12 rounded-2xl bg-[#1E1E1E] hover:bg-black text-white font-bold text-sm flex items-center justify-center gap-2"
                   >
-                    <span>आवेदन कैसे करें व आधिकारिक लिंक</span>
-                    <ChevronRight className="w-5 h-5" />
+                    <span>पूरी जानकारी व आवेदन प्रक्रिया देखें</span>
+                    <ChevronRight className="w-4 h-4" />
                   </button>
                 )}
               </div>
             )}
 
-            {/* Official Helplines Quick Card */}
-            <div className="bg-[var(--bg-card)] rounded-3xl p-5 border-[1.5px] border-[var(--border-card)] shadow-2xs">
-              <div className="flex items-center gap-2.5 mb-3">
-                <PhoneCall className="w-5 h-5 text-[#1B5E20]" />
-                <h4 className="text-base font-extrabold text-[var(--text-main)]">
-                  निःशुल्क सरकारी हेल्पलाइन नंबर
-                </h4>
+            {/* ==================== TAB 1: ALL 26 SCHEMES ==================== */}
+            {activeTab === 'schemes' && (
+              <div className="space-y-5">
+                {/* Active Citizen Profile Summary Banner */}
+                <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-[#E6D7C3] flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+                  <div className="flex items-center gap-3">
+                    <CitizenProfileCheckIcon className="w-10 h-10 shrink-0" />
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-black uppercase tracking-wider text-[#1B5E20]">
+                          सक्रिय नागरिक प्रोफ़ाइल (Character Build):
+                        </span>
+                        <span className="text-xs font-extrabold px-2 py-0.5 rounded-md bg-[#FFF3E0] text-[#E65100]">
+                          {citizenProfile.occupation.toUpperCase()} • {citizenProfile.age} वर्ष • ₹
+                          {(citizenProfile.annualIncome / 100000).toFixed(1)}L आय •{' '}
+                          {citizenProfile.ownedDocs.length} दस्तावेज़
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#545454] mt-0.5">
+                        योजनाओं पर आपका व्यक्तिगत <strong>% पात्रता मैच</strong> दिखाया जा रहा है
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setSortByProfileMatch(!sortByProfileMatch)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-extrabold border transition-all flex items-center gap-1.5 ${
+                        sortByProfileMatch
+                          ? 'bg-[#E8F5E9] text-[#1B5E20] border-[#A5D6A7]'
+                          : 'bg-white text-[#545454] border-[#E6D7C3]'
+                      }`}
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5" />
+                      <span>{sortByProfileMatch ? 'प्रोफ़ाइल मैच के अनुसार क्रमबद्ध ✓' : 'डिफ़ॉल्ट क्रम'}</span>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('wizard')}
+                      className="px-3 py-1.5 rounded-xl bg-saffron text-white text-xs font-extrabold hover:bg-saffron-600 transition-colors"
+                    >
+                      प्रोफ़ाइल बदलें
+                    </button>
+                  </div>
+                </div>
+
+                {/* Category Filter Pills (with Real SVG Icons instead of emojis) */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                  {[
+                    { id: 'all', hi: `सभी (${schemesData.length})`, iconId: 'all' },
+                    { id: 'farmer', hi: 'किसान (4)', iconId: 'tractor_harvest' },
+                    { id: 'women', hi: 'महिला (5)', iconId: 'women_empowerment' },
+                    { id: 'health', hi: 'स्वास्थ्य (4)', iconId: 'hospital_shield' },
+                    { id: 'housing', hi: 'आवास व बिजली (3)', iconId: 'brick_home' },
+                    { id: 'livelihood', hi: 'रोज़गार व पेंशन (7)', iconId: 'artisan_tools' },
+                    { id: 'education', hi: 'शिक्षा व छात्रवृत्ति (3)', iconId: 'graduation_cap' },
+                  ].map((cat) => {
+                    const active = categoryFilter === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => setCategoryFilter(cat.id as CategoryFilter)}
+                        className={`px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-extrabold whitespace-nowrap transition-all flex items-center gap-2 border ${
+                          active
+                            ? 'bg-saffron text-white border-saffron shadow-xs'
+                            : 'bg-[#FFFDF9] text-[#1E1E1E] border-[#E6D7C3] hover:border-saffron'
+                        }`}
+                      >
+                        {cat.id !== 'all' && (
+                          <SchemeRealIcon iconId={cat.iconId} className="w-5 h-5" />
+                        )}
+                        <span>{cat.hi}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Scheme Cards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {filteredSchemes.map((scheme: any) => {
+                    const disp = getSchemeDisplay(scheme);
+                    const isCardPlaying = playingCardId === scheme.id;
+                    const isCardLoading = loadingCardId === scheme.id;
+                    const matchInfo = evaluatedSchemes[scheme.id];
+
+                    return (
+                      <div
+                        key={scheme.id}
+                        onClick={() => router.push(`/scheme/${scheme.id}`)}
+                        className="group cursor-pointer bg-[#FFFDF9] rounded-3xl p-5 border-[1.5px] border-[#E6D7C3] hover:border-saffron shadow-2xs hover:shadow-md transition-all flex flex-col justify-between gap-4"
+                      >
+                        <div>
+                          {/* Top Row: Real-Life Tactile Vector Icon + Profile Match % Pill */}
+                          <div className="flex items-start justify-between gap-2 mb-3">
+                            <div className="w-14 h-14 rounded-2xl bg-[#FFF8EE] border border-[#FFE0B2] flex items-center justify-center p-1.5 shrink-0 shadow-2xs">
+                              <SchemeRealIcon
+                                iconId={scheme.iconId}
+                                category={scheme.category}
+                                className="w-11 h-11"
+                              />
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              {matchInfo && (
+                                <span
+                                  className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg border ${
+                                    matchInfo.matchScore >= 80
+                                      ? 'bg-[#E8F5E9] text-[#1B5E20] border-[#A5D6A7]'
+                                      : matchInfo.matchScore >= 60
+                                      ? 'bg-[#FFF3E0] text-[#E65100] border-[#FFE0B2]'
+                                      : 'bg-slate-100 text-slate-600 border-slate-300'
+                                  }`}
+                                >
+                                  {matchInfo.matchScore}% प्रोफ़ाइल मैच
+                                </span>
+                              )}
+                              {scheme.helpline && (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#545454]">
+                                  <PhoneCall className="w-3 h-3 text-saffron" />
+                                  {scheme.helpline}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <h3 className="text-lg font-extrabold text-[#1E1E1E] group-hover:text-saffron transition-colors leading-snug">
+                            {disp.name}
+                          </h3>
+                          <p className="text-sm text-[#545454] mt-1.5 leading-relaxed line-clamp-2">
+                            {disp.tagline}
+                          </p>
+                        </div>
+
+                        {/* Card Footer */}
+                        <div className="pt-3 border-t border-[#E6D7C3]/80 space-y-2.5">
+                          <div className="w-full px-3 py-2 rounded-xl bg-[#E8F5E9] border border-[#A5D6A7] text-[#1B5E20] text-xs font-extrabold flex items-center gap-2">
+                            <Gift className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{disp.badge}</span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              onClick={(e) => handleCardListen(e, scheme)}
+                              className={`h-10 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 border transition-all ${
+                                isCardPlaying
+                                  ? 'bg-red-600 text-white border-red-600'
+                                  : 'bg-[#FFF3E0] hover:bg-[#FFE0B2] text-[#E65100] border-[#FFE0B2]'
+                              }`}
+                            >
+                              {isCardLoading ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              ) : isCardPlaying ? (
+                                <>
+                                  <Square className="w-3 h-3 fill-current" />
+                                  <span>रोकें</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Volume2 className="w-3.5 h-3.5" />
+                                  <span>सुनें ({speaker})</span>
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/scheme/${scheme.id}`);
+                              }}
+                              className="h-10 px-3 rounded-xl bg-[#FAF7F2] hover:bg-saffron hover:text-white text-[#1E1E1E] border border-[#E6D7C3] font-extrabold text-xs flex items-center justify-center gap-1 transition-all"
+                            >
+                              <span>पूरी जानकारी</span>
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-2.5 text-xs">
-                <div className="p-2.5 rounded-xl bg-[var(--bg-canvas)] border border-[var(--border-card)]">
-                  <span className="text-[var(--text-muted)] block">पीएम किसान हेल्पलाइन</span>
-                  <strong className="text-sm text-[var(--text-main)]">📞 155261</strong>
+            )}
+
+            {/* ==================== TAB 2: CITIZEN PROFILE ("CHARACTER BUILD") & ELIGIBILITY WIZARD ==================== */}
+            {activeTab === 'wizard' && (
+              <div className="bg-[#FFFDF9] rounded-3xl p-6 border-2 border-[#E6D7C3] shadow-sm space-y-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E6D7C3] pb-4">
+                  <div className="flex items-center gap-3">
+                    <CitizenProfileCheckIcon className="w-12 h-12" />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E1E1E]">
+                          नागरिक प्रोफ़ाइल एवं पात्रता इंजन (Citizen Character Build)
+                        </h2>
+                      </div>
+                      <p className="text-xs sm:text-sm text-[#545454]">
+                        आपकी प्रोफ़ाइल ब्राउज़र के <code>{CITIZEN_PROFILE_STORAGE_KEY}</code> में सुरक्षित सेव होती है और 26 योजनाओं से तुरंत मिलान करती है
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleResetProfile}
+                    className="px-3 py-1.5 rounded-xl bg-[#FAF7F2] border border-[#E6D7C3] text-xs font-extrabold text-[#545454] hover:text-red-600 flex items-center gap-1"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>प्रोफ़ाइल रीसेट करें</span>
+                  </button>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[var(--bg-canvas)] border border-[var(--border-card)]">
-                  <span className="text-[var(--text-muted)] block">आयुष्मान भारत</span>
-                  <strong className="text-sm text-[var(--text-main)]">📞 14555</strong>
+
+                {/* Step 1: Occupation Selection with Real-Life SVG Icons */}
+                <div>
+                  <label className="block text-sm font-extrabold text-[#1E1E1E] mb-2.5">
+                    1. आपका मुख्य काम / पेशा क्या है? (Occupation — 35% Weight)
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {OCCUPATION_TILES.map((occ) => {
+                      const selected = citizenProfile.occupation === occ.id;
+                      return (
+                        <button
+                          key={occ.id}
+                          onClick={() => updateCitizenProfile({ occupation: occ.id })}
+                          className={`p-3 rounded-2xl border-2 text-left transition-all flex flex-col items-start gap-2 ${
+                            selected
+                              ? 'bg-[#FFF3E0] border-saffron shadow-xs'
+                              : 'bg-[#FAF7F2] border-[#E6D7C3] hover:border-saffron'
+                          }`}
+                        >
+                          <SchemeRealIcon iconId={occ.iconId} className="w-9 h-9" />
+                          <div>
+                            <div className="text-xs sm:text-sm font-extrabold text-[#1E1E1E]">
+                              {occ.hi}
+                            </div>
+                            <div className="text-[11px] text-[#545454] font-medium">{occ.en}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[var(--bg-canvas)] border border-[var(--border-card)]">
-                  <span className="text-[var(--text-muted)] block">महिला हेल्पलाइन</span>
-                  <strong className="text-sm text-[var(--text-main)]">📞 181</strong>
+
+                {/* Step 2: Age, Gender & Social Category */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {/* Gender */}
+                  <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3]">
+                    <label className="block text-xs font-extrabold text-[#1E1E1E] mb-2">
+                      2. लिंग चुनें (Gender — 15% Weight)
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'female', label: 'महिला (Female)' },
+                        { id: 'male', label: 'पुरुष (Male)' },
+                      ].map((g) => (
+                        <button
+                          key={g.id}
+                          onClick={() => updateCitizenProfile({ gender: g.id as CitizenGender })}
+                          className={`py-2 px-2.5 rounded-xl text-xs font-extrabold border transition-all ${
+                            citizenProfile.gender === g.id
+                              ? 'bg-saffron text-white border-saffron'
+                              : 'bg-white text-[#1E1E1E] border-[#E6D7C3]'
+                          }`}
+                        >
+                          {g.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Age Preset / Slider */}
+                  <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3]">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-extrabold text-[#1E1E1E]">
+                        3. आयु (Age — 15% Weight):
+                      </label>
+                      <span className="text-xs font-black text-saffron">
+                        {citizenProfile.age} वर्ष
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={15}
+                      max={80}
+                      value={citizenProfile.age}
+                      onChange={(e) =>
+                        updateCitizenProfile({ age: parseInt(e.target.value, 10) })
+                      }
+                      className="w-full accent-[#F57C00] cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] font-bold text-[#545454] mt-1">
+                      <button onClick={() => updateCitizenProfile({ age: 20 })}>20 (युवा)</button>
+                      <button onClick={() => updateCitizenProfile({ age: 35 })}>35 (वयस्क)</button>
+                      <button onClick={() => updateCitizenProfile({ age: 65, occupation: 'senior' })}>
+                        65 (वरिष्ठ)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Social Category */}
+                  <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3]">
+                    <label className="block text-xs font-extrabold text-[#1E1E1E] mb-2">
+                      4. वर्ग / श्रेणी (Social Category)
+                    </label>
+                    <select
+                      value={citizenProfile.socialCategory}
+                      onChange={(e) =>
+                        updateCitizenProfile({
+                          socialCategory: e.target.value as CitizenSocialCategory,
+                        })
+                      }
+                      className="w-full h-9 px-2.5 rounded-xl bg-white border border-[#E6D7C3] text-xs font-extrabold text-[#1E1E1E]"
+                    >
+                      <option value="obc">OBC (अन्य पिछड़ा वर्ग)</option>
+                      <option value="sc_st">SC / ST (अनुसूचित जाति/जनजाति)</option>
+                      <option value="general">General / EWS (सामान्य)</option>
+                      <option value="minority">Minority (अल्पसंख्यक)</option>
+                      <option value="divyang">Divyangjan (दिव्यांग विशेष)</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[var(--bg-canvas)] border border-[var(--border-card)]">
-                  <span className="text-[var(--text-muted)] block">सूर्य घर / सोलर</span>
-                  <strong className="text-sm text-[var(--text-main)]">📞 15555</strong>
+
+                {/* Step 3: Annual Family Income & Region */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3]">
+                    <label className="block text-xs font-extrabold text-[#1E1E1E] mb-2">
+                      5. वार्षिक पारिवारिक आय (Annual Income — 15% Weight)
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { val: 80000, label: '₹1 लाख से कम (BPL)' },
+                        { val: 180000, label: '₹1 से ₹2.5 लाख' },
+                        { val: 450000, label: '₹2.5 से ₹6 लाख' },
+                        { val: 750000, label: '₹6 लाख से अधिक' },
+                      ].map((inc) => (
+                        <button
+                          key={inc.val}
+                          onClick={() => updateCitizenProfile({ annualIncome: inc.val })}
+                          className={`py-2 px-2.5 rounded-xl text-xs font-extrabold border transition-all ${
+                            citizenProfile.annualIncome === inc.val
+                              ? 'bg-[#1B5E20] text-white border-[#1B5E20]'
+                              : 'bg-white text-[#1E1E1E] border-[#E6D7C3]'
+                          }`}
+                        >
+                          {inc.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3]">
+                    <label className="block text-xs font-extrabold text-[#1E1E1E] mb-2">
+                      6. राज्य एवं निवास क्षेत्र (State & Rural/Urban — 10% Weight)
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() =>
+                          updateCitizenProfile({
+                            state: citizenProfile.state === 'maharashtra' ? 'all' : 'maharashtra',
+                          })
+                        }
+                        className={`py-2 px-2.5 rounded-xl text-xs font-extrabold border ${
+                          citizenProfile.state === 'maharashtra'
+                            ? 'bg-saffron text-white border-saffron'
+                            : 'bg-white text-[#1E1E1E] border-[#E6D7C3]'
+                        }`}
+                      >
+                        {citizenProfile.state === 'maharashtra'
+                          ? 'महाराष्ट्र + केंद्र (MH)'
+                          : 'अन्य राज्य (All India)'}
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          updateCitizenProfile({
+                            area: citizenProfile.area === 'rural' ? 'urban' : 'rural',
+                          })
+                        }
+                        className="py-2 px-2.5 rounded-xl text-xs font-extrabold border bg-white text-[#1E1E1E] border-[#E6D7C3] hover:border-saffron"
+                      >
+                        {citizenProfile.area === 'rural'
+                          ? 'ग्रामीण क्षेत्र (Rural)'
+                          : 'शहरी क्षेत्र (Urban)'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Matched Schemes Output */}
+                <div className="pt-4 border-t-2 border-[#E6D7C3] space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-[#1B5E20] font-extrabold text-base sm:text-lg">
+                      <Award className="w-6 h-6" />
+                      <span>
+                        आपकी नागरिक प्रोफ़ाइल के लिए {wizardMatchedSchemes.length} उच्च-पात्रता योजनाएं:
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={handleGenerateWizardAiAdvisory}
+                      disabled={isGeneratingWizAi}
+                      className="px-4 py-2 rounded-xl bg-saffron hover:bg-saffron-600 text-white font-extrabold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition-all"
+                    >
+                      {isGeneratingWizAi ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Sarvam 105B सलाह बना रहा है...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-4 h-4" />
+                          <span>Sarvam AI से व्यक्तिगत सलाह सुनें 🔊</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {wizAiAdvisory && (
+                    <div className="p-4 rounded-2xl bg-[#FFF3E0] border border-[#FFE0B2] text-sm sm:text-base font-bold text-[#1E1E1E] leading-relaxed">
+                      <span className="text-xs font-extrabold uppercase text-saffron block mb-1">
+                        Sarvam 105B + Bulbul v3 व्यक्तिगत परामर्श:
+                      </span>
+                      {wizAiAdvisory}
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {wizardMatchedSchemes.slice(0, 8).map((s: any) => {
+                      const disp = getSchemeDisplay(s);
+                      const m = evaluatedSchemes[s.id];
+                      return (
+                        <div
+                          key={s.id}
+                          onClick={() => router.push(`/scheme/${s.id}`)}
+                          className="p-4 rounded-2xl bg-[#FAF7F2] border-2 border-[#A5D6A7] hover:border-[#1B5E20] cursor-pointer transition-all flex flex-col justify-between gap-2.5"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="w-12 h-12 rounded-xl bg-white border border-[#E6D7C3] flex items-center justify-center p-1 shrink-0">
+                              <SchemeRealIcon iconId={s.iconId} category={s.category} className="w-9 h-9" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-[11px] font-black px-2 py-0.5 rounded bg-[#E8F5E9] text-[#1B5E20]">
+                                  {m.matchScore}% पात्रता मैच
+                                </span>
+                                <span className="text-[11px] font-bold text-[#545454]">
+                                  {m.docsReadyCount}/{m.docsTotalCount} दस्तावेज़
+                                </span>
+                              </div>
+                              <h4 className="font-extrabold text-sm sm:text-base text-[#1E1E1E] mt-1 truncate">
+                                {disp.name}
+                              </h4>
+                              <p className="text-xs font-bold text-[#1B5E20] mt-0.5">{disp.badge}</p>
+                            </div>
+                          </div>
+
+                          {/* Matched Reason Chips */}
+                          <div className="flex flex-wrap gap-1 pt-2 border-t border-[#E6D7C3]/60">
+                            {m.matchedFactors.slice(0, 3).map((reason, idx) => (
+                              <span
+                                key={idx}
+                                className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-[#E6D7C3] text-[#1E1E1E]"
+                              >
+                                ✓ {reason}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ==================== TAB 3: DOCUMENT READINESS CHECKER ==================== */}
+            {activeTab === 'doccheck' && (
+              <div className="bg-[#FFFDF9] rounded-3xl p-6 border-2 border-[#E6D7C3] shadow-sm space-y-6">
+                <div className="flex items-center gap-3 border-b border-[#E6D7C3] pb-4">
+                  <DocumentFolderIcon className="w-12 h-12 shrink-0" />
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E1E1E]">
+                      दस्तावेज़ रेडीनेस चेक (Document Readiness Analyzer)
+                    </h2>
+                    <p className="text-xs sm:text-sm text-[#545454] mt-0.5">
+                      आपके पास जो कागजात हैं उन पर टैप करें — यह आपकी नागरिक प्रोफ़ाइल के साथ सिंक होकर तुरंत बताएगा कि आप किन योजनाओं के लिए तैयार हैं
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step A: Multi-select Document Grid with Real-Life SVG Document Icons */}
+                <div>
+                  <p className="text-sm font-extrabold text-[#1E1E1E] mb-3">
+                    1. आपके पास अभी कौन-कौन से दस्तावेज़ हैं? (टैप करके चुनें):
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {DOC_OPTIONS.map((doc) => {
+                      const isSelected = citizenProfile.ownedDocs.includes(doc.id);
+                      return (
+                        <button
+                          key={doc.id}
+                          onClick={() => toggleDoc(doc.id)}
+                          className={`p-3 rounded-2xl border-2 text-left transition-all flex flex-col justify-between gap-2 ${
+                            isSelected
+                              ? 'bg-[#E8F5E9] border-[#1B5E20] text-[#1B5E20] shadow-2xs'
+                              : 'bg-[#FAF7F2] border-[#E6D7C3] text-[#545454] hover:border-saffron'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <DocumentRealIcon docId={doc.id} className="w-9 h-9" />
+                            <span
+                              className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                                isSelected
+                                  ? 'bg-[#1B5E20] text-white'
+                                  : 'bg-white border border-[#E6D7C3]'
+                              }`}
+                            >
+                              {isSelected ? '✓' : ''}
+                            </span>
+                          </div>
+                          <div className="text-xs font-extrabold leading-snug text-[#1E1E1E]">
+                            {lang === 'mr' ? doc.mr : lang === 'en' ? doc.en : doc.hi}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Step B: Optional Document File / Note Upload */}
+                <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <div className="text-xs sm:text-sm font-extrabold text-[#1E1E1E] flex items-center gap-1.5">
+                      <Upload className="w-4 h-4 text-saffron" />
+                      <span>राशन कार्ड / आधार / दस्तावेज़ की फोटो या रसीद अपलोड करें (Optional)</span>
+                    </div>
+                    <p className="text-xs text-[#545454] mt-0.5">
+                      फाइल के नाम और विवरण से दस्तावेज़ अपने-आप पहचान लिए जाएंगे
+                    </p>
+                  </div>
+                  <label className="px-4 py-2.5 rounded-xl bg-white border-2 border-saffron text-saffron font-extrabold text-xs cursor-pointer hover:bg-[#FFF3E0] transition-colors shrink-0">
+                    <span>फाइल चुनें (Upload Document)</span>
+                    <input
+                      type="file"
+                      accept="image/*,.pdf,.txt"
+                      onChange={handleDocFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                {/* Step C: Live Analysis Result + Sarvam Mayura & Bulbul v3 Advisory */}
+                {isCheckingDocs ? (
+                  <div className="py-8 flex items-center justify-center gap-2 text-saffron font-bold">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Sarvam AI आपके दस्तावेज़ों की जांच कर रहा है...</span>
+                  </div>
+                ) : (
+                  docCheckResult && (
+                    <div className="space-y-5 pt-2 border-t border-[#E6D7C3]">
+                      <div className="p-4 rounded-2xl bg-[#FFF3E0] border border-[#FFE0B2] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div>
+                          <span className="text-[11px] font-extrabold uppercase text-saffron">
+                            Sarvam Mayura v1 + Bulbul v3 दस्तावेज़ रिपोर्ट ({currentLangObj.label})
+                          </span>
+                          <p className="text-sm sm:text-base font-bold text-[#1E1E1E] mt-1">
+                            {docCheckResult.spokenSummary}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() =>
+                            speakAnyText('doc-summary', docCheckResult.spokenSummary)
+                          }
+                          className="px-4 py-2.5 rounded-xl bg-saffron text-white font-extrabold text-xs flex items-center gap-1.5 shrink-0 shadow-xs"
+                        >
+                          <Volume2 className="w-4 h-4" />
+                          <span>रिपोर्ट सुनें 🔊</span>
+                        </button>
+                      </div>
+
+                      {/* 100% Ready Schemes */}
+                      <div>
+                        <h3 className="text-base font-extrabold text-[#1B5E20] flex items-center gap-2 mb-3">
+                          <CheckCircle2 className="w-5 h-5" />
+                          <span>
+                            तुरंत आवेदन के लिए तैयार योजनाएं ({docCheckResult.readySchemes?.length || 0} Ready Now)
+                          </span>
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {(docCheckResult.readySchemes || []).map((rs: any) => (
+                            <div
+                              key={rs.id}
+                              onClick={() => router.push(`/scheme/${rs.id}`)}
+                              className="p-3.5 rounded-2xl bg-[#E8F5E9]/70 border border-[#A5D6A7] hover:border-[#1B5E20] cursor-pointer flex items-center justify-between gap-2"
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <SchemeRealIcon category={rs.category} className="w-9 h-9 shrink-0" />
+                                <div className="min-w-0">
+                                  <div className="text-sm font-extrabold text-[#1E1E1E] truncate">
+                                    {rs.name[lang === 'mr' || lang === 'en' ? lang : 'hi']}
+                                  </div>
+                                  <div className="text-[11px] font-bold text-[#1B5E20]">
+                                    ✓ सभी आवश्यक दस्तावेज़ मौजूद
+                                  </div>
+                                </div>
+                              </div>
+                              <ChevronRight className="w-4 h-4 text-[#1B5E20] shrink-0" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Almost Ready (Missing 1 doc) */}
+                      {(docCheckResult.almostReadySchemes || []).length > 0 && (
+                        <div>
+                          <h3 className="text-base font-extrabold text-amber-800 flex items-center gap-2 mb-3">
+                            <AlertCircle className="w-5 h-5" />
+                            <span>
+                              सिर्फ 1 दस्तावेज़ बनवाते ही मिलेंगी ये योजनाएं ({docCheckResult.almostReadySchemes.length} Almost Ready)
+                            </span>
+                          </h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {docCheckResult.almostReadySchemes.map((ars: any) => (
+                              <div
+                                key={ars.id}
+                                onClick={() => router.push(`/scheme/${ars.id}`)}
+                                className="p-3.5 rounded-2xl bg-[#FFF3E0]/50 border border-[#FFE0B2] cursor-pointer flex items-center justify-between gap-2"
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <SchemeRealIcon category={ars.category} className="w-9 h-9 shrink-0" />
+                                  <div className="min-w-0">
+                                    <div className="text-sm font-extrabold text-[#1E1E1E] truncate">
+                                      {ars.name[lang === 'mr' || lang === 'en' ? lang : 'hi']}
+                                    </div>
+                                    <div className="text-[11px] font-bold text-red-700">
+                                      बाकी दस्तावेज़:{' '}
+                                      {lang === 'mr'
+                                        ? ars.missingDocs[0]?.mr
+                                        : lang === 'en'
+                                        ? ars.missingDocs[0]?.en
+                                        : ars.missingDocs[0]?.hi}
+                                    </div>
+                                  </div>
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-saffron shrink-0" />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT COLUMN (5 Cols on Laptop, Sticky): Sarvam AI Voice Assistant Hub */}
+          <div className="lg:col-span-5 order-1 lg:order-2 lg:sticky lg:top-28">
+            <div className="bg-[#FFFDF9] rounded-3xl p-6 sm:p-7 border-2 border-[#E6D7C3] shadow-md">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#FFF3E0] text-saffron mb-3 border border-[#FFE0B2]">
+                  <Mic className="w-7 h-7" />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E1E1E]">
+                  बोलकर पूछें (Sarvam Voice Assistant)
+                </h2>
+                <p className="text-sm text-[#545454] mt-1">
+                  माइक बटन दबाकर रखें और हिंदी, मराठी, हिंग्लिश या किसी भी भारतीय भाषा में पूछें
+                </p>
+              </div>
+
+              {errorBanner && (
+                <div className="mt-4 bg-amber-50 border border-amber-300 text-amber-950 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center justify-between gap-2">
+                  <span>{errorBanner}</span>
+                  <button onClick={() => setErrorBanner(null)} className="text-amber-800 font-bold">
+                    ✕
+                  </button>
+                </div>
+              )}
+
+              {/* Hold-to-Speak Microphone Button */}
+              <div className="my-6 flex flex-col items-center">
+                <p className="text-sm font-extrabold text-[#1E1E1E] mb-4 text-center">
+                  {micState === 'idle' && 'नीचे नारंगी बटन दबाकर रखें और बोलें (Hold to Speak)'}
+                  {micState === 'recording' && `🔴 सुन रहा हूँ... (${recordSeconds}s) — बोलना खत्म होने पर छोड़ें`}
+                  {micState === 'thinking' && '⏳ Sarvam AI योजना खोज रहा है...'}
+                  {micState === 'speaking' && `🔊 Bulbul v3 (${speaker}) उत्तर बोल रहा है...`}
+                </p>
+
+                <div className="relative flex items-center justify-center">
+                  {micState === 'idle' && (
+                    <span className="absolute w-24 h-24 rounded-full bg-saffron/25 mic-idle-ring pointer-events-none" />
+                  )}
+                  {micState === 'recording' && (
+                    <span className="absolute w-28 h-28 rounded-full bg-red-500/30 mic-recording-ring pointer-events-none" />
+                  )}
+
+                  <button
+                    type="button"
+                    onMouseDown={startRecording}
+                    onMouseUp={stopRecording}
+                    onMouseLeave={() => {
+                      if (micState === 'recording') stopRecording();
+                    }}
+                    onTouchStart={(e) => {
+                      e.preventDefault();
+                      startRecording();
+                    }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      stopRecording();
+                    }}
+                    disabled={micState === 'thinking'}
+                    aria-label="Hold to speak"
+                    className={`relative z-10 w-24 h-24 rounded-full flex items-center justify-center shadow-lg transition-transform select-none ${
+                      micState === 'recording'
+                        ? 'bg-red-600 scale-110 text-white'
+                        : micState === 'thinking'
+                        ? 'bg-amber-500 text-white cursor-wait'
+                        : micState === 'speaking'
+                        ? 'bg-[#1B5E20] text-white'
+                        : 'bg-saffron hover:bg-saffron-600 active:scale-95 text-white'
+                    }`}
+                  >
+                    {micState === 'thinking' ? (
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]" />
+                        <span className="w-2.5 h-2.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s]" />
+                        <span className="w-2.5 h-2.5 bg-white rounded-full animate-bounce" />
+                      </div>
+                    ) : micState === 'speaking' ? (
+                      <Volume2 className="w-10 h-10 animate-pulse" />
+                    ) : (
+                      <Mic className="w-10 h-10" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick Voice Sample Prompts */}
+              <div className="pt-4 border-t border-[#E6D7C3]">
+                <p className="text-xs font-extrabold text-[#545454] uppercase tracking-wider mb-2.5 text-center">
+                  या इन सवालों पर टैप करके तुरंत डेमो देखें:
+                </p>
+                <div className="flex flex-col gap-2">
+                  {[
+                    {
+                      q: 'PM Kisan aur Namo Shetkari mein kul kitne paise milte hain?',
+                      label: '“पीएम किसान और नमो शेतकरी में कुल कितने पैसे मिलते हैं?”',
+                    },
+                    {
+                      q: 'Ladki Bahin yojana ke benefits kya hain?',
+                      label: '“लाडकी बहिन योजना के क्या फायदे हैं?”',
+                    },
+                    {
+                      q: 'Chhota vyapar shuru karne ke liye Mudra loan kaise milega?',
+                      label: '“छोटा व्यापार शुरू करने के लिए मुद्रा लोन कैसे मिलेगा?”',
+                    },
+                  ].map((chip, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => processQuery(chip.q)}
+                      className="text-left text-xs sm:text-sm font-bold px-3.5 py-2.5 rounded-2xl bg-[#FAF7F2] hover:bg-[#FFF3E0] border border-[#E6D7C3] hover:border-saffron text-[#1E1E1E] transition-colors flex items-center justify-between gap-2"
+                    >
+                      <span>{chip.label}</span>
+                      <ChevronRight className="w-4 h-4 text-saffron shrink-0" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Typed Fallback Input */}
+              {showTextInput && (
+                <form onSubmit={handleTextSubmit} className="mt-4 flex gap-2">
+                  <input
+                    type="text"
+                    value={textQuery}
+                    onChange={(e) => setTextQuery(e.target.value)}
+                    placeholder="यहाँ अपना सवाल लिखें (e.g. Mudra loan details)..."
+                    className="flex-1 h-12 px-4 rounded-xl bg-white border-2 border-[#E6D7C3] focus:border-saffron focus:outline-none text-sm text-[#1E1E1E]"
+                  />
+                  <button
+                    type="submit"
+                    className="h-12 px-5 rounded-xl bg-saffron text-white font-extrabold text-sm hover:bg-saffron-600 transition-colors"
+                  >
+                    पूछें
+                  </button>
+                </form>
+              )}
+
+              {/* Bottom Controls */}
+              <div className="mt-5 pt-3 border-t border-[#E6D7C3] flex items-center justify-between text-xs font-bold text-[#545454]">
+                <button
+                  type="button"
+                  onClick={() => setShowTextInput((prev) => !prev)}
+                  className="inline-flex items-center gap-1.5 hover:text-[#1E1E1E] underline"
+                >
+                  <Keyboard className="w-4 h-4 text-saffron" />
+                  <span>{showTextInput ? 'कीबोर्ड छुपाएं' : 'लिखकर पूछें (Type)'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsDemoMode((prev) => !prev)}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg ${
+                    isDemoMode
+                      ? 'bg-[#E8F5E9] text-[#1B5E20]'
+                      : 'hover:text-[#1E1E1E]'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{isDemoMode ? 'Demo Mode: ON' : 'Live Sarvam API'}</span>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </main>
-
-      {/* Mobile Floating Bottom Voice Bar (< lg screens) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[var(--bg-canvas)] via-[var(--bg-canvas)]/95 to-transparent pt-3 pb-4 px-4 z-40 flex flex-col items-center border-t border-[var(--border-card)]/60">
-        <div className="flex items-center gap-4 w-full max-w-md justify-between bg-[var(--bg-card)] px-4 py-2.5 rounded-2xl border-2 border-[var(--border-card)] shadow-lg">
-          <div className="flex-1">
-            {micState === 'recording' ? (
-              <span className="text-xs font-extrabold text-red-600 flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
-                बोलें... {recordTimer}s (छोड़ें)
-              </span>
-            ) : micState === 'thinking' ? (
-              <span className="text-xs font-extrabold text-amber-800">
-                ⏳ Sarvam AI जवाब तैयार कर रहा है...
-              </span>
-            ) : micState === 'speaking' ? (
-              <span className="text-xs font-extrabold text-[#1B5E20]">
-                🔊 Bulbul ({speaker}) बोल रहा है...
-              </span>
-            ) : (
-              <div>
-                <p className="text-sm font-extrabold text-[var(--text-main)]">
-                  बोलकर पूछें ({currentLangMeta.native})
-                </p>
-                <p className="text-[11px] text-[var(--text-muted)]">8 भारतीय भाषाओं में उपलब्ध</p>
-              </div>
-            )}
-          </div>
-
-          <button
-            onPointerDown={startRecording}
-            onPointerUp={stopRecording}
-            onPointerLeave={(e) => {
-              if (micState === 'recording') stopRecording(e);
-            }}
-            disabled={micState === 'thinking'}
-            className={`w-14 h-14 min-w-[56px] min-h-[56px] rounded-full flex items-center justify-center shadow-md active:scale-95 transition-all select-none touch-none ${
-              micState === 'recording'
-                ? 'bg-red-600 text-white ring-4 ring-red-200'
-                : micState === 'thinking'
-                ? 'bg-amber-500 text-white animate-pulse'
-                : 'bg-[var(--accent-primary)] text-white'
-            }`}
-            aria-label="Hold to speak"
-          >
-            <Mic className="w-7 h-7" />
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
@@ -2056,7 +1979,7 @@ export default function HomePage() {
   return (
     <Suspense
       fallback={
-        <div className="p-10 text-center text-[#545454] font-bold">
+        <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2] text-[#1E1E1E] font-bold">
           सरकारी सहायक लोड हो रहा है...
         </div>
       }

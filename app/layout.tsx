@@ -17,15 +17,24 @@ const notoDevanagari = Noto_Sans_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: 'Sarkari Sahayak (सरकारी सहायक) — बोलकर जानें सरकारी योजनाएं',
+  title: 'Sarkari Sahayak (सरकारी सहायक) — बोलकर जानें 26+ सरकारी योजनाएं',
   description:
-    'Voice-first Indian Government Welfare Scheme Assistant for citizens in Hindi, Marathi, and English, powered by Sarvam AI.',
+    'Voice-first Indian Government Welfare Scheme Assistant across 8 Indic languages, powered by Sarvam AI (Saaras v3, Sarvam 105B, Mayura v1, Bulbul v3).',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'सरकारी सहायक',
+  },
+  formatDetection: {
+    telephone: true,
+  },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  themeColor: '#F57C00',
 };
 
 export default function RootLayout({
