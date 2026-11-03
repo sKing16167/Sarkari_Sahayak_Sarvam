@@ -1,11 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect, Suspense } from 'react';
-import Link from 'next/router';
 import { useRouter, useSearchParams } from 'next/navigation';
 import schemesData from '@/data/schemes.json';
 import { audioBlobToWav } from '@/lib/audio';
-
 import {
   Mic,
   MicOff,
@@ -22,6 +20,7 @@ import {
   Send,
   AlertCircle,
   HelpCircle,
+  Radio,
 } from 'lucide-react';
 
 type Lang = 'hi' | 'mr' | 'en';
@@ -115,10 +114,13 @@ function HomeContent() {
         setIsPlayingAudio(false);
         setMicState('idle');
       } else {
-        currentAudioRef.current.play().then(() => {
-          setIsPlayingAudio(true);
-          setMicState('speaking');
-        }).catch(console.error);
+        currentAudioRef.current
+          .play()
+          .then(() => {
+            setIsPlayingAudio(true);
+            setMicState('speaking');
+          })
+          .catch(console.error);
       }
     }
   };
@@ -326,340 +328,485 @@ function HomeContent() {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between pb-32">
+    <div className="min-h-screen flex flex-col justify-between pb-28 lg:pb-12">
       {/* Top Header */}
-      <header className="p-4 bg-[#FAF8F5] border-b border-[#EADCC9] sticky top-0 z-20 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-3xl">🇮🇳</span>
+      <header className="bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#EADCC9] sticky top-0 z-30 shadow-xs">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+          {/* Logo & Title */}
+          <div className="flex items-center gap-3">
+            <span className="text-3xl sm:text-4xl p-1 bg-white rounded-xl shadow-xs border border-[#EADCC9]">
+              🇮🇳
+            </span>
             <div>
-              <h1 className="text-xl font-bold text-ink leading-tight">
-                Sarkari Sahayak <span className="text-saffron text-sm font-semibold">सरकारी सहायक</span>
-              </h1>
-              <p className="text-xs text-ink-muted">Voice Assistant for Citizens</p>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-ink tracking-tight">
+                  Sarkari Sahayak
+                </h1>
+                <span className="text-saffron text-sm sm:text-base font-bold bg-[#FFF3E0] px-2.5 py-0.5 rounded-lg border border-saffron-100">
+                  सरकारी सहायक
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-ink-muted font-medium mt-0.5">
+                Voice Assistant for Indian Welfare Schemes • Sarvam AI Powered
+              </p>
             </div>
           </div>
 
-          {/* Language Picker */}
-          <div className="flex bg-white rounded-xl p-1 border border-[#EADCC9] shadow-sm">
-            {(['hi', 'mr', 'en'] as const).map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                className={`min-h-[44px] min-w-[48px] px-2.5 py-1.5 rounded-lg text-sm font-bold transition-all ${
-                  lang === l
-                    ? 'bg-saffron text-white shadow-sm scale-100'
-                    : 'text-ink-muted hover:text-ink'
-                }`}
-              >
-                {l === 'hi' ? 'हिंदी' : l === 'mr' ? 'मराठी' : 'EN'}
-              </button>
-            ))}
+          {/* Right Action Bar: USP badge & Language Picker */}
+          <div className="flex items-center gap-3">
+            {/* USP Badge */}
+            <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFF3E0] border border-saffron-100 text-saffron-700 text-xs font-bold shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-saffron fill-saffron" />
+              <span>Understands Hindi + English mixed 🎙️</span>
+            </div>
+
+            {/* Language Selector */}
+            <div className="flex bg-white rounded-xl p-1 border border-[#EADCC9] shadow-xs">
+              {(['hi', 'mr', 'en'] as const).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
+                  className={`min-h-[40px] px-3 py-1 rounded-lg text-sm font-bold transition-all ${
+                    lang === l
+                      ? 'bg-saffron text-white shadow-sm'
+                      : 'text-ink-muted hover:text-ink'
+                  }`}
+                >
+                  {l === 'hi' ? 'हिंदी' : l === 'mr' ? 'मराठी' : 'English'}
+                </button>
+              ))}
+            </div>
+
+            {/* Demo indicator */}
+            {isDemoMode && (
+              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                ⚡ Demo
+              </span>
+            )}
           </div>
         </div>
 
-        {/* USP Badge */}
-        <div className="mt-3 flex items-center justify-between">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFF3E0] border border-saffron-100 text-saffron-700 text-xs font-semibold shadow-xs">
-            <Sparkles className="w-4 h-4 text-saffron fill-saffron" />
+        {/* Mobile-only USP banner */}
+        <div className="sm:hidden px-4 pb-2.5 flex items-center justify-between border-t border-[#EADCC9]/50 pt-2">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron-700">
+            <Sparkles className="w-3.5 h-3.5 text-saffron fill-saffron" />
             <span>Understands Hindi + English mixed 🎙️</span>
           </div>
-
-          {/* Offline Demo Indicator */}
           {isDemoMode && (
-            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-              ⚡ Demo Mode
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+              Demo Active
             </span>
           )}
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="px-4 py-4 flex-1">
+      {/* Main Container */}
+      <main className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex-1">
         {/* Error / Alert Toast */}
         {errorMsg && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2.5 text-red-800 text-sm">
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3 text-red-800 text-sm shadow-sm animate-in fade-in">
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-600" />
             <div className="flex-1">
               <p className="font-semibold">{errorMsg}</p>
             </div>
             <button
               onClick={() => setErrorMsg(null)}
-              className="text-xs font-bold underline ml-2"
+              className="text-xs font-bold underline ml-2 hover:text-red-950"
             >
-              हटाएं
+              हटाएं (Dismiss)
             </button>
           </div>
         )}
 
-        {/* Conversation / Answer Card (Slide-up view if answer present) */}
-        {answer ? (
-          <div className="bg-[#FFFDF9] rounded-2xl p-5 border-[1.5px] border-[#EADCC9] shadow-md mb-6 animate-in fade-in duration-300">
-            {/* User Query Bubble */}
-            <div className="mb-4 p-3 bg-[#FAF8F5] rounded-xl border border-[#EADCC9]/70 flex items-start justify-between gap-2">
+        {/* Responsive Grid Layout: Left Schemes & Prompts, Right Assistant Hub & Answers */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+          {/* Left Column (Schemes & Suggestions) */}
+          <div className="lg:col-span-7 flex flex-col gap-6">
+            {/* Section Header */}
+            <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-bold text-ink-muted block mb-0.5">
-                  आपने पूछा (You Asked):
-                </span>
-                <p className="text-[17px] font-semibold text-ink">"{transcript}"</p>
+                <h2 className="text-xl sm:text-2xl font-bold text-ink">
+                  {lang === 'mr'
+                    ? 'लोकप्रिय सरकारी योजना'
+                    : lang === 'en'
+                    ? 'Trending Government Schemes'
+                    : 'लोकप्रिय सरकारी योजनाएं'}
+                </h2>
+                <p className="text-sm text-ink-muted mt-0.5">
+                  योजना पर टैप करें या नीचे माइक से कोई भी प्रश्न पूछें
+                </p>
               </div>
+              <span className="hidden sm:inline-block text-xs font-semibold px-2.5 py-1 bg-white rounded-lg border border-[#EADCC9] text-ink-muted">
+                6 Verified Schemes
+              </span>
             </div>
 
-            {/* Spoken Text Audio Player Card */}
-            <div className="p-4 bg-[#FFF3E0] rounded-xl border border-[#FFE0B2] mb-5">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-bold text-saffron-700 flex items-center gap-1.5">
-                  <Volume2 className="w-4 h-4" /> सहायक का उत्तर (Spoken Answer):
-                </span>
-
-                {/* Animated Waveform when speaking */}
-                {isPlayingAudio && (
-                  <div className="flex items-center gap-1 h-5">
-                    <span className="w-1 bg-saffron rounded-full wave-bar-1" />
-                    <span className="w-1 bg-saffron rounded-full wave-bar-2" />
-                    <span className="w-1 bg-saffron rounded-full wave-bar-3" />
-                    <span className="w-1 bg-saffron rounded-full wave-bar-4" />
-                  </div>
-                )}
-              </div>
-
-              <p className="text-[17px] text-ink font-medium leading-relaxed mb-3">
-                {answer.spokenText}
-              </p>
-
-              {/* Play / Replay Audio Button */}
-              {audioUrl ? (
-                <button
-                  onClick={toggleAudio}
-                  className="h-12 min-h-[48px] px-4 rounded-xl bg-saffron text-white font-bold text-sm flex items-center gap-2 shadow-sm active:scale-95 transition-all"
+            {/* Scheme Cards Grid (2 columns on tablets/laptops, 1 column on small phones) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {schemesData.map((scheme) => (
+                <div
+                  key={scheme.id}
+                  onClick={() => handleSchemeClick(scheme.id)}
+                  className="bg-[#FFFDF9] rounded-2xl p-5 border-[1.5px] border-[#EADCC9] shadow-xs hover:shadow-md hover:border-saffron/70 active:scale-[0.99] transition-all cursor-pointer flex flex-col justify-between group"
                 >
-                  {isPlayingAudio ? (
-                    <>
-                      <Square className="w-4 h-4 fill-white" />
-                      <span>रोकें (Pause)</span>
-                    </>
-                  ) : (
-                    <>
-                      <RotateCcw className="w-4 h-4" />
-                      <span>फिर से सुनें (Replay Audio)</span>
-                    </>
-                  )}
-                </button>
-              ) : (
-                <span className="text-xs text-ink-muted italic">आवाज अनुपलब्ध (Audio unavailable)</span>
-              )}
-            </div>
-
-            {/* Answer Sections */}
-            <h2 className="text-lg font-bold text-ink mb-3">{answer.card.title}</h2>
-
-            <div className="space-y-3.5">
-              {/* Eligibility */}
-              {answer.card.eligibility && answer.card.eligibility.length > 0 && (
-                <div className="p-3.5 bg-white rounded-xl border border-[#EADCC9]">
-                  <div className="flex items-center gap-2 mb-2 text-saffron font-bold text-sm">
-                    <CheckCircle2 className="w-5 h-5" />
-                    <span>पात्रता (Eligibility)</span>
-                  </div>
-                  <ul className="space-y-1.5">
-                    {answer.card.eligibility.map((item, i) => (
-                      <li key={i} className="text-[16px] text-ink flex items-start gap-2">
-                        <span className="text-saffron font-bold">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Benefits */}
-              {answer.card.benefits && answer.card.benefits.length > 0 && (
-                <div className="p-3.5 bg-[#E8F5E9]/50 rounded-xl border border-civicGreen-100">
-                  <div className="flex items-center gap-2 mb-2 text-civicGreen font-bold text-sm">
-                    <Gift className="w-5 h-5" />
-                    <span>लाभ (Benefits)</span>
-                  </div>
-                  <ul className="space-y-1.5">
-                    {answer.card.benefits.map((item, i) => (
-                      <li key={i} className="text-[16px] text-ink flex items-start gap-2">
-                        <span className="text-civicGreen font-bold">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Documents */}
-              {answer.card.documents && answer.card.documents.length > 0 && (
-                <div className="p-3.5 bg-white rounded-xl border border-[#EADCC9]">
-                  <div className="flex items-center gap-2 mb-2 text-amber-800 font-bold text-sm">
-                    <FileText className="w-5 h-5" />
-                    <span>जरूरी दस्तावेज (Documents Needed)</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {answer.card.documents.map((doc, i) => (
-                      <span
-                        key={i}
-                        className="text-xs font-semibold px-2.5 py-1 bg-[#FFF3E0] text-amber-900 rounded-lg border border-[#FFE0B2]"
-                      >
-                        {doc}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Scheme Detail Link if matched */}
-            {answer.schemeId && (
-              <div className="mt-4 pt-3 border-t border-[#EADCC9] flex gap-2">
-                <button
-                  onClick={() => router.push(`/scheme/${answer.schemeId}`)}
-                  className="flex-1 h-14 min-h-[56px] rounded-xl bg-civicGreen text-white font-bold text-[16px] flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all"
-                >
-                  <span>पूरी जानकारी व आवेदन विधि</span>
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            )}
-
-            {/* Ask another question button */}
-            <button
-              onClick={() => {
-                setAnswer(null);
-                setTranscript('');
-                if (currentAudioRef.current) currentAudioRef.current.pause();
-                setIsPlayingAudio(false);
-              }}
-              className="mt-3 w-full h-12 text-sm font-bold text-saffron underline text-center"
-            >
-              नया सवाल पूछें (Ask Another Question)
-            </button>
-          </div>
-        ) : null}
-
-        {/* Trending Schemes Feed */}
-        <section className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold text-ink">
-              {lang === 'mr'
-                ? 'लोकप्रिय सरकारी योजना (Trending Schemes)'
-                : lang === 'en'
-                ? 'Trending Government Schemes'
-                : 'लोकप्रिय सरकारी योजनाएं (Trending Schemes)'}
-            </h2>
-            <span className="text-xs text-ink-muted">टैप करके सुनें</span>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3">
-            {schemesData.map((scheme) => (
-              <div
-                key={scheme.id}
-                onClick={() => handleSchemeClick(scheme.id)}
-                className="bg-[#FFFDF9] rounded-2xl p-4 border-[1.5px] border-[#EADCC9] shadow-sm active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between gap-3 hover:border-saffron"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl p-2 bg-[#FFF3E0] rounded-xl flex-shrink-0">
-                    {scheme.icon}
-                  </span>
                   <div>
-                    <h3 className="text-[17px] font-bold text-ink leading-snug">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <span className="text-3xl p-2 bg-[#FFF3E0] rounded-xl flex-shrink-0 group-hover:scale-105 transition-transform">
+                        {scheme.icon}
+                      </span>
+                      <span className="text-xs uppercase tracking-wider font-bold px-2.5 py-1 rounded-md bg-civicGreen-50 text-civicGreen border border-civicGreen-100">
+                        {scheme.category}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-ink leading-snug group-hover:text-saffron transition-colors">
                       {scheme.name[lang]}
                     </h3>
-                    <p className="text-xs text-ink-muted line-clamp-1 mt-0.5">
+                    <p className="text-sm text-ink-muted leading-relaxed mt-2 line-clamp-2">
                       {scheme.tagline[lang]}
                     </p>
-                    <span className="inline-block mt-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-civicGreen-50 text-civicGreen">
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-[#EADCC9]/60 flex items-center justify-between">
+                    <span className="text-xs font-bold text-civicGreen bg-[#E8F5E9] px-2 py-0.5 rounded-md">
                       {scheme.benefits[0]?.split('(')[0] || 'सरकारी सहायता'}
+                    </span>
+                    <span className="text-xs font-bold text-saffron flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                      <span>विवरण व आवाज</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col items-center justify-center min-w-[48px] h-12 rounded-xl bg-[#FAF8F5] border border-[#EADCC9] text-saffron">
-                  <Volume2 className="w-5 h-5" />
-                  <span className="text-[10px] font-bold">सुनें</span>
+              ))}
+            </div>
+
+            {/* Suggested Voice Questions */}
+            <div className="bg-[#FFFDF9] rounded-2xl p-5 border-[1.5px] border-[#EADCC9] shadow-xs">
+              <div className="flex items-center gap-2 mb-3">
+                <Radio className="w-5 h-5 text-saffron" />
+                <h3 className="text-base font-bold text-ink">
+                  सुझाए गए प्रश्न (Click any to speak/ask):
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {[
+                  'PM-Kisan ke benefits kya hain?',
+                  'Ladki Bahin yojana ke liye documents kya chahiye?',
+                  'Ayushman Bharat me kitna muft ilaj milta hai?',
+                  'PM Ujjwala gas connection kaise milega?',
+                ].map((query, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleChipClick(query)}
+                    className="text-left p-3.5 rounded-xl bg-white border border-[#EADCC9] text-sm font-semibold text-ink shadow-2xs hover:border-saffron hover:bg-[#FFF3E0]/30 flex items-center justify-between active:scale-[0.99] transition-all"
+                  >
+                    <span className="line-clamp-2">🎙️ "{query}"</span>
+                    <ChevronRight className="w-4 h-4 text-ink-muted flex-shrink-0 ml-2" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Inline Text Fallback Box */}
+            {showTextInput && (
+              <form
+                onSubmit={handleTextSubmit}
+                className="p-4 bg-white rounded-2xl border-2 border-saffron shadow-sm animate-in fade-in"
+              >
+                <label className="block text-sm font-bold text-ink mb-2">
+                  लिखकर पूछें (Type your question):
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={typedText}
+                    onChange={(e) => setTypedText(e.target.value)}
+                    placeholder="जैसे: लाडकी बहिन योजना के लाभ क्या हैं?"
+                    className="flex-1 h-12 px-4 border border-[#EADCC9] rounded-xl text-base focus:outline-none focus:border-saffron"
+                  />
+                  <button
+                    type="submit"
+                    className="h-12 px-5 bg-saffron hover:bg-saffron-600 text-white rounded-xl font-bold flex items-center justify-center min-w-[56px] shadow-sm transition-colors"
+                  >
+                    <Send className="w-5 h-5" />
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          {/* Right Column (Assistant Hub & Conversation / Results) */}
+          <div className="lg:col-span-5 flex flex-col gap-6 lg:sticky lg:top-24">
+            {/* If Answer Present: Show Structured Results Card */}
+            {answer ? (
+              <div className="bg-[#FFFDF9] rounded-3xl p-6 border-[2px] border-saffron/40 shadow-lg animate-in fade-in duration-300">
+                {/* User Query Box */}
+                <div className="mb-4 p-3.5 bg-[#FAF8F5] rounded-xl border border-[#EADCC9] flex items-start gap-2.5">
+                  <span className="text-xl">👤</span>
+                  <div>
+                    <span className="text-xs font-bold text-ink-muted block uppercase tracking-wider">
+                      आपने पूछा (You Asked):
+                    </span>
+                    <p className="text-base sm:text-lg font-bold text-ink mt-0.5">
+                      "{transcript}"
+                    </p>
+                  </div>
+                </div>
+
+                {/* Spoken Answer Audio Card */}
+                <div className="p-4 sm:p-5 bg-[#FFF3E0] rounded-2xl border border-[#FFE0B2] mb-5">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="text-sm font-bold text-saffron-700 flex items-center gap-1.5">
+                      <Volume2 className="w-5 h-5 text-saffron" />
+                      सहायक का उत्तर (Spoken Answer):
+                    </span>
+
+                    {/* Animated Waveform */}
+                    {isPlayingAudio && (
+                      <div className="flex items-center gap-1 h-5">
+                        <span className="w-1 bg-saffron rounded-full wave-bar-1" />
+                        <span className="w-1 bg-saffron rounded-full wave-bar-2" />
+                        <span className="w-1 bg-saffron rounded-full wave-bar-3" />
+                        <span className="w-1 bg-saffron rounded-full wave-bar-4" />
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-base sm:text-lg text-ink font-medium leading-relaxed mb-4">
+                    {answer.spokenText}
+                  </p>
+
+                  {/* Playback Controls */}
+                  {audioUrl ? (
+                    <button
+                      onClick={toggleAudio}
+                      className="h-12 min-h-[48px] px-5 rounded-xl bg-saffron hover:bg-saffron-600 text-white font-bold text-sm flex items-center gap-2.5 shadow-sm active:scale-95 transition-all"
+                    >
+                      {isPlayingAudio ? (
+                        <>
+                          <Square className="w-4 h-4 fill-white" />
+                          <span>रोकें (Pause Audio)</span>
+                        </>
+                      ) : (
+                        <>
+                          <RotateCcw className="w-4 h-4" />
+                          <span>फिर से सुनें (Replay Audio)</span>
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <span className="text-xs text-ink-muted italic">
+                      आवाज अनुपलब्ध (Audio unavailable)
+                    </span>
+                  )}
+                </div>
+
+                {/* Result Heading */}
+                <h3 className="text-lg font-bold text-ink mb-3">{answer.card.title}</h3>
+
+                {/* Structured Sections */}
+                <div className="space-y-3">
+                  {/* Eligibility */}
+                  {answer.card.eligibility && answer.card.eligibility.length > 0 && (
+                    <div className="p-4 bg-white rounded-xl border border-[#EADCC9]">
+                      <div className="flex items-center gap-2 mb-2 text-saffron font-bold text-sm">
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span>पात्रता (Eligibility)</span>
+                      </div>
+                      <ul className="space-y-1.5">
+                        {answer.card.eligibility.map((item, i) => (
+                          <li key={i} className="text-sm sm:text-base text-ink flex items-start gap-2">
+                            <span className="text-saffron font-bold mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Benefits */}
+                  {answer.card.benefits && answer.card.benefits.length > 0 && (
+                    <div className="p-4 bg-[#E8F5E9]/60 rounded-xl border border-civicGreen-100">
+                      <div className="flex items-center gap-2 mb-2 text-civicGreen font-bold text-sm">
+                        <Gift className="w-5 h-5" />
+                        <span>मिलने वाले लाभ (Benefits)</span>
+                      </div>
+                      <ul className="space-y-1.5">
+                        {answer.card.benefits.map((item, i) => (
+                          <li key={i} className="text-sm sm:text-base text-ink flex items-start gap-2">
+                            <span className="text-civicGreen font-bold mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Documents */}
+                  {answer.card.documents && answer.card.documents.length > 0 && (
+                    <div className="p-4 bg-white rounded-xl border border-[#EADCC9]">
+                      <div className="flex items-center gap-2 mb-2 text-amber-800 font-bold text-sm">
+                        <FileText className="w-5 h-5" />
+                        <span>जरूरी दस्तावेज (Documents Needed)</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {answer.card.documents.map((doc, i) => (
+                          <span
+                            key={i}
+                            className="text-xs font-semibold px-2.5 py-1 bg-[#FFF3E0] text-amber-900 rounded-lg border border-[#FFE0B2]"
+                          >
+                            📄 {doc}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Scheme Detail Link button */}
+                {answer.schemeId && (
+                  <div className="mt-5 pt-4 border-t border-[#EADCC9]">
+                    <button
+                      onClick={() => router.push(`/scheme/${answer.schemeId}`)}
+                      className="w-full h-14 min-h-[56px] rounded-xl bg-civicGreen hover:bg-civicGreen-600 text-white font-bold text-base flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all"
+                    >
+                      <span>पूरी जानकारी व आवेदन विधि</span>
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Ask Another Question button */}
+                <button
+                  onClick={() => {
+                    setAnswer(null);
+                    setTranscript('');
+                    if (currentAudioRef.current) currentAudioRef.current.pause();
+                    setIsPlayingAudio(false);
+                    setMicState('idle');
+                  }}
+                  className="mt-3 w-full py-2.5 text-sm font-bold text-saffron underline text-center hover:text-saffron-700"
+                >
+                  नया सवाल पूछें (Ask Another Question)
+                </button>
+              </div>
+            ) : (
+              /* Desktop Voice Assistant Hub (When no answer yet) */
+              <div className="hidden lg:flex bg-[#FFFDF9] rounded-3xl p-6 border-[1.5px] border-[#EADCC9] shadow-sm flex-col items-center text-center">
+                <div className="w-14 h-14 rounded-2xl bg-[#FFF3E0] border border-saffron-100 flex items-center justify-center text-3xl mb-4">
+                  🎙️
+                </div>
+                <h3 className="text-xl font-bold text-ink">बोलकर पूछें (Voice Assistant)</h3>
+                <p className="text-sm text-ink-muted leading-relaxed mt-1 max-w-xs">
+                  माइक बटन दबाकर रखें और अपनी भाषा में किसी भी योजना के बारे में पूछें।
+                </p>
+
+                {/* State Label */}
+                <div className="my-5 min-h-[36px] flex items-center justify-center">
+                  {micState === 'recording' && (
+                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 text-red-700 text-sm font-bold animate-pulse">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
+                      रिकॉर्ड हो रहा है: {recordTimer}s (छोड़ें जवाब पाने के लिए)
+                    </span>
+                  )}
+                  {micState === 'thinking' && (
+                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 text-amber-800 text-sm font-bold">
+                      <span className="w-2 h-2 rounded-full bg-amber-600 animate-bounce" />
+                      सुन रहा हूँ और सोच रहा हूँ...
+                    </span>
+                  )}
+                  {micState === 'speaking' && (
+                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-100 text-green-800 text-sm font-bold">
+                      🔊 जवाब बोल रहा हूँ...
+                    </span>
+                  )}
+                  {micState === 'idle' && (
+                    <span className="text-xs font-bold text-ink-muted">
+                      नीचे बटन दबाकर रखें और बोलें (Hold to speak)
+                    </span>
+                  )}
+                </div>
+
+                {/* Main Microphone Button */}
+                <div className="relative flex items-center justify-center my-2">
+                  {micState === 'recording' && (
+                    <div className="absolute w-28 h-28 rounded-full bg-red-400 opacity-50 animate-pulse-ring" />
+                  )}
+
+                  <button
+                    onPointerDown={startRecording}
+                    onPointerUp={stopRecording}
+                    onPointerLeave={(e) => {
+                      if (micState === 'recording') stopRecording(e);
+                    }}
+                    disabled={micState === 'thinking'}
+                    className={`relative z-10 w-24 h-24 rounded-full flex flex-col items-center justify-center shadow-xl active:scale-95 transition-all select-none touch-none ${
+                      micState === 'recording'
+                        ? 'bg-red-600 text-white ring-4 ring-red-200'
+                        : micState === 'thinking'
+                        ? 'bg-amber-500 text-white animate-pulse'
+                        : 'bg-saffron text-white hover:bg-saffron-600 shadow-saffron/40'
+                    }`}
+                    aria-label="Hold to speak"
+                  >
+                    <Mic className="w-11 h-11" />
+                  </button>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-[#EADCC9]/60 w-full flex items-center justify-center gap-4 text-xs font-semibold text-ink-muted">
+                  <button
+                    onClick={() => setShowTextInput(!showTextInput)}
+                    className="underline hover:text-saffron py-1"
+                  >
+                    {showTextInput ? 'कीबोर्ड छिपाएं' : '⌨️ या लिखकर पूछें (Type)'}
+                  </button>
+                  <span>•</span>
+                  <button
+                    onClick={() => setIsDemoMode(!isDemoMode)}
+                    className="hover:text-ink py-1"
+                  >
+                    {isDemoMode ? '⚡ Demo Mode: ON' : '⚙️ Demo Mode'}
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
+            )}
 
-        {/* Suggested Voice Queries */}
-        <section className="mb-4">
-          <p className="text-xs font-bold text-ink-muted mb-2 uppercase tracking-wide">
-            सुझाए गए प्रश्न (Tap to Ask):
-          </p>
-          <div className="flex flex-col gap-2">
-            {[
-              'PM-Kisan ke benefits kya hain?',
-              'Ladki Bahin yojana ke liye documents kya chahiye?',
-              'Ayushman Bharat me kitna muft ilaj milta hai?',
-            ].map((query, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleChipClick(query)}
-                className="text-left p-3 rounded-xl bg-white border border-[#EADCC9] text-[15px] font-semibold text-ink shadow-xs hover:border-saffron flex items-center justify-between active:scale-[0.99] transition-all"
-              >
-                <span>🎙️ "{query}"</span>
-                <ChevronRight className="w-4 h-4 text-ink-muted flex-shrink-0" />
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Text Input Fallback Box */}
-        {showTextInput && (
-          <form onSubmit={handleTextSubmit} className="mt-3 p-3 bg-white rounded-2xl border border-saffron shadow-sm">
-            <label className="block text-xs font-bold text-ink mb-1.5">
-              लिखकर पूछें (Type your question):
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={typedText}
-                onChange={(e) => setTypedText(e.target.value)}
-                placeholder="योजना का नाम या सवाल लिखें..."
-                className="flex-1 h-12 px-3 border border-[#EADCC9] rounded-xl text-[16px] focus:outline-none focus:border-saffron"
-              />
-              <button
-                type="submit"
-                className="h-12 px-4 bg-saffron text-white rounded-xl font-bold flex items-center justify-center min-w-[56px]"
-              >
-                <Send className="w-5 h-5" />
-              </button>
+            {/* Helpline / Support Card */}
+            <div className="hidden lg:flex bg-[#FAF8F5] rounded-2xl p-4 border border-[#EADCC9] items-center gap-3">
+              <span className="text-2xl">📞</span>
+              <div className="text-xs text-ink-muted">
+                <p className="font-bold text-ink">नागरिक सहायता हेल्पलाइन: 1950</p>
+                <p>सभी योजनाओं की जानकारी पूर्णतः निःशुल्क और आधिकारिक है।</p>
+              </div>
             </div>
-          </form>
-        )}
-
-        {/* Footer info note */}
-        <p className="text-center text-[12px] text-ink-muted mt-6 px-4">
-          Information from official government sources. Always confirm details at the official portal.
-        </p>
+          </div>
+        </div>
       </main>
 
-      {/* Floating Bottom Voice Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-[480px] mx-auto bg-gradient-to-t from-[#FAF8F5] via-[#FAF8F5]/95 to-transparent pt-6 pb-6 px-6 z-30 flex flex-col items-center">
+      {/* Floating Bottom Voice Navigation Bar (Mobile Viewport: < lg) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-gradient-to-t from-[#FAF8F5] via-[#FAF8F5]/98 to-transparent pt-4 pb-6 px-4 z-40 flex flex-col items-center">
         {/* State Label */}
         <div className="mb-2 text-center">
           {micState === 'recording' && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm font-bold animate-pulse">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />
               रिकॉर्ड हो रहा है: {recordTimer}s (छोड़ें समाप्त करने के लिए)
             </span>
           )}
           {micState === 'thinking' && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-sm font-bold">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">
               <span className="w-2 h-2 rounded-full bg-amber-600 animate-bounce" />
               सुन रहा हूँ और सोच रहा हूँ...
             </span>
           )}
           {micState === 'speaking' && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-bold">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold">
               🔊 जवाब बोल रहा हूँ...
             </span>
           )}
           {micState === 'idle' && (
-            <span className="text-xs font-bold text-ink-muted">
+            <span className="text-[11px] font-bold text-ink-muted">
               दबाकर रखें और बोलें (Hold to speak)
             </span>
           )}
@@ -667,9 +814,8 @@ function HomeContent() {
 
         {/* Main Microphone Button */}
         <div className="relative flex items-center justify-center">
-          {/* Pulsing ring during recording */}
           {micState === 'recording' && (
-            <div className="absolute w-24 h-24 rounded-full bg-red-400 opacity-60 animate-pulse-ring" />
+            <div className="absolute w-22 h-22 rounded-full bg-red-400 opacity-60 animate-pulse-ring" />
           )}
 
           <button
@@ -679,7 +825,7 @@ function HomeContent() {
               if (micState === 'recording') stopRecording(e);
             }}
             disabled={micState === 'thinking'}
-            className={`relative z-10 w-20 h-20 min-w-[72px] min-h-[72px] rounded-full flex flex-col items-center justify-center shadow-xl active:scale-95 transition-all select-none touch-none ${
+            className={`relative z-10 w-18 h-18 min-w-[70px] min-h-[70px] rounded-full flex flex-col items-center justify-center shadow-xl active:scale-95 transition-all select-none touch-none ${
               micState === 'recording'
                 ? 'bg-red-600 text-white ring-4 ring-red-200'
                 : micState === 'thinking'
@@ -692,20 +838,20 @@ function HomeContent() {
           </button>
         </div>
 
-        {/* Secondary fallback toggles */}
-        <div className="mt-3 flex items-center gap-4 text-xs font-semibold text-ink-muted">
+        {/* Fallback & Demo toggles */}
+        <div className="mt-2.5 flex items-center gap-4 text-xs font-semibold text-ink-muted">
           <button
             onClick={() => setShowTextInput(!showTextInput)}
             className="underline hover:text-saffron py-1"
           >
-            {showTextInput ? 'कीबोर्ड छिपाएं' : '⌨️ या लिखकर पूछें (Type)'}
+            {showTextInput ? 'कीबोर्ड छिपाएं' : '⌨️ या लिखकर पूछें'}
           </button>
           <span>•</span>
           <button
             onClick={() => setIsDemoMode(!isDemoMode)}
             className="hover:text-ink py-1"
           >
-            {isDemoMode ? '⚡ Demo Mode: ON' : '⚙️ Demo Mode'}
+            {isDemoMode ? '⚡ Demo: ON' : '⚙️ Demo'}
           </button>
         </div>
       </div>
@@ -715,7 +861,13 @@ function HomeContent() {
 
 export default function HomePage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-ink-muted font-bold">लोड हो रहा है...</div>}>
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-ink-muted font-bold">
+          लोड हो रहा है (Loading Sarkari Sahayak)...
+        </div>
+      }
+    >
       <HomeContent />
     </Suspense>
   );

@@ -20,8 +20,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="hi">
-      <body className="min-h-screen bg-[#FAF8F5] text-[#1E1E1E] antialiased flex justify-center">
-        <div className="w-full max-w-[480px] min-h-screen bg-[#FAF8F5] relative flex flex-col shadow-lg border-x border-[#EADCC9]/50">
+      <body className="min-h-screen bg-[#FAF8F5] text-[#1E1E1E] antialiased">
+        <div className="w-full min-h-screen bg-[#FAF8F5] relative flex flex-col">
           {children}
         </div>
       </body>

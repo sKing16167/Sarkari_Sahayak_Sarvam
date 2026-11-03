@@ -3,7 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import schemesData from '@/data/schemes.json';
-import { ArrowLeft, Volume2, ExternalLink, CheckCircle2, Gift, FileText, ChevronRight, Loader2, Square } from 'lucide-react';
+import {
+  ArrowLeft,
+  Volume2,
+  ExternalLink,
+  CheckCircle2,
+  Gift,
+  FileText,
+  ChevronRight,
+  Loader2,
+  Square,
+  Sparkles,
+} from 'lucide-react';
 
 export default function SchemeDetailPage() {
   const router = useRouter();
@@ -27,11 +38,11 @@ export default function SchemeDetailPage() {
 
   if (!scheme) {
     return (
-      <div className="p-6 text-center">
-        <p className="text-lg text-ink-muted mb-4">योजना नहीं मिली (Scheme not found)</p>
+      <div className="max-w-xl mx-auto p-12 text-center">
+        <p className="text-xl text-ink-muted mb-6">योजना नहीं मिली (Scheme not found)</p>
         <button
           onClick={() => router.push('/')}
-          className="h-14 px-6 bg-saffron text-white rounded-xl font-bold min-h-[56px]"
+          className="h-14 px-8 bg-saffron text-white rounded-xl font-bold min-h-[56px] shadow-sm hover:bg-saffron-600 transition-colors"
         >
           होम पर जाएं (Go Home)
         </button>
@@ -77,125 +88,137 @@ export default function SchemeDetailPage() {
   };
 
   return (
-    <div className="min-h-screen pb-16 px-4 pt-4">
+    <div className="min-h-screen pb-20 pt-4 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8">
       {/* Top Bar */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#EADCC9]">
+      <div className="flex items-center justify-between pb-4 border-b border-[#EADCC9]">
         <button
           onClick={() => router.push('/')}
-          className="min-h-[56px] min-w-[56px] flex items-center justify-center rounded-xl bg-white border border-[#EADCC9] shadow-sm text-ink active:scale-95 transition-transform"
+          className="min-h-[48px] px-4 flex items-center gap-2 rounded-xl bg-white border border-[#EADCC9] shadow-xs text-ink hover:border-saffron active:scale-95 transition-all text-sm font-bold"
           aria-label="Back to home"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <ArrowLeft className="w-5 h-5" />
+          <span>होम पर वापस (Back)</span>
         </button>
 
         {/* Language switcher */}
-        <div className="flex bg-white rounded-xl p-1 border border-[#EADCC9] shadow-sm">
+        <div className="flex bg-white rounded-xl p-1 border border-[#EADCC9] shadow-xs">
           {(['hi', 'mr', 'en'] as const).map((l) => (
             <button
               key={l}
               onClick={() => setLang(l)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-                lang === l ? 'bg-saffron text-white shadow-sm' : 'text-ink-muted'
+              className={`px-3.5 py-1.5 rounded-lg text-sm font-bold transition-colors ${
+                lang === l ? 'bg-saffron text-white shadow-xs' : 'text-ink-muted hover:text-ink'
               }`}
             >
-              {l === 'hi' ? 'हिंदी' : l === 'mr' ? 'मराठी' : 'EN'}
+              {l === 'hi' ? 'हिंदी' : l === 'mr' ? 'मराठी' : 'English'}
             </button>
           ))}
         </div>
       </div>
 
       {/* Scheme Hero Header */}
-      <div className="mt-4 bg-[#FFFDF9] rounded-2xl p-5 border-[1.5px] border-[#EADCC9] shadow-sm">
-        <div className="flex items-start gap-3">
-          <span className="text-4xl p-2 bg-[#FFF3E0] rounded-xl">{scheme.icon}</span>
-          <div className="flex-1">
-            <span className="inline-block text-xs uppercase tracking-wider font-bold px-2 py-0.5 rounded-md bg-civicGreen-50 text-civicGreen mb-1">
-              {scheme.category}
+      <div className="mt-6 bg-[#FFFDF9] rounded-3xl p-6 sm:p-8 border-[1.5px] border-[#EADCC9] shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <span className="text-5xl p-3 bg-[#FFF3E0] rounded-2xl border border-saffron-100 flex-shrink-0">
+              {scheme.icon}
             </span>
-            <h1 className="text-xl font-bold leading-tight text-ink">{scheme.name[lang]}</h1>
+            <div>
+              <span className="inline-block text-xs uppercase tracking-wider font-bold px-2.5 py-1 rounded-md bg-civicGreen-50 text-civicGreen border border-civicGreen-100 mb-2">
+                {scheme.category}
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-bold text-ink leading-tight">
+                {scheme.name[lang]}
+              </h1>
+              <p className="mt-2 text-base sm:text-lg text-ink-muted font-medium leading-relaxed">
+                {scheme.tagline[lang]}
+              </p>
+            </div>
+          </div>
+
+          {/* Listen Button */}
+          <div className="flex-shrink-0 sm:w-60">
+            <button
+              onClick={handlePlayTTS}
+              disabled={isLoadingAudio}
+              className="w-full h-14 min-h-[56px] flex items-center justify-center gap-3 rounded-2xl bg-civicGreen hover:bg-civicGreen-600 text-white font-bold text-base shadow-sm active:scale-[0.98] transition-all"
+            >
+              {isLoadingAudio ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>आवाज तैयार हो रही है...</span>
+                </>
+              ) : isPlaying ? (
+                <>
+                  <Square className="w-5 h-5 fill-current" />
+                  <span>रोकें (Pause Audio)</span>
+                </>
+              ) : (
+                <>
+                  <Volume2 className="w-6 h-6" />
+                  <span>सुनें (Listen) 🔊</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
-
-        <p className="mt-3 text-[17px] text-ink-muted leading-relaxed font-medium bg-[#FAF8F5] p-3 rounded-xl border border-[#EADCC9]/60">
-          {scheme.tagline[lang]}
-        </p>
-
-        {/* Listen Button */}
-        <button
-          onClick={handlePlayTTS}
-          disabled={isLoadingAudio}
-          className="mt-4 w-full h-14 min-h-[56px] flex items-center justify-center gap-3 rounded-xl bg-civicGreen text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all"
-        >
-          {isLoadingAudio ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span>आवाज तैयार हो रही है...</span>
-            </>
-          ) : isPlaying ? (
-            <>
-              <Square className="w-5 h-5 fill-current" />
-              <span>रोकें (Pause Audio)</span>
-            </>
-          ) : (
-            <>
-              <Volume2 className="w-6 h-6" />
-              <span>सुनें (Listen Details) 🔊</span>
-            </>
-          )}
-        </button>
       </div>
 
-      {/* Key Sections */}
-      <div className="mt-5 space-y-4">
+      {/* Key Sections: 2-column grid on tablets/laptops, 1-column on mobile */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Benefits */}
-        <div className="bg-[#FFFDF9] rounded-2xl p-5 border-[1.5px] border-[#EADCC9] shadow-sm">
-          <div className="flex items-center gap-2 mb-3">
-            <Gift className="w-6 h-6 text-civicGreen" />
-            <h2 className="text-lg font-bold text-ink">
-              {lang === 'mr' ? 'मिळणारे फायदे (Benefits)' : lang === 'en' ? 'Benefits' : 'मिलने वाले लाभ (Benefits)'}
-            </h2>
+        <div className="bg-[#FFFDF9] rounded-3xl p-6 border-[1.5px] border-[#EADCC9] shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2.5 mb-4">
+              <Gift className="w-6 h-6 text-civicGreen" />
+              <h2 className="text-lg sm:text-xl font-bold text-ink">
+                {lang === 'mr' ? 'मिळणारे फायदे (Benefits)' : lang === 'en' ? 'Benefits' : 'मिलने वाले लाभ (Benefits)'}
+              </h2>
+            </div>
+            <ul className="space-y-3">
+              {scheme.benefits.map((b, i) => (
+                <li key={i} className="flex items-start gap-3 text-base sm:text-lg text-ink leading-relaxed">
+                  <span className="text-civicGreen font-bold mt-1 text-lg">✦</span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="space-y-2.5">
-            {scheme.benefits.map((b, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-[17px] text-ink">
-                <span className="text-civicGreen font-bold mt-0.5">✦</span>
-                <span>{b}</span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* Eligibility */}
-        <div className="bg-[#FFFDF9] rounded-2xl p-5 border-[1.5px] border-[#EADCC9] shadow-sm">
-          <div className="flex items-center gap-2 mb-3">
-            <CheckCircle2 className="w-6 h-6 text-saffron" />
-            <h2 className="text-lg font-bold text-ink">
-              {lang === 'mr' ? 'पात्रता (Who can apply)' : lang === 'en' ? 'Eligibility' : 'पात्रता (कौन आवेदन कर सकता है)'}
-            </h2>
+        <div className="bg-[#FFFDF9] rounded-3xl p-6 border-[1.5px] border-[#EADCC9] shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2.5 mb-4">
+              <CheckCircle2 className="w-6 h-6 text-saffron" />
+              <h2 className="text-lg sm:text-xl font-bold text-ink">
+                {lang === 'mr' ? 'पात्रता (Who can apply)' : lang === 'en' ? 'Eligibility' : 'पात्रता (कौन आवेदन कर सकता है)'}
+              </h2>
+            </div>
+            <ul className="space-y-3">
+              {scheme.eligibility.map((e, i) => (
+                <li key={i} className="flex items-start gap-3 text-base sm:text-lg text-ink leading-relaxed">
+                  <span className="text-saffron font-bold mt-1 text-lg">✔</span>
+                  <span>{e}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="space-y-2.5">
-            {scheme.eligibility.map((e, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-[17px] text-ink">
-                <span className="text-saffron font-bold mt-0.5">✔</span>
-                <span>{e}</span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* Documents */}
-        <div className="bg-[#FFFDF9] rounded-2xl p-5 border-[1.5px] border-[#EADCC9] shadow-sm">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="bg-[#FFFDF9] rounded-3xl p-6 border-[1.5px] border-[#EADCC9] shadow-xs">
+          <div className="flex items-center gap-2.5 mb-4">
             <FileText className="w-6 h-6 text-amber-700" />
-            <h2 className="text-lg font-bold text-ink">
+            <h2 className="text-lg sm:text-xl font-bold text-ink">
               {lang === 'mr' ? 'आवश्यक कागदपत्रे (Documents)' : lang === 'en' ? 'Required Documents' : 'जरूरी दस्तावेज (Documents)'}
             </h2>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {scheme.documents.map((d, i) => (
               <span
                 key={i}
-                className="inline-block px-3 py-2 bg-[#FFF3E0] text-amber-900 border border-[#FFE0B2] rounded-xl text-[16px] font-medium"
+                className="inline-block px-3.5 py-2 bg-[#FFF3E0] text-amber-950 border border-[#FFE0B2] rounded-xl text-sm sm:text-base font-semibold"
               >
                 📄 {d}
               </span>
@@ -204,14 +227,14 @@ export default function SchemeDetailPage() {
         </div>
 
         {/* How to Apply */}
-        <div className="bg-[#FFFDF9] rounded-2xl p-5 border-[1.5px] border-[#EADCC9] shadow-sm">
-          <h2 className="text-lg font-bold text-ink mb-3">
+        <div className="bg-[#FFFDF9] rounded-3xl p-6 border-[1.5px] border-[#EADCC9] shadow-xs">
+          <h2 className="text-lg sm:text-xl font-bold text-ink mb-4">
             {lang === 'mr' ? 'अर्ज कसा करावा (How to Apply)' : lang === 'en' ? 'How to Apply' : 'आवेदन कैसे करें (How to Apply)'}
           </h2>
-          <ol className="space-y-3">
+          <ol className="space-y-3.5">
             {scheme.howToApply.map((step, idx) => (
-              <li key={idx} className="flex items-start gap-3 text-[17px] text-ink">
-                <span className="w-7 h-7 min-w-[28px] rounded-full bg-saffron text-white text-sm font-bold flex items-center justify-center">
+              <li key={idx} className="flex items-start gap-3 text-base sm:text-lg text-ink leading-relaxed">
+                <span className="w-7 h-7 min-w-[28px] rounded-full bg-saffron text-white text-sm font-bold flex items-center justify-center mt-0.5">
                   {idx + 1}
                 </span>
                 <span>{step}</span>
@@ -219,15 +242,17 @@ export default function SchemeDetailPage() {
             ))}
           </ol>
         </div>
+      </div>
 
-        {/* Official Link Button */}
+      {/* Official Link Button (Wide CTA) */}
+      <div className="mt-8">
         <a
           href={scheme.officialLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full h-14 min-h-[56px] flex items-center justify-center gap-3 rounded-2xl bg-[#1E1E1E] text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all"
+          className="w-full h-16 min-h-[56px] flex items-center justify-center gap-3 rounded-2xl bg-[#1E1E1E] hover:bg-black text-white font-bold text-lg shadow-md active:scale-[0.99] transition-all"
         >
-          <span>आधिकारिक पोर्टल खोलें (Official Portal)</span>
+          <span>आधिकारिक पोर्टल खोलें ({scheme.officialLink.replace('https://', '')})</span>
           <ExternalLink className="w-5 h-5" />
         </a>
       </div>
