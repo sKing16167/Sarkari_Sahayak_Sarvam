@@ -316,17 +316,26 @@ function HomeContent() {
   }, [lang, currentLangObj.code, translatedMap]);
 
   const getSchemeDisplay = (scheme: any) => {
+    if (!scheme) return { name: '', tagline: '', badge: '' };
+    if (typeof scheme.name === 'string') {
+      return {
+        name: scheme.name,
+        tagline: typeof scheme.tagline === 'string' ? scheme.tagline : '',
+        badge: typeof scheme.benefitBadge === 'string' ? scheme.benefitBadge : '',
+      };
+    }
     const l = lang;
     const tTrans = translatedMap[l]?.[scheme.id];
     return {
-      name: scheme.name?.[l] || tTrans?.name || scheme.name?.en || scheme.name?.hi,
-      tagline: scheme.tagline?.[l] || tTrans?.tagline || scheme.tagline?.en || scheme.tagline?.hi,
+      name: scheme.name?.[l] || tTrans?.name || scheme.name?.en || scheme.name?.hi || '',
+      tagline: scheme.tagline?.[l] || tTrans?.tagline || scheme.tagline?.en || scheme.tagline?.hi || '',
       badge:
         scheme.benefitBadge?.[l] ||
         tTrans?.badge ||
         scheme.benefitBadge?.en ||
         scheme.benefitBadge?.hi ||
-        scheme.benefits?.[0],
+        scheme.benefits?.[0] ||
+        '',
     };
   };
 
@@ -799,7 +808,9 @@ function HomeContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ownedDocs: citizenProfile.ownedDocs,
+          uploadedNote: docNoteText,
           uploadedNoteText: docNoteText,
+          languageCode: currentLangObj.code,
           targetLanguageCode: currentLangObj.code,
         }),
       });
