@@ -1,0 +1,240 @@
+[
+  {
+    "id": "pm-kisan",
+    "name": {
+      "en": "PM-Kisan Samman Nidhi",
+      "hi": "पीएम किसान सम्मान निधि",
+      "mr": "पीएम किसान सन्मान निधी"
+    },
+    "icon": "🌾",
+    "tagline": {
+      "en": "₹6,000 per year directly to bank account for farmer families",
+      "hi": "किसान परिवारों को हर साल ₹6,000 सीधे बैंक खाते में",
+      "mr": "शेतकरी कुटुंबांसाठी दरवर्षी ₹६,००० थेट बँक खात्यात"
+    },
+    "category": "farmer",
+    "eligibility": [
+      "All small and marginal farmer families with cultivable land",
+      "Land ownership must be in the farmer's name in official land records",
+      "Aadhaar-seeded bank account and completed eKYC are compulsory",
+      "Institutional landholders and income tax paying professionals are not eligible"
+    ],
+    "benefits": [
+      "Financial benefit of ₹6,000 per year",
+      "Paid in three equal instalments of ₹2,000 every 4 months",
+      "Direct Benefit Transfer (DBT) straight into bank account"
+    ],
+    "documents": [
+      "Aadhaar Card",
+      "Land Ownership Documents (Khata / Khatauni / 7/12 extract)",
+      "Bank Account Passbook / Account details linked to Aadhaar",
+      "Active Mobile Number linked to Aadhaar"
+    ],
+    "howToApply": [
+      "Visit pmkisan.gov.in portal or your nearest CSC (Common Service Centre)",
+      "Click on 'New Farmer Registration' and enter your Aadhaar number",
+      "Upload your land details and bank passbook",
+      "Complete Aadhaar OTP based eKYC"
+    ],
+    "officialLink": "https://pmkisan.gov.in",
+    "keywords": ["kisan", "farmer", "kheti", "pm kisan", "instalment", "kist", "sheti", "krishi", "6000", "2000"]
+  },
+  {
+    "id": "ladki-bahin",
+    "name": {
+      "en": "Mukhyamantri Majhi Ladki Bahin Yojana",
+      "hi": "मुख्यमंत्री माझी लाडकी बहिन योजना",
+      "mr": "मुख्यमंत्री माझी लाडकी बहीण योजना"
+    },
+    "icon": "🌸",
+    "tagline": {
+      "en": "₹1,500 monthly financial aid for eligible women in Maharashtra",
+      "hi": "महाराष्ट्र में पात्र महिलाओं को ₹1,500 प्रति माह आर्थिक सहायता",
+      "mr": "महाराष्ट्रातील पात्र महिलांना दरमहा ₹१,५०० आर्थिक मदत"
+    },
+    "category": "women",
+    "eligibility": [
+      "Resident women of Maharashtra aged between 21 and 65 years",
+      "Married, unmarried, widowed, divorced, or destitute women",
+      "Annual family income must be under ₹2.5 Lakhs (or family possesses yellow/orange ration card)",
+      "No family member should be a regular government employee or income tax payer"
+    ],
+    "benefits": [
+      "Monthly financial assistance of ₹1,500 transferred directly to bank account",
+      "Annual total assistance of ₹18,000 per beneficiary",
+      "Supports nutrition, health, and economic independence of women"
+    ],
+    "documents": [
+      "Aadhaar Card",
+      "Maharashtra Domicile Certificate or Ration Card (Yellow/Orange)",
+      "Bank Account linked to Aadhaar with DBT enabled",
+      "Income Certificate (if not having yellow/orange ration card)",
+      "Self-declaration / Hamipatra"
+    ],
+    "howToApply": [
+      "Apply through the official Nari Shakti Doot app or portal",
+      "Or apply via Anganwadi Sevika, Gram Sevak, or Setu Suvidha Kendra",
+      "Submit Aadhaar, ration card, and bank details with biometric verification"
+    ],
+    "officialLink": "https://ladkibahin.maharashtra.gov.in",
+    "keywords": ["ladki bahin", "ladki behan", "women", "mahila", "maharashtra", "1500", "majhi ladki", "bahin", "behen"]
+  },
+  {
+    "id": "ayushman-bharat",
+    "name": {
+      "en": "Ayushman Bharat PM-JAY",
+      "hi": "आयुष्मान भारत - प्रधानमंत्री जन आरोग्य योजना",
+      "mr": "आयुष्मान भारत - पंतप्रधान जन आरोग्य योजना"
+    },
+    "icon": "🏥",
+    "tagline": {
+      "en": "Free health treatment up to ₹5 Lakh per family per year",
+      "hi": "हर पात्र परिवार को प्रति वर्ष ₹5 लाख तक का मुफ्त इलाज",
+      "mr": "प्रत्येक कुटुंबाला दरवर्षी ₹५ लाखांपर्यंत मोफत उपचार"
+    },
+    "category": "health",
+    "eligibility": [
+      "Families identified under Socio-Economic Caste Census (SECC 2011) rural and urban deprivation criteria",
+      "Active Rashtriya Swasthya Bima Yojana (RSBY) cardholders",
+      "All senior citizens aged 70 and above regardless of income (under Ayushman Vaya Vandana expansion)",
+      "No limit on family size, age, or gender"
+    ],
+    "benefits": [
+      "Cashless and paperless treatment up to ₹5,00,000 per family per year",
+      "Covers secondary and tertiary care hospitalization in all empanelled public and private hospitals across India",
+      "Includes 3 days pre-hospitalization and 15 days post-hospitalization expenses, medicines, and diagnostics"
+    ],
+    "documents": [
+      "Aadhaar Card or Government Photo ID",
+      "Ration Card or PM-JAY Family ID letter",
+      "Active Mobile number for OTP verification"
+    ],
+    "howToApply": [
+      "Check eligibility at beneficiary.nha.gov.in or call toll-free helpline 14555",
+      "Visit any empanelled government or private hospital or CSC center with your Aadhaar and Ration card",
+      "The Ayushman Mitra at hospital will verify KYC and issue your Ayushman Card immediately"
+    ],
+    "officialLink": "https://beneficiary.nha.gov.in",
+    "keywords": ["ayushman", "pmjay", "health", "hospital", "ilaj", "treatment", "5 lakh", "bimari", "doctor", "swasthya", "card"]
+  },
+  {
+    "id": "pm-ujjwala",
+    "name": {
+      "en": "PM Ujjwala Yojana (Ujjwala 2.0)",
+      "hi": "प्रधानमंत्री उज्ज्वला योजना (2.0)",
+      "mr": "पंतप्रधान उज्ज्वला योजना (२.०)"
+    },
+    "icon": "🔥",
+    "tagline": {
+      "en": "Free LPG gas connection with first cylinder and stove for women",
+      "hi": "गरीब परिवारों की महिलाओं को मुफ्त गैस कनेक्शन, पहला सिलेंडर और चूल्हा",
+      "mr": "महिलांसाठी मोफत गॅस कनेक्शन, पहिला सिलेंडर आणि शेगडी"
+    },
+    "category": "women",
+    "eligibility": [
+      "Adult woman (aged 18+) belonging to poor households (BPL, SC/ST, PMAY, Antyodaya)",
+      "No other existing LPG connection in the same household",
+      "Migrant families can apply without submitting local address proof (self-declaration accepted)"
+    ],
+    "benefits": [
+      "Deposit-free LPG gas connection in the name of the female head of the family",
+      "First LPG cylinder refill completely free of cost",
+      "Free hotplate (stove) provided at the time of connection",
+      "Targeted subsidy of ₹300 per cylinder for up to 12 refills a year deposited via DBT"
+    ],
+    "documents": [
+      "Aadhaar Card of the applicant woman and adult family members",
+      "Ration Card or Family composition certificate",
+      "Bank Account details (Passbook) linked to Aadhaar",
+      "Active Mobile Number"
+    ],
+    "howToApply": [
+      "Apply online at pmuy.gov.in or visit the nearest LPG distributor (Indane, Bharatgas, or HP Gas)",
+      "Fill the Ujjwala 2.0 application form and attach Aadhaar and ration card copy",
+      "Distributor verifies details and issues connection within few days"
+    ],
+    "officialLink": "https://www.pmuy.gov.in",
+    "keywords": ["ujjwala", "gas", "cylinder", "chulha", "lpg", "rasoi", "subsidy", "gas connection"]
+  },
+  {
+    "id": "pm-awas",
+    "name": {
+      "en": "Pradhan Mantri Awas Yojana (PMAY-Gramin & Urban)",
+      "hi": "प्रधानमंत्री आवास योजना (ग्रामीण एवं शहरी)",
+      "mr": "पंतप्रधान आवास योजना (ग्रामीण व शहरी)"
+    },
+    "icon": "🏠",
+    "tagline": {
+      "en": "Financial assistance to construct a pucca house with basic amenities",
+      "hi": "पक्का मकान बनाने के लिए सीधी आर्थिक सहायता और सुविधाएं",
+      "mr": "पक्के घर बांधण्यासाठी थेट आर्थिक मदत आणि सुविधा"
+    },
+    "category": "housing",
+    "eligibility": [
+      "Families without a pucca house or living in zero, one, or two-room kutcha houses",
+      "Must not own a pucca house anywhere in India",
+      "Families selected through Gram Sabha validated SECC 2011 and Awaas+ surveys",
+      "Preference given to SC/ST, minorities, widows, and physically challenged persons"
+    ],
+    "benefits": [
+      "Direct grant of ₹1,20,000 in plain areas and ₹1,30,000 in hilly/difficult states for house construction",
+      "Additional ₹12,000 financial support for toilet construction under Swachh Bharat Mission",
+      "90 to 95 days of unskilled labor wages under MGNREGA (~₹25,000)",
+      "Piped drinking water, electricity connection, and LPG under other convergence schemes"
+    ],
+    "documents": [
+      "Aadhaar Card",
+      "Bank Account details with DBT enabled",
+      "MGNREGA Job Card Number",
+      "Swachh Bharat Mission (SBM) registration number",
+      "Land / homestead site ownership papers or certificate"
+    ],
+    "howToApply": [
+      "For PMAY-Gramin: Name is registered by Gram Panchayat / Panchayat Secretary through AwaasSoft app",
+      "For PMAY-Urban: Apply online via pmaymis.gov.in or visit nearest CSC center with income and land documents",
+      "Geo-tagged photos of construction stages are verified before each installment release"
+    ],
+    "officialLink": "https://pmayg.nic.in",
+    "keywords": ["awas", "makan", "ghar", "home", "house", "pmay", "pucca ghar", "gramin awas", "kholi"]
+  },
+  {
+    "id": "sukanya-samriddhi",
+    "name": {
+      "en": "Sukanya Samriddhi Yojana (SSY)",
+      "hi": "सुकन्या समृद्धि योजना",
+      "mr": "सुकन्या समृद्धी योजना"
+    },
+    "icon": "👧",
+    "tagline": {
+      "en": "High-interest savings scheme for girl child with tax-free returns",
+      "hi": "बेटियों के उज्ज्वल भविष्य के लिए सबसे ज्यादा ब्याज वाली बचत योजना",
+      "mr": "मुलींच्या सुरक्षित भविष्यासाठी सर्वाधिक व्याजाची बचत योजना"
+    },
+    "category": "education",
+    "eligibility": [
+      "Account can be opened by parents/guardians for a girl child from birth up to 10 years of age",
+      "Maximum two accounts per family (one per girl child; exception for twins/triplets)",
+      "Child must be an Indian citizen and resident"
+    ],
+    "benefits": [
+      "Highest government small-savings interest rate (currently 8.2% per annum, compounded annually)",
+      "Start with as little as ₹250 per year (maximum ₹1.5 Lakh per year)",
+      "Complete tax exemption under Section 80C on deposit, interest earned, and final maturity amount",
+      "Account matures after 21 years or upon girl's marriage after age 18; 50% withdrawal allowed for higher education after age 18"
+    ],
+    "documents": [
+      "Birth Certificate of the girl child",
+      "Identity Proof (Aadhaar / PAN / Voter ID) of the parent/guardian",
+      "Address Proof of parent/guardian",
+      "Passport size photographs of child and parent"
+    ],
+    "howToApply": [
+      "Visit any Post Office branch or authorized public/private commercial bank",
+      "Fill the Sukanya Samriddhi Account Opening Form-1",
+      "Submit child's birth certificate and KYC documents with initial deposit (minimum ₹250)",
+      "A physical passbook is issued for recording all deposits and interest"
+    ],
+    "officialLink": "https://www.indiapost.gov.in",
+    "keywords": ["sukanya", "samriddhi", "girl", "beti", "ladki", "savings", "post office", "bachee", "education", "daughter"]
+  }
+]

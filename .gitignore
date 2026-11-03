@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+build/
+
+# Environment variables & secrets (CRITICAL)
+.env
+.env*.local
+.env.development
+.env.production
+.env.test
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# OS generated
+.DS_Store
+Thumbs.db
