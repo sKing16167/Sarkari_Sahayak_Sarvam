@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     }
 
     const formData = await req.formData();
-    const file = formData.get('file') as Blob | null;
+    const file = (formData.get('file') || formData.get('audio')) as Blob | null;
     const languageHint = (formData.get('language_hint') as string) || 'unknown';
 
     if (!file) {

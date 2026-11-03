@@ -10,29 +10,45 @@ async function translateSingle(
     return text;
   }
 
-  const res = await fetch('https://api.sarvam.ai/translate', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'api-subscription-key': apiKey,
-    },
-    body: JSON.stringify({
-      input: text.slice(0, 950),
-      source_language_code: sourceLang,
-      target_language_code: targetLang,
-      model: 'mayura:v1',
-      mode: 'formal',
-    }),
-  });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch('https://api.sarvam.ai/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-subscription-key': apiKey,
+        },
+        body: JSON.stringify({
+          input: text.slice(0, 950),
+          source_language_code: sourceLang,
+          target_language_code: targetLang,
+          model: 'mayura:v1',
+          mode: 'formal',
+        }),
+      });
 
-  if (!res.ok) {
-    const errText = await res.text();
-    console.warn('Sarvam Mayura translate warning:', res.status, errText);
-    return text;
+      if (res.status === 429 && attempt === 0) {
+        await new Promise((r) => setTimeout(r, 600));
+        continue;
+      }
+
+      if (!res.ok) {
+        const errText = await res.text();
+        console.warn('Sarvam Mayura translate warning:', res.status, errText);
+        return text;
+      }
+
+      const data = await res.json();
+      return data.translated_text || text;
+    } catch (e) {
+      if (attempt === 0) {
+        await new Promise((r) => setTimeout(r, 300));
+        continue;
+      }
+      return text;
+    }
   }
-
-  const data = await res.json();
-  return data.translated_text || text;
+  return text;
 }
 
 export async function POST(req: NextRequest) {
@@ -50,13 +66,22 @@ export async function POST(req: NextRequest) {
     }
 
     if (Array.isArray(texts)) {
-      const translatedList = await Promise.all(
-        texts.map((item: string) =>
-          translateSingle(item, sourceLanguageCode, targetLanguageCode, apiKey)
-        )
-      );
+      const results: string[] = [];
+      const CHUNK_SIZE = 4;
+      for (let i = 0; i < texts.length; i += CHUNK_SIZE) {
+        const chunk = texts.slice(i, i + CHUNK_SIZE);
+        const chunkResults = await Promise.all(
+          chunk.map((item: string) =>
+            translateSingle(item, sourceLanguageCode, targetLanguageCode, apiKey)
+          )
+        );
+        results.push(...chunkResults);
+        if (i + CHUNK_SIZE < texts.length) {
+          await new Promise((resolve) => setTimeout(resolve, 80));
+        }
+      }
       return NextResponse.json({
-        translatedTexts: translatedList,
+        translatedTexts: results,
         modelUsed: 'mayura:v1',
         targetLanguageCode,
       });

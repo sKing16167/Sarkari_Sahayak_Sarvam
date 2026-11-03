@@ -263,6 +263,8 @@ function HomeContent() {
   // Translate scheme cards dynamically via Sarvam Mayura (mayura:v1) when user picks Tamil, Telugu, Bengali, Gujarati, or Kannada
   useEffect(() => {
     if (lang === 'hi' || lang === 'mr' || lang === 'en') return;
+    const allHaveLang = (schemesData as any[]).every((s) => s.name?.[lang]);
+    if (allHaveLang) return;
     if (translatedMap[lang]) return;
 
     const translateSchemesToIndic = async () => {
@@ -314,34 +316,20 @@ function HomeContent() {
   }, [lang, currentLangObj.code, translatedMap]);
 
   const getSchemeDisplay = (scheme: any) => {
-    if (lang === 'en') {
-      return {
-        name: scheme.name.en || scheme.name.hi,
-        tagline: scheme.tagline.en || scheme.tagline.hi,
-        badge: scheme.benefitBadge?.en || scheme.benefits[0],
-      };
-    }
-    if (lang === 'mr') {
-      return {
-        name: scheme.name.mr || scheme.name.hi,
-        tagline: scheme.tagline.mr || scheme.tagline.hi,
-        badge: scheme.benefitBadge?.mr || scheme.benefitBadge?.hi || scheme.benefits[0],
-      };
-    }
-    if (lang === 'hi') {
-      return {
-        name: scheme.name.hi,
-        tagline: scheme.tagline.hi,
-        badge: scheme.benefitBadge?.hi || scheme.benefits[0],
-      };
-    }
-    const tTrans = translatedMap[lang]?.[scheme.id];
+    const l = lang;
+    const tTrans = translatedMap[l]?.[scheme.id];
     return {
-      name: tTrans?.name || scheme.name.en || scheme.name.hi,
-      tagline: tTrans?.tagline || scheme.tagline.en || scheme.tagline.hi,
-      badge: tTrans?.badge || scheme.benefitBadge?.en || scheme.benefits[0],
+      name: scheme.name?.[l] || tTrans?.name || scheme.name?.en || scheme.name?.hi,
+      tagline: scheme.tagline?.[l] || tTrans?.tagline || scheme.tagline?.en || scheme.tagline?.hi,
+      badge:
+        scheme.benefitBadge?.[l] ||
+        tTrans?.badge ||
+        scheme.benefitBadge?.en ||
+        scheme.benefitBadge?.hi ||
+        scheme.benefits?.[0],
     };
   };
+
 
   const stopAllAudio = () => {
     if (audioPlayerRef.current) {
@@ -625,7 +613,9 @@ function HomeContent() {
           }
 
           const formData = new FormData();
+          formData.append('file', uploadBlob, 'speech.wav');
           formData.append('audio', uploadBlob, 'speech.wav');
+          formData.append('language_hint', currentLangObj?.code || 'unknown');
 
           const sttRes = await fetch('/api/stt', {
             method: 'POST',
@@ -666,7 +656,7 @@ function HomeContent() {
         }
       };
 
-      mediaRecorder.start();
+      mediaRecorder.start(200);
       setMicState('recording');
       setRecordSeconds(0);
 
