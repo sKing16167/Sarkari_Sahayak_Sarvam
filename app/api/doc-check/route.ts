@@ -204,15 +204,28 @@ export async function POST(req: NextRequest) {
         readySchemes.push({
           ...scheme,
           missingDoc: null,
+          missingDocs: [],
         });
       } else if (missing.length === 1) {
         const missingKey = missing[0];
+        const docObj = DOC_LABELS[missingKey] || {
+          hi: missingKey,
+          mr: missingKey,
+          en: missingKey,
+          ta: missingKey,
+          te: missingKey,
+          bn: missingKey,
+          gu: missingKey,
+          kn: missingKey,
+        };
         almostReadySchemes.push({
           ...scheme,
           missingDoc:
-            DOC_LABELS[missingKey]?.[userLangKey] ||
-            DOC_LABELS[missingKey]?.hi ||
+            docObj[userLangKey] ||
+            docObj.hi ||
+            docObj.en ||
             missingKey,
+          missingDocs: [docObj],
         });
       }
     }
