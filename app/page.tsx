@@ -26,6 +26,7 @@ import {
 } from '@/components/CivicIcons';
 import { IntroSplash } from '@/components/IntroSplash';
 import { UserManualModal } from '@/components/UserManualModal';
+import { getT, SupportedLang } from '@/lib/translations';
 import {
   Mic,
   Volume2,
@@ -40,18 +41,13 @@ import {
   Square,
   PhoneCall,
   Loader2,
-  Compass,
-  FileCheck2,
   AlertCircle,
   Upload,
   Palette,
   Languages,
-  UserCheck,
   Cpu,
   BookOpen,
   SlidersHorizontal,
-  Sun,
-  Shield,
   Award,
 } from 'lucide-react';
 
@@ -59,7 +55,6 @@ type MicState = 'idle' | 'recording' | 'thinking' | 'speaking';
 type CategoryFilter = 'all' | 'farmer' | 'women' | 'health' | 'housing' | 'livelihood' | 'education';
 type ActiveFeatureTab = 'schemes' | 'wizard' | 'doccheck';
 type ThemeMode = 'theme-warmth' | 'theme-sovereign' | 'theme-daylight';
-type IndicLang = 'hi' | 'mr' | 'ta' | 'te' | 'bn' | 'gu' | 'kn' | 'en';
 type SpeakerVoice = 'ritu' | 'priya' | 'aditya' | 'rohan';
 
 interface ChatResponse {
@@ -75,7 +70,7 @@ interface ChatResponse {
   demoCached?: boolean;
 }
 
-const LANG_OPTIONS: { id: IndicLang; code: string; label: string; sub: string }[] = [
+const LANG_OPTIONS: { id: SupportedLang; code: string; label: string; sub: string }[] = [
   { id: 'hi', code: 'hi-IN', label: 'हिन्दी', sub: 'Hindi' },
   { id: 'mr', code: 'mr-IN', label: 'मराठी', sub: 'Marathi' },
   { id: 'ta', code: 'ta-IN', label: 'தமிழ்', sub: 'Tamil' },
@@ -87,10 +82,10 @@ const LANG_OPTIONS: { id: IndicLang; code: string; label: string; sub: string }[
 ];
 
 const VOICE_OPTIONS: { id: SpeakerVoice; label: string; gender: string }[] = [
-  { id: 'ritu', label: 'Ritu (महिला)', gender: 'F' },
-  { id: 'priya', label: 'Priya (महिला)', gender: 'F' },
-  { id: 'aditya', label: 'Aditya (पुरुष)', gender: 'M' },
-  { id: 'rohan', label: 'Rohan (पुरुष)', gender: 'M' },
+  { id: 'ritu', label: 'Ritu (Female)', gender: 'F' },
+  { id: 'priya', label: 'Priya (Female)', gender: 'F' },
+  { id: 'aditya', label: 'Aditya (Male)', gender: 'M' },
+  { id: 'rohan', label: 'Rohan (Male)', gender: 'M' },
 ];
 
 const DOC_OPTIONS = [
@@ -108,16 +103,17 @@ const OCCUPATION_TILES: {
   id: CitizenOccupation;
   iconId: string;
   hi: string;
+  mr: string;
   en: string;
 }[] = [
-  { id: 'farmer', iconId: 'tractor_harvest', hi: 'किसान / खेती', en: 'Farmer' },
-  { id: 'homemaker', iconId: 'women_empowerment', hi: 'गृहिणी / महिला', en: 'Homemaker / Woman' },
-  { id: 'laborer', iconId: 'rural_work', hi: 'मजदूर / निर्माण श्रमिक', en: 'Daily Wage Worker' },
-  { id: 'vendor', iconId: 'street_cart', hi: 'रेहड़ी-पटरी / दुकानदार', en: 'Street Vendor / Shop' },
-  { id: 'artisan', iconId: 'artisan_tools', hi: 'कारीगर / विश्वकर्मा', en: 'Artisan / Craftsperson' },
-  { id: 'student', iconId: 'graduation_cap', hi: 'छात्र / युवा', en: 'Student / Youth' },
-  { id: 'entrepreneur', iconId: 'mudra_bank', hi: 'स्वरोजगार / उद्यमी', en: 'Micro-Business' },
-  { id: 'senior', iconId: 'pension_shield', hi: 'वरिष्ठ नागरिक (60+)', en: 'Senior Citizen 60+' },
+  { id: 'farmer', iconId: 'tractor_harvest', hi: 'किसान / खेती', mr: 'शेतकरी / कृषी', en: 'Farmer / Agriculture' },
+  { id: 'homemaker', iconId: 'women_empowerment', hi: 'गृहिणी / महिला', mr: 'गृहिणी / महिला', en: 'Homemaker / Woman' },
+  { id: 'laborer', iconId: 'rural_work', hi: 'मजदूर / निर्माण श्रमिक', mr: 'मजूर / बांधकाम कामगार', en: 'Daily Wage Worker' },
+  { id: 'vendor', iconId: 'street_cart', hi: 'रेहड़ी-पटरी / दुकानदार', mr: 'भाजीपाला / छोटा दुकानदार', en: 'Street Vendor / Shop' },
+  { id: 'artisan', iconId: 'artisan_tools', hi: 'कारीगर / विश्वकर्मा', mr: 'कारागीर / विश्वकर्मा', en: 'Artisan / Craftsperson' },
+  { id: 'student', iconId: 'graduation_cap', hi: 'छात्र / युवा', mr: 'विद्यार्थी / तरुण', en: 'Student / Youth' },
+  { id: 'entrepreneur', iconId: 'mudra_bank', hi: 'स्वरोजगार / उद्यमी', mr: 'स्वयंरोजगार / उद्योजक', en: 'Micro-Business' },
+  { id: 'senior', iconId: 'pension_shield', hi: 'वरिष्ठ नागरिक (60+)', mr: 'ज्येष्ठ नागरिक (60+)', en: 'Senior Citizen 60+' },
 ];
 
 function SarkariEmblem() {
@@ -157,11 +153,14 @@ function HomeContent() {
 
   // Theme, Language, Speaker, and Feature Tabs
   const [themeMode, setThemeMode] = useState<ThemeMode>('theme-warmth');
-  const [lang, setLang] = useState<IndicLang>('hi');
+  const [lang, setLang] = useState<SupportedLang>('hi');
   const [speaker, setSpeaker] = useState<SpeakerVoice>('ritu');
   const [activeTab, setActiveTab] = useState<ActiveFeatureTab>('schemes');
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
   const [sortByProfileMatch, setSortByProfileMatch] = useState<boolean>(true);
+
+  // Localized string dictionary helper
+  const t = getT(lang);
 
   // Persistent Citizen Profile ("Character Build") stored in localStorage
   const [citizenProfile, setCitizenProfile] = useState<CitizenProfile>(DEFAULT_CITIZEN_PROFILE);
@@ -252,7 +251,7 @@ function HomeContent() {
     };
   }, []);
 
-  // Evaluate all 26 schemes against the stored Citizen Profile ("Character Build")
+  // Evaluate all schemes against the stored Citizen Profile ("Character Build")
   const evaluatedSchemes = useMemo(() => {
     const map: Record<string, ReturnType<typeof evaluateSchemeForCitizen>> = {};
     for (const s of schemesData as any[]) {
@@ -294,9 +293,9 @@ function HomeContent() {
           (schemesData as any[]).forEach((s, idx) => {
             const base = idx * 3;
             langMap[s.id] = {
-              name: arr[base] || s.name.hi,
-              tagline: arr[base + 1] || s.tagline.hi,
-              badge: arr[base + 2] || s.benefitBadge?.hi || s.benefits[0],
+              name: arr[base] || s.name.en,
+              tagline: arr[base + 1] || s.tagline.en,
+              badge: arr[base + 2] || s.benefitBadge?.en || s.benefits[0],
             };
           });
           setTranslatedMap((prev) => ({ ...prev, [lang]: langMap }));
@@ -315,19 +314,32 @@ function HomeContent() {
   }, [lang, currentLangObj.code, translatedMap]);
 
   const getSchemeDisplay = (scheme: any) => {
-    if (lang === 'hi' || lang === 'mr' || lang === 'en') {
+    if (lang === 'en') {
       return {
-        name: scheme.name[lang],
-        tagline: scheme.tagline[lang],
-        badge:
-          scheme.benefitBadge?.[lang] || scheme.benefitBadge?.hi || scheme.benefits[0],
+        name: scheme.name.en || scheme.name.hi,
+        tagline: scheme.tagline.en || scheme.tagline.hi,
+        badge: scheme.benefitBadge?.en || scheme.benefits[0],
       };
     }
-    const t = translatedMap[lang]?.[scheme.id];
+    if (lang === 'mr') {
+      return {
+        name: scheme.name.mr || scheme.name.hi,
+        tagline: scheme.tagline.mr || scheme.tagline.hi,
+        badge: scheme.benefitBadge?.mr || scheme.benefitBadge?.hi || scheme.benefits[0],
+      };
+    }
+    if (lang === 'hi') {
+      return {
+        name: scheme.name.hi,
+        tagline: scheme.tagline.hi,
+        badge: scheme.benefitBadge?.hi || scheme.benefits[0],
+      };
+    }
+    const tTrans = translatedMap[lang]?.[scheme.id];
     return {
-      name: t?.name || scheme.name.hi,
-      tagline: t?.tagline || scheme.tagline.hi,
-      badge: t?.badge || scheme.benefitBadge?.hi || scheme.benefits[0],
+      name: tTrans?.name || scheme.name.en || scheme.name.hi,
+      tagline: tTrans?.tagline || scheme.tagline.en || scheme.tagline.hi,
+      badge: tTrans?.badge || scheme.benefitBadge?.en || scheme.benefits[0],
     };
   };
 
@@ -391,7 +403,7 @@ function HomeContent() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             text: spokenText,
-            sourceLanguageCode: 'hi-IN',
+            sourceLanguageCode: 'en-IN',
             targetLanguageCode: currentLangObj.code,
           }),
         });
@@ -437,7 +449,7 @@ function HomeContent() {
     const disp = getSchemeDisplay(scheme);
     const benefitsList: string[] =
       scheme.benefitsI18n?.[lang === 'mr' || lang === 'en' ? lang : 'hi'] || scheme.benefits;
-    const spokenSummary = `${disp.name}। ${disp.tagline}। ${benefitsList[0] || ''}`;
+    const spokenSummary = `${disp.name}. ${disp.tagline}. ${benefitsList[0] || ''}`;
     await speakAnyText(scheme.id, spokenSummary);
   };
 
@@ -555,7 +567,11 @@ function HomeContent() {
       setMicState('idle');
     } catch (err) {
       console.error('Query error:', err);
-      setErrorBanner('नेटवर्क व्यस्त है। आप नीचे अपनी बात लिखकर भी पूछ सकते हैं।');
+      setErrorBanner(
+        lang === 'en'
+          ? 'Network busy. You can type your question below as well.'
+          : 'नेटवर्क व्यस्त है। आप नीचे अपनी बात लिखकर भी पूछ सकते हैं।'
+      );
       setShowTextInput(true);
       setMicState('idle');
     }
@@ -588,7 +604,11 @@ function HomeContent() {
         });
         if (rawBlob.size < 800) {
           setMicState('idle');
-          setErrorBanner('आवाज बहुत छोटी थी। कृपया माइक दबाकर थोड़ा लंबा बोलें।');
+          setErrorBanner(
+            lang === 'en'
+              ? 'Voice was too short. Please hold the mic and speak a little longer.'
+              : 'आवाज बहुत छोटी थी। कृपया माइक दबाकर थोड़ा लंबा बोलें।'
+          );
           return;
         }
 
@@ -621,7 +641,11 @@ function HomeContent() {
 
           if (!userTranscript) {
             setMicState('idle');
-            setErrorBanner('आवाज साफ नहीं सुनाई दी। कृपया फिर से बोलें या टाइप करें।');
+            setErrorBanner(
+              lang === 'en'
+                ? 'Could not hear voice clearly. Please speak again or type below.'
+                : 'आवाज साफ नहीं सुनाई दी। कृपया फिर से बोलें या टाइप करें।'
+            );
             setShowTextInput(true);
             return;
           }
@@ -633,7 +657,11 @@ function HomeContent() {
         } catch (err) {
           console.error('STT processing error:', err);
           setMicState('idle');
-          setErrorBanner('माइक से आवाज समझने में समस्या हुई। कृपया नीचे टाइप करके पूछें।');
+          setErrorBanner(
+            lang === 'en'
+              ? 'Voice recognition failed. Please type your question below.'
+              : 'माइक से आवाज समझने में समस्या हुई। कृपया नीचे टाइप करके पूछें।'
+          );
           setShowTextInput(true);
         }
       };
@@ -653,7 +681,11 @@ function HomeContent() {
       }, 1000);
     } catch (err) {
       console.warn('Microphone permission denied or unavailable:', err);
-      setErrorBanner('माइक की अनुमति नहीं मिली। कृपया नीचे अपने सवाल टाइप करें।');
+      setErrorBanner(
+        lang === 'en'
+          ? 'Microphone access was denied. Please type your question below.'
+          : 'माइक की अनुमति नहीं मिली। कृपया नीचे अपने सवाल टाइप करें।'
+      );
       setShowTextInput(true);
       setMicState('idle');
     }
@@ -706,7 +738,10 @@ function HomeContent() {
       setLastSarvamCall(
         'Calling Sarvam sarvam-105b-conversations for personalized Citizen Profile eligibility advisory...'
       );
-      const profilePrompt = `मेरी नागरिक प्रोफ़ाइल: पेशा ${citizenProfile.occupation}, आयु ${citizenProfile.age} वर्ष, लिंग ${citizenProfile.gender}, वार्षिक आय ₹${citizenProfile.annualIncome}, क्षेत्र ${citizenProfile.area}, राज्य ${citizenProfile.state}। मेरे लिए सबसे अच्छी सरकारी योजनाएं कौन सी हैं?`;
+      const profilePrompt =
+        lang === 'en'
+          ? `My Citizen Profile: Occupation ${citizenProfile.occupation}, Age ${citizenProfile.age} years, Gender ${citizenProfile.gender}, Annual family income Rs ${citizenProfile.annualIncome}, Region ${citizenProfile.area}, State ${citizenProfile.state}. Which government welfare schemes am I best eligible for and how do I apply?`
+          : `मेरी नागरिक प्रोफ़ाइल: पेशा ${citizenProfile.occupation}, आयु ${citizenProfile.age} वर्ष, लिंग ${citizenProfile.gender}, वार्षिक आय ₹${citizenProfile.annualIncome}, क्षेत्र ${citizenProfile.area}, राज्य ${citizenProfile.state}। मेरे लिए सबसे अच्छी सरकारी योजनाएं कौन सी हैं?`;
 
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -808,6 +843,7 @@ function HomeContent() {
         isPlayingAudio={playingCardId === 'user-manual-audio'}
         isLoadingAudio={loadingCardId === 'user-manual-audio'}
         onReplayIntro={() => setShowIntro(true)}
+        lang={lang}
       />
 
       {/* Top Tricolor Accent Ribbon */}
@@ -829,14 +865,14 @@ function HomeContent() {
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#1E1E1E] leading-none">
-                    सरकारी सहायक
+                    {lang === 'en' ? 'Sarkari Sahayak' : 'सरकारी सहायक'}
                   </h1>
                   <span className="text-xs sm:text-sm font-bold text-saffron bg-[#FFF3E0] px-2.5 py-0.5 rounded-lg border border-[#FFE0B2]">
-                    Sarkari Sahayak
+                    {lang === 'en' ? 'Civic Voice Portal' : 'Sarkari Sahayak'}
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-[#545454] font-medium mt-1">
-                  26+ आधिकारिक सरकारी योजनाएं • Sarvam AI Sovereign Voice Stack
+                  {t.brandTagline(schemesData.length)}
                 </p>
               </div>
             </div>
@@ -849,27 +885,27 @@ function HomeContent() {
                 className="px-3.5 py-2 rounded-xl bg-[#1E3A8A] hover:bg-[#172554] text-white text-xs sm:text-sm font-extrabold flex items-center gap-2 shadow-xs transition-all active:scale-95"
               >
                 <BookOpen className="w-4 h-4 text-amber-300" />
-                <span>उपयोग पुस्तिका (User Manual)</span>
+                <span>{t.userManualBtn}</span>
               </button>
 
               {/* Stitch-Assessed 3-Theme Switcher */}
               <div className="flex items-center bg-white rounded-xl p-1 border border-[#E6D7C3] shadow-2xs">
                 <Palette className="w-4 h-4 text-saffron ml-1.5 mr-1 hidden sm:block" />
                 {[
-                  { id: 'theme-warmth', label: 'केसरिया (Warm)' },
-                  { id: 'theme-sovereign', label: 'अशोक नेवी (Navy)' },
-                  { id: 'theme-daylight', label: 'धूप मोड (High Contrast)' },
-                ].map((t) => (
+                  { id: 'theme-warmth', label: t.themeWarmth },
+                  { id: 'theme-sovereign', label: t.themeSovereign },
+                  { id: 'theme-daylight', label: t.themeDaylight },
+                ].map((thm) => (
                   <button
-                    key={t.id}
-                    onClick={() => setThemeMode(t.id as ThemeMode)}
+                    key={thm.id}
+                    onClick={() => setThemeMode(thm.id as ThemeMode)}
                     className={`px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all ${
-                      themeMode === t.id
+                      themeMode === thm.id
                         ? 'bg-saffron text-white shadow-2xs'
                         : 'text-[#545454] hover:text-[#1E1E1E]'
                     }`}
                   >
-                    {t.label}
+                    {thm.label}
                   </button>
                 ))}
               </div>
@@ -877,7 +913,7 @@ function HomeContent() {
               {/* Bulbul v3 Voice Persona Selector */}
               <div className="flex items-center bg-white rounded-xl px-2.5 py-1 border border-[#E6D7C3] shadow-2xs gap-1.5">
                 <Volume2 className="w-4 h-4 text-[#1B5E20]" />
-                <span className="text-[11px] font-bold text-[#545454]">आवाज:</span>
+                <span className="text-[11px] font-bold text-[#545454]">{t.voiceLabel}</span>
                 <select
                   value={speaker}
                   onChange={(e) => setSpeaker(e.target.value as SpeakerVoice)}
@@ -899,7 +935,7 @@ function HomeContent() {
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
               <span className="inline-flex items-center gap-1 text-xs font-extrabold text-[#1E1E1E] mr-1 shrink-0">
                 <Languages className="w-4 h-4 text-saffron" />
-                भाषा (Mayura v1):
+                {t.langLabel}
               </span>
               {LANG_OPTIONS.map((l) => (
                 <button
@@ -933,7 +969,7 @@ function HomeContent() {
 
       {/* Main Content Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-12">
-        {/* 3 Real-Life Illustrated Primary Feature Navigation Cards (NO EMOJIS) */}
+        {/* 3 Real-Life Illustrated Primary Feature Navigation Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-6">
           <button
             onClick={() => setActiveTab('schemes')}
@@ -952,14 +988,14 @@ function HomeContent() {
             </div>
             <div>
               <div className="text-base sm:text-lg font-extrabold leading-snug">
-                सभी {schemesData.length} सरकारी योजनाएं
+                {t.tabSchemesTitle(schemesData.length)}
               </div>
               <div
                 className={`text-xs font-semibold mt-0.5 ${
                   activeTab === 'schemes' ? 'text-white/90' : 'text-[#545454]'
                 }`}
               >
-                श्रेणी व प्रोफ़ाइल मैच के अनुसार देखें और आवाज में सुनें
+                {t.tabSchemesSub}
               </div>
             </div>
           </button>
@@ -981,14 +1017,14 @@ function HomeContent() {
             </div>
             <div>
               <div className="text-base sm:text-lg font-extrabold leading-snug">
-                नागरिक प्रोफ़ाइल व पात्रता
+                {t.tabWizardTitle}
               </div>
               <div
                 className={`text-xs font-semibold mt-0.5 ${
                   activeTab === 'wizard' ? 'text-white/90' : 'text-[#545454]'
                 }`}
               >
-                अपनी प्रोफ़ाइल (Character Build) बनाएं व % मैच जानें
+                {t.tabWizardSub}
               </div>
             </div>
           </button>
@@ -1010,14 +1046,14 @@ function HomeContent() {
             </div>
             <div>
               <div className="text-base sm:text-lg font-extrabold leading-snug">
-                दस्तावेज़ जांचें (Doc Readiness)
+                {t.tabDocCheckTitle}
               </div>
               <div
                 className={`text-xs font-semibold mt-0.5 ${
                   activeTab === 'doccheck' ? 'text-white/90' : 'text-[#545454]'
                 }`}
               >
-                अपने कागजात चुनें और तुरंत आवेदन योग्यता जानें
+                {t.tabDocCheckSub}
               </div>
             </div>
           </button>
@@ -1027,14 +1063,14 @@ function HomeContent() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           {/* LEFT COLUMN (7 Cols on Laptop): Active Feature Content */}
           <div className="lg:col-span-7 order-2 lg:order-1 space-y-5">
-            {/*Voice / Chat Answer Card when user asks a question*/}
+            {/* Voice / Chat Answer Card when user asks a question */}
             {answer && (
               <div className="bg-[#FFFDF9] rounded-3xl p-6 border-2 border-saffron shadow-md space-y-5 animate-in fade-in duration-200">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-[#E8F5E9] text-[#1B5E20]">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      Sarvam 105B सत्यापित उत्तर {answer.demoCached ? '• (Demo)' : ''}
+                      {t.answerVerifiedBadge} {answer.demoCached ? '• (Demo)' : ''}
                     </span>
                     <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E1E1E] mt-2">
                       {answer.schemeName}
@@ -1056,7 +1092,7 @@ function HomeContent() {
                 {transcript && (
                   <div className="bg-[#FAF7F2] rounded-2xl p-3.5 border border-[#E6D7C3]">
                     <p className="text-xs font-bold text-[#545454] mb-0.5">
-                      आपने पूछा (Transcribed by Sarvam saaras:v3):
+                      {t.youAsked}
                     </p>
                     <p className="text-base font-bold text-[#1E1E1E]">&ldquo;{transcript}&rdquo;</p>
                   </div>
@@ -1076,11 +1112,11 @@ function HomeContent() {
                           <span className="w-1 bg-saffron rounded-full eq-bar-3" />
                           <span className="w-1 bg-saffron rounded-full eq-bar-4" />
                         </div>
-                        <span>Bulbul v3 ({speaker}) बोल रहा है...</span>
+                        <span>Bulbul v3 ({speaker}) speaking...</span>
                       </div>
                     ) : (
                       <span className="text-xs font-bold text-[#545454]">
-                        आवाज: Sarvam Bulbul v3 ({speaker})
+                        {t.voicePoweredBy(speaker)}
                       </span>
                     )}
 
@@ -1091,7 +1127,7 @@ function HomeContent() {
                           className="h-10 px-4 rounded-xl bg-red-600 text-white text-xs font-bold flex items-center gap-1.5"
                         >
                           <Square className="w-3.5 h-3.5 fill-current" />
-                          <span>रोकें</span>
+                          <span>{t.stopBtn}</span>
                         </button>
                       ) : (
                         <button
@@ -1103,7 +1139,7 @@ function HomeContent() {
                           className="h-10 px-4 rounded-xl bg-saffron text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs"
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
-                          <span>दोबारा सुनें</span>
+                          <span>{t.replayAudio}</span>
                         </button>
                       )}
                     </div>
@@ -1115,7 +1151,7 @@ function HomeContent() {
                   <div className="rounded-2xl bg-[#E8F5E9]/70 border border-[#C8E6C9] p-4">
                     <div className="flex items-center gap-2 text-[#1B5E20] font-extrabold text-sm mb-2">
                       <Gift className="w-4 h-4" />
-                      <span>मुख्य लाभ (Benefits)</span>
+                      <span>{t.keyBenefits}</span>
                     </div>
                     <ul className="space-y-1.5">
                       {answer.benefits.map((item, idx) => (
@@ -1130,7 +1166,7 @@ function HomeContent() {
                   <div className="rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3] p-4">
                     <div className="flex items-center gap-2 text-saffron font-extrabold text-sm mb-2">
                       <CheckCircle2 className="w-4 h-4" />
-                      <span>पात्रता (Eligibility)</span>
+                      <span>{t.eligibilityCriteria}</span>
                     </div>
                     <ul className="space-y-1.5">
                       {answer.eligibility.map((item, idx) => (
@@ -1148,14 +1184,14 @@ function HomeContent() {
                     onClick={() => router.push(`/scheme/${answer.schemeId}`)}
                     className="w-full h-12 rounded-2xl bg-[#1E1E1E] hover:bg-black text-white font-bold text-sm flex items-center justify-center gap-2"
                   >
-                    <span>पूरी जानकारी व आवेदन प्रक्रिया देखें</span>
+                    <span>{t.viewCompleteGuide}</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 )}
               </div>
             )}
 
-            {/* ==================== TAB 1: ALL 26 SCHEMES ==================== */}
+            {/* ==================== TAB 1: ALL WELFARE SCHEMES ==================== */}
             {activeTab === 'schemes' && (
               <div className="space-y-5">
                 {/* Active Citizen Profile Summary Banner */}
@@ -1165,16 +1201,16 @@ function HomeContent() {
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-black uppercase tracking-wider text-[#1B5E20]">
-                          सक्रिय नागरिक प्रोफ़ाइल (Character Build):
+                          {t.profileBannerTitle}
                         </span>
                         <span className="text-xs font-extrabold px-2 py-0.5 rounded-md bg-[#FFF3E0] text-[#E65100]">
-                          {citizenProfile.occupation.toUpperCase()} • {citizenProfile.age} वर्ष • ₹
-                          {(citizenProfile.annualIncome / 100000).toFixed(1)}L आय •{' '}
-                          {citizenProfile.ownedDocs.length} दस्तावेज़
+                          {citizenProfile.occupation.toUpperCase()} • {citizenProfile.age} {t.yearsSuffix} • ₹
+                          {(citizenProfile.annualIncome / 100000).toFixed(1)}L {t.incomeLabel} •{' '}
+                          {citizenProfile.ownedDocs.length} {t.docsLabel}
                         </span>
                       </div>
                       <p className="text-xs text-[#545454] mt-0.5">
-                        योजनाओं पर आपका व्यक्तिगत <strong>% पात्रता मैच</strong> दिखाया जा रहा है
+                        {t.profileBannerExpl}
                       </p>
                     </div>
                   </div>
@@ -1189,27 +1225,27 @@ function HomeContent() {
                       }`}
                     >
                       <SlidersHorizontal className="w-3.5 h-3.5" />
-                      <span>{sortByProfileMatch ? 'प्रोफ़ाइल मैच के अनुसार क्रमबद्ध ✓' : 'डिफ़ॉल्ट क्रम'}</span>
+                      <span>{sortByProfileMatch ? t.sortedByMatch : t.defaultOrder}</span>
                     </button>
                     <button
                       onClick={() => setActiveTab('wizard')}
                       className="px-3 py-1.5 rounded-xl bg-saffron text-white text-xs font-extrabold hover:bg-saffron-600 transition-colors"
                     >
-                      प्रोफ़ाइल बदलें
+                      {t.editProfile}
                     </button>
                   </div>
                 </div>
 
-                {/* Category Filter Pills (with Real SVG Icons instead of emojis) */}
+                {/* Category Filter Pills */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
                   {[
-                    { id: 'all', hi: `सभी (${schemesData.length})`, iconId: 'all' },
-                    { id: 'farmer', hi: 'किसान (4)', iconId: 'tractor_harvest' },
-                    { id: 'women', hi: 'महिला (5)', iconId: 'women_empowerment' },
-                    { id: 'health', hi: 'स्वास्थ्य (4)', iconId: 'hospital_shield' },
-                    { id: 'housing', hi: 'आवास व बिजली (3)', iconId: 'brick_home' },
-                    { id: 'livelihood', hi: 'रोज़गार व पेंशन (7)', iconId: 'artisan_tools' },
-                    { id: 'education', hi: 'शिक्षा व छात्रवृत्ति (3)', iconId: 'graduation_cap' },
+                    { id: 'all', label: t.catAll(schemesData.length), iconId: 'all' },
+                    { id: 'farmer', label: t.catFarmer(schemesData.filter((s: any) => s.category === 'farmer').length), iconId: 'tractor_harvest' },
+                    { id: 'women', label: t.catWomen(schemesData.filter((s: any) => s.category === 'women').length), iconId: 'women_empowerment' },
+                    { id: 'health', label: t.catHealth(schemesData.filter((s: any) => s.category === 'health').length), iconId: 'hospital_shield' },
+                    { id: 'housing', label: t.catHousing(schemesData.filter((s: any) => s.category === 'housing').length), iconId: 'brick_home' },
+                    { id: 'livelihood', label: t.catLivelihood(schemesData.filter((s: any) => s.category === 'livelihood').length), iconId: 'artisan_tools' },
+                    { id: 'education', label: t.catEducation(schemesData.filter((s: any) => s.category === 'education').length), iconId: 'graduation_cap' },
                   ].map((cat) => {
                     const active = categoryFilter === cat.id;
                     return (
@@ -1225,7 +1261,7 @@ function HomeContent() {
                         {cat.id !== 'all' && (
                           <SchemeRealIcon iconId={cat.iconId} className="w-5 h-5" />
                         )}
-                        <span>{cat.hi}</span>
+                        <span>{cat.label}</span>
                       </button>
                     );
                   })}
@@ -1266,7 +1302,7 @@ function HomeContent() {
                                       : 'bg-slate-100 text-slate-600 border-slate-300'
                                   }`}
                                 >
-                                  {matchInfo.matchScore}% प्रोफ़ाइल मैच
+                                  {t.profileMatchPill(matchInfo.matchScore)}
                                 </span>
                               )}
                               {scheme.helpline && (
@@ -1308,12 +1344,12 @@ function HomeContent() {
                               ) : isCardPlaying ? (
                                 <>
                                   <Square className="w-3 h-3 fill-current" />
-                                  <span>रोकें</span>
+                                  <span>{t.stopBtn}</span>
                                 </>
                               ) : (
                                 <>
                                   <Volume2 className="w-3.5 h-3.5" />
-                                  <span>सुनें ({speaker})</span>
+                                  <span>{t.listenBtn(speaker)}</span>
                                 </>
                               )}
                             </button>
@@ -1326,7 +1362,7 @@ function HomeContent() {
                               }}
                               className="h-10 px-3 rounded-xl bg-[#FAF7F2] hover:bg-saffron hover:text-white text-[#1E1E1E] border border-[#E6D7C3] font-extrabold text-xs flex items-center justify-center gap-1 transition-all"
                             >
-                              <span>पूरी जानकारी</span>
+                              <span>{t.fullDetailsBtn}</span>
                               <ChevronRight className="w-3.5 h-3.5" />
                             </button>
                           </div>
@@ -1347,11 +1383,11 @@ function HomeContent() {
                     <div>
                       <div className="flex items-center gap-2">
                         <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E1E1E]">
-                          नागरिक प्रोफ़ाइल एवं पात्रता इंजन (Citizen Character Build)
+                          {t.wizTitle}
                         </h2>
                       </div>
                       <p className="text-xs sm:text-sm text-[#545454]">
-                        आपकी प्रोफ़ाइल ब्राउज़र के <code>{CITIZEN_PROFILE_STORAGE_KEY}</code> में सुरक्षित सेव होती है और 26 योजनाओं से तुरंत मिलान करती है
+                        {t.wizSub(schemesData.length)}
                       </p>
                     </div>
                   </div>
@@ -1360,14 +1396,14 @@ function HomeContent() {
                     className="px-3 py-1.5 rounded-xl bg-[#FAF7F2] border border-[#E6D7C3] text-xs font-extrabold text-[#545454] hover:text-red-600 flex items-center gap-1"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
-                    <span>प्रोफ़ाइल रीसेट करें</span>
+                    <span>{t.resetProfile}</span>
                   </button>
                 </div>
 
                 {/* Step 1: Occupation Selection with Real-Life SVG Icons */}
                 <div>
                   <label className="block text-sm font-extrabold text-[#1E1E1E] mb-2.5">
-                    1. आपका मुख्य काम / पेशा क्या है? (Occupation — 35% Weight)
+                    {t.wizOccupation}
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                     {OCCUPATION_TILES.map((occ) => {
@@ -1385,9 +1421,11 @@ function HomeContent() {
                           <SchemeRealIcon iconId={occ.iconId} className="w-9 h-9" />
                           <div>
                             <div className="text-xs sm:text-sm font-extrabold text-[#1E1E1E]">
-                              {occ.hi}
+                              {lang === 'en' ? occ.en : lang === 'mr' ? occ.mr : occ.hi}
                             </div>
-                            <div className="text-[11px] text-[#545454] font-medium">{occ.en}</div>
+                            <div className="text-[11px] text-[#545454] font-medium">
+                              {lang === 'en' ? occ.hi : occ.en}
+                            </div>
                           </div>
                         </button>
                       );
@@ -1400,12 +1438,12 @@ function HomeContent() {
                   {/* Gender */}
                   <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3]">
                     <label className="block text-xs font-extrabold text-[#1E1E1E] mb-2">
-                      2. लिंग चुनें (Gender — 15% Weight)
+                      {t.wizGender}
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { id: 'female', label: 'महिला (Female)' },
-                        { id: 'male', label: 'पुरुष (Male)' },
+                        { id: 'female', label: t.genderFemale },
+                        { id: 'male', label: t.genderMale },
                       ].map((g) => (
                         <button
                           key={g.id}
@@ -1426,10 +1464,10 @@ function HomeContent() {
                   <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3]">
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="text-xs font-extrabold text-[#1E1E1E]">
-                        3. आयु (Age — 15% Weight):
+                        {t.wizAge}
                       </label>
                       <span className="text-xs font-black text-saffron">
-                        {citizenProfile.age} वर्ष
+                        {citizenProfile.age} {t.yearsSuffix}
                       </span>
                     </div>
                     <input
@@ -1443,10 +1481,10 @@ function HomeContent() {
                       className="w-full accent-[#F57C00] cursor-pointer"
                     />
                     <div className="flex justify-between text-[10px] font-bold text-[#545454] mt-1">
-                      <button onClick={() => updateCitizenProfile({ age: 20 })}>20 (युवा)</button>
-                      <button onClick={() => updateCitizenProfile({ age: 35 })}>35 (वयस्क)</button>
+                      <button onClick={() => updateCitizenProfile({ age: 20 })}>{t.ageYouth}</button>
+                      <button onClick={() => updateCitizenProfile({ age: 35 })}>{t.ageAdult}</button>
                       <button onClick={() => updateCitizenProfile({ age: 65, occupation: 'senior' })}>
-                        65 (वरिष्ठ)
+                        {t.ageSenior}
                       </button>
                     </div>
                   </div>
@@ -1454,7 +1492,7 @@ function HomeContent() {
                   {/* Social Category */}
                   <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3]">
                     <label className="block text-xs font-extrabold text-[#1E1E1E] mb-2">
-                      4. वर्ग / श्रेणी (Social Category)
+                      {t.wizCategory}
                     </label>
                     <select
                       value={citizenProfile.socialCategory}
@@ -1465,11 +1503,11 @@ function HomeContent() {
                       }
                       className="w-full h-9 px-2.5 rounded-xl bg-white border border-[#E6D7C3] text-xs font-extrabold text-[#1E1E1E]"
                     >
-                      <option value="obc">OBC (अन्य पिछड़ा वर्ग)</option>
-                      <option value="sc_st">SC / ST (अनुसूचित जाति/जनजाति)</option>
-                      <option value="general">General / EWS (सामान्य)</option>
-                      <option value="minority">Minority (अल्पसंख्यक)</option>
-                      <option value="divyang">Divyangjan (दिव्यांग विशेष)</option>
+                      <option value="obc">OBC (Other Backward Classes)</option>
+                      <option value="sc_st">SC / ST (Scheduled Caste / Tribe)</option>
+                      <option value="general">General / EWS</option>
+                      <option value="minority">Minority</option>
+                      <option value="divyang">Divyangjan (Persons with Disabilities)</option>
                     </select>
                   </div>
                 </div>
@@ -1478,14 +1516,14 @@ function HomeContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3]">
                     <label className="block text-xs font-extrabold text-[#1E1E1E] mb-2">
-                      5. वार्षिक पारिवारिक आय (Annual Income — 15% Weight)
+                      {t.wizIncome}
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { val: 80000, label: '₹1 लाख से कम (BPL)' },
-                        { val: 180000, label: '₹1 से ₹2.5 लाख' },
-                        { val: 450000, label: '₹2.5 से ₹6 लाख' },
-                        { val: 750000, label: '₹6 लाख से अधिक' },
+                        { val: 80000, label: t.incBelow1L },
+                        { val: 180000, label: t.inc1To25L },
+                        { val: 450000, label: t.inc25To6L },
+                        { val: 750000, label: t.incAbove6L },
                       ].map((inc) => (
                         <button
                           key={inc.val}
@@ -1504,7 +1542,7 @@ function HomeContent() {
 
                   <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#E6D7C3]">
                     <label className="block text-xs font-extrabold text-[#1E1E1E] mb-2">
-                      6. राज्य एवं निवास क्षेत्र (State & Rural/Urban — 10% Weight)
+                      {t.wizRegion}
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
@@ -1519,9 +1557,7 @@ function HomeContent() {
                             : 'bg-white text-[#1E1E1E] border-[#E6D7C3]'
                         }`}
                       >
-                        {citizenProfile.state === 'maharashtra'
-                          ? 'महाराष्ट्र + केंद्र (MH)'
-                          : 'अन्य राज्य (All India)'}
+                        {citizenProfile.state === 'maharashtra' ? t.stateMh : t.stateOther}
                       </button>
 
                       <button
@@ -1532,9 +1568,7 @@ function HomeContent() {
                         }
                         className="py-2 px-2.5 rounded-xl text-xs font-extrabold border bg-white text-[#1E1E1E] border-[#E6D7C3] hover:border-saffron"
                       >
-                        {citizenProfile.area === 'rural'
-                          ? 'ग्रामीण क्षेत्र (Rural)'
-                          : 'शहरी क्षेत्र (Urban)'}
+                        {citizenProfile.area === 'rural' ? t.areaRural : t.areaUrban}
                       </button>
                     </div>
                   </div>
@@ -1545,9 +1579,7 @@ function HomeContent() {
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2 text-[#1B5E20] font-extrabold text-base sm:text-lg">
                       <Award className="w-6 h-6" />
-                      <span>
-                        आपकी नागरिक प्रोफ़ाइल के लिए {wizardMatchedSchemes.length} उच्च-पात्रता योजनाएं:
-                      </span>
+                      <span>{t.matchedSchemesHeading(wizardMatchedSchemes.length)}</span>
                     </div>
 
                     <button
@@ -1558,12 +1590,12 @@ function HomeContent() {
                       {isGeneratingWizAi ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          <span>Sarvam 105B सलाह बना रहा है...</span>
+                          <span>{t.generatingAdvice}</span>
                         </>
                       ) : (
                         <>
                           <Volume2 className="w-4 h-4" />
-                          <span>Sarvam AI से व्यक्तिगत सलाह सुनें 🔊</span>
+                          <span>{t.listenAiAdvice}</span>
                         </>
                       )}
                     </button>
@@ -1572,7 +1604,7 @@ function HomeContent() {
                   {wizAiAdvisory && (
                     <div className="p-4 rounded-2xl bg-[#FFF3E0] border border-[#FFE0B2] text-sm sm:text-base font-bold text-[#1E1E1E] leading-relaxed">
                       <span className="text-xs font-extrabold uppercase text-saffron block mb-1">
-                        Sarvam 105B + Bulbul v3 व्यक्तिगत परामर्श:
+                        {t.aiAdviceTitle}
                       </span>
                       {wizAiAdvisory}
                     </div>
@@ -1595,10 +1627,10 @@ function HomeContent() {
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-1">
                                 <span className="text-[11px] font-black px-2 py-0.5 rounded bg-[#E8F5E9] text-[#1B5E20]">
-                                  {m.matchScore}% पात्रता मैच
+                                  {t.profileMatchPill(m.matchScore)}
                                 </span>
                                 <span className="text-[11px] font-bold text-[#545454]">
-                                  {m.docsReadyCount}/{m.docsTotalCount} दस्तावेज़
+                                  {t.docsCount(m.docsReadyCount, m.docsTotalCount)}
                                 </span>
                               </div>
                               <h4 className="font-extrabold text-sm sm:text-base text-[#1E1E1E] mt-1 truncate">
@@ -1634,10 +1666,10 @@ function HomeContent() {
                   <DocumentFolderIcon className="w-12 h-12 shrink-0" />
                   <div>
                     <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E1E1E]">
-                      दस्तावेज़ रेडीनेस चेक (Document Readiness Analyzer)
+                      {t.docCheckTitle}
                     </h2>
                     <p className="text-xs sm:text-sm text-[#545454] mt-0.5">
-                      आपके पास जो कागजात हैं उन पर टैप करें — यह आपकी नागरिक प्रोफ़ाइल के साथ सिंक होकर तुरंत बताएगा कि आप किन योजनाओं के लिए तैयार हैं
+                      {t.docCheckSub}
                     </p>
                   </div>
                 </div>
@@ -1645,7 +1677,7 @@ function HomeContent() {
                 {/* Step A: Multi-select Document Grid with Real-Life SVG Document Icons */}
                 <div>
                   <p className="text-sm font-extrabold text-[#1E1E1E] mb-3">
-                    1. आपके पास अभी कौन-कौन से दस्तावेज़ हैं? (टैप करके चुनें):
+                    {t.docStep1}
                   </p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                     {DOC_OPTIONS.map((doc) => {
@@ -1686,14 +1718,16 @@ function HomeContent() {
                   <div>
                     <div className="text-xs sm:text-sm font-extrabold text-[#1E1E1E] flex items-center gap-1.5">
                       <Upload className="w-4 h-4 text-saffron" />
-                      <span>राशन कार्ड / आधार / दस्तावेज़ की फोटो या रसीद अपलोड करें (Optional)</span>
+                      <span>{t.docUploadNote}</span>
                     </div>
                     <p className="text-xs text-[#545454] mt-0.5">
-                      फाइल के नाम और विवरण से दस्तावेज़ अपने-आप पहचान लिए जाएंगे
+                      {lang === 'en'
+                        ? 'Document types will be automatically detected from filename and contents'
+                        : 'फाइल के नाम और विवरण से दस्तावेज़ अपने-आप पहचान लिए जाएंगे'}
                     </p>
                   </div>
                   <label className="px-4 py-2.5 rounded-xl bg-white border-2 border-saffron text-saffron font-extrabold text-xs cursor-pointer hover:bg-[#FFF3E0] transition-colors shrink-0">
-                    <span>फाइल चुनें (Upload Document)</span>
+                    <span>{t.docChooseFile}</span>
                     <input
                       type="file"
                       accept="image/*,.pdf,.txt"
@@ -1707,7 +1741,7 @@ function HomeContent() {
                 {isCheckingDocs ? (
                   <div className="py-8 flex items-center justify-center gap-2 text-saffron font-bold">
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Sarvam AI आपके दस्तावेज़ों की जांच कर रहा है...</span>
+                    <span>{t.docAnalyzing}</span>
                   </div>
                 ) : (
                   docCheckResult && (
@@ -1715,7 +1749,7 @@ function HomeContent() {
                       <div className="p-4 rounded-2xl bg-[#FFF3E0] border border-[#FFE0B2] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                         <div>
                           <span className="text-[11px] font-extrabold uppercase text-saffron">
-                            Sarvam Mayura v1 + Bulbul v3 दस्तावेज़ रिपोर्ट ({currentLangObj.label})
+                            {t.docReportTitle(currentLangObj.label)}
                           </span>
                           <p className="text-sm sm:text-base font-bold text-[#1E1E1E] mt-1">
                             {docCheckResult.spokenSummary}
@@ -1728,7 +1762,7 @@ function HomeContent() {
                           className="px-4 py-2.5 rounded-xl bg-saffron text-white font-extrabold text-xs flex items-center gap-1.5 shrink-0 shadow-xs"
                         >
                           <Volume2 className="w-4 h-4" />
-                          <span>रिपोर्ट सुनें 🔊</span>
+                          <span>{t.docListenReport}</span>
                         </button>
                       </div>
 
@@ -1736,31 +1770,32 @@ function HomeContent() {
                       <div>
                         <h3 className="text-base font-extrabold text-[#1B5E20] flex items-center gap-2 mb-3">
                           <CheckCircle2 className="w-5 h-5" />
-                          <span>
-                            तुरंत आवेदन के लिए तैयार योजनाएं ({docCheckResult.readySchemes?.length || 0} Ready Now)
-                          </span>
+                          <span>{t.docReadyHeading(docCheckResult.readySchemes?.length || 0)}</span>
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {(docCheckResult.readySchemes || []).map((rs: any) => (
-                            <div
-                              key={rs.id}
-                              onClick={() => router.push(`/scheme/${rs.id}`)}
-                              className="p-3.5 rounded-2xl bg-[#E8F5E9]/70 border border-[#A5D6A7] hover:border-[#1B5E20] cursor-pointer flex items-center justify-between gap-2"
-                            >
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                <SchemeRealIcon category={rs.category} className="w-9 h-9 shrink-0" />
-                                <div className="min-w-0">
-                                  <div className="text-sm font-extrabold text-[#1E1E1E] truncate">
-                                    {rs.name[lang === 'mr' || lang === 'en' ? lang : 'hi']}
-                                  </div>
-                                  <div className="text-[11px] font-bold text-[#1B5E20]">
-                                    ✓ सभी आवश्यक दस्तावेज़ मौजूद
+                          {(docCheckResult.readySchemes || []).map((rs: any) => {
+                            const dispRs = getSchemeDisplay(rs);
+                            return (
+                              <div
+                                key={rs.id}
+                                onClick={() => router.push(`/scheme/${rs.id}`)}
+                                className="p-3.5 rounded-2xl bg-[#E8F5E9]/70 border border-[#A5D6A7] hover:border-[#1B5E20] cursor-pointer flex items-center justify-between gap-2"
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <SchemeRealIcon category={rs.category} className="w-9 h-9 shrink-0" />
+                                  <div className="min-w-0">
+                                    <div className="text-sm font-extrabold text-[#1E1E1E] truncate">
+                                      {dispRs.name}
+                                    </div>
+                                    <div className="text-[11px] font-bold text-[#1B5E20]">
+                                      {t.docAllPresent}
+                                    </div>
                                   </div>
                                 </div>
+                                <ChevronRight className="w-4 h-4 text-[#1B5E20] shrink-0" />
                               </div>
-                              <ChevronRight className="w-4 h-4 text-[#1B5E20] shrink-0" />
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
 
@@ -1769,36 +1804,37 @@ function HomeContent() {
                         <div>
                           <h3 className="text-base font-extrabold text-amber-800 flex items-center gap-2 mb-3">
                             <AlertCircle className="w-5 h-5" />
-                            <span>
-                              सिर्फ 1 दस्तावेज़ बनवाते ही मिलेंगी ये योजनाएं ({docCheckResult.almostReadySchemes.length} Almost Ready)
-                            </span>
+                            <span>{t.docAlmostHeading(docCheckResult.almostReadySchemes.length)}</span>
                           </h3>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {docCheckResult.almostReadySchemes.map((ars: any) => (
-                              <div
-                                key={ars.id}
-                                onClick={() => router.push(`/scheme/${ars.id}`)}
-                                className="p-3.5 rounded-2xl bg-[#FFF3E0]/50 border border-[#FFE0B2] cursor-pointer flex items-center justify-between gap-2"
-                              >
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                  <SchemeRealIcon category={ars.category} className="w-9 h-9 shrink-0" />
-                                  <div className="min-w-0">
-                                    <div className="text-sm font-extrabold text-[#1E1E1E] truncate">
-                                      {ars.name[lang === 'mr' || lang === 'en' ? lang : 'hi']}
-                                    </div>
-                                    <div className="text-[11px] font-bold text-red-700">
-                                      बाकी दस्तावेज़:{' '}
-                                      {lang === 'mr'
-                                        ? ars.missingDocs[0]?.mr
-                                        : lang === 'en'
-                                        ? ars.missingDocs[0]?.en
-                                        : ars.missingDocs[0]?.hi}
+                            {docCheckResult.almostReadySchemes.map((ars: any) => {
+                              const dispArs = getSchemeDisplay(ars);
+                              return (
+                                <div
+                                  key={ars.id}
+                                  onClick={() => router.push(`/scheme/${ars.id}`)}
+                                  className="p-3.5 rounded-2xl bg-[#FFF3E0]/50 border border-[#FFE0B2] cursor-pointer flex items-center justify-between gap-2"
+                                >
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <SchemeRealIcon category={ars.category} className="w-9 h-9 shrink-0" />
+                                    <div className="min-w-0">
+                                      <div className="text-sm font-extrabold text-[#1E1E1E] truncate">
+                                        {dispArs.name}
+                                      </div>
+                                      <div className="text-[11px] font-bold text-red-700">
+                                        {t.docMissingLabel}{' ' }
+                                        {lang === 'mr'
+                                          ? ars.missingDocs[0]?.mr
+                                          : lang === 'en'
+                                          ? ars.missingDocs[0]?.en
+                                          : ars.missingDocs[0]?.hi}
+                                      </div>
                                     </div>
                                   </div>
+                                  <ChevronRight className="w-4 h-4 text-saffron shrink-0" />
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-saffron shrink-0" />
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
                       )}
@@ -1817,10 +1853,10 @@ function HomeContent() {
                   <Mic className="w-7 h-7" />
                 </div>
                 <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E1E1E]">
-                  बोलकर पूछें (Sarvam Voice Assistant)
+                  {t.assistantTitle}
                 </h2>
                 <p className="text-sm text-[#545454] mt-1">
-                  माइक बटन दबाकर रखें और हिंदी, मराठी, हिंग्लिश या किसी भी भारतीय भाषा में पूछें
+                  {t.assistantSub}
                 </p>
               </div>
 
@@ -1836,10 +1872,10 @@ function HomeContent() {
               {/* Hold-to-Speak Microphone Button */}
               <div className="my-6 flex flex-col items-center">
                 <p className="text-sm font-extrabold text-[#1E1E1E] mb-4 text-center">
-                  {micState === 'idle' && 'नीचे नारंगी बटन दबाकर रखें और बोलें (Hold to Speak)'}
-                  {micState === 'recording' && `🔴 सुन रहा हूँ... (${recordSeconds}s) — बोलना खत्म होने पर छोड़ें`}
-                  {micState === 'thinking' && '⏳ Sarvam AI योजना खोज रहा है...'}
-                  {micState === 'speaking' && `🔊 Bulbul v3 (${speaker}) उत्तर बोल रहा है...`}
+                  {micState === 'idle' && t.micIdle}
+                  {micState === 'recording' && t.micRecording(recordSeconds)}
+                  {micState === 'thinking' && t.micThinking}
+                  {micState === 'speaking' && t.micSpeaking(speaker)}
                 </p>
 
                 <div className="relative flex items-center justify-center">
@@ -1895,21 +1931,21 @@ function HomeContent() {
               {/* Quick Voice Sample Prompts */}
               <div className="pt-4 border-t border-[#E6D7C3]">
                 <p className="text-xs font-extrabold text-[#545454] uppercase tracking-wider mb-2.5 text-center">
-                  या इन सवालों पर टैप करके तुरंत डेमो देखें:
+                  {t.quickPromptsTitle}
                 </p>
                 <div className="flex flex-col gap-2">
                   {[
                     {
                       q: 'PM Kisan aur Namo Shetkari mein kul kitne paise milte hain?',
-                      label: '“पीएम किसान और नमो शेतकरी में कुल कितने पैसे मिलते हैं?”',
+                      label: t.promptKisan,
                     },
                     {
                       q: 'Ladki Bahin yojana ke benefits kya hain?',
-                      label: '“लाडकी बहिन योजना के क्या फायदे हैं?”',
+                      label: t.promptLadki,
                     },
                     {
                       q: 'Chhota vyapar shuru karne ke liye Mudra loan kaise milega?',
-                      label: '“छोटा व्यापार शुरू करने के लिए मुद्रा लोन कैसे मिलेगा?”',
+                      label: t.promptMudra,
                     },
                   ].map((chip, idx) => (
                     <button
@@ -1931,14 +1967,14 @@ function HomeContent() {
                     type="text"
                     value={textQuery}
                     onChange={(e) => setTextQuery(e.target.value)}
-                    placeholder="यहाँ अपना सवाल लिखें (e.g. Mudra loan details)..."
+                    placeholder={t.typePlaceholder}
                     className="flex-1 h-12 px-4 rounded-xl bg-white border-2 border-[#E6D7C3] focus:border-saffron focus:outline-none text-sm text-[#1E1E1E]"
                   />
                   <button
                     type="submit"
                     className="h-12 px-5 rounded-xl bg-saffron text-white font-extrabold text-sm hover:bg-saffron-600 transition-colors"
                   >
-                    पूछें
+                    {t.askBtn}
                   </button>
                 </form>
               )}
@@ -1951,7 +1987,7 @@ function HomeContent() {
                   className="inline-flex items-center gap-1.5 hover:text-[#1E1E1E] underline"
                 >
                   <Keyboard className="w-4 h-4 text-saffron" />
-                  <span>{showTextInput ? 'कीबोर्ड छुपाएं' : 'लिखकर पूछें (Type)'}</span>
+                  <span>{showTextInput ? t.hideKeyboard : t.typeToggle}</span>
                 </button>
 
                 <button
@@ -1964,7 +2000,7 @@ function HomeContent() {
                   }`}
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>{isDemoMode ? 'Demo Mode: ON' : 'Live Sarvam API'}</span>
+                  <span>{isDemoMode ? t.demoOn : t.demoOff}</span>
                 </button>
               </div>
             </div>
@@ -1980,7 +2016,7 @@ export default function HomePage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2] text-[#1E1E1E] font-bold">
-          सरकारी सहायक लोड हो रहा है...
+          Sarkari Sahayak Loading...
         </div>
       }
     >

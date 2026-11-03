@@ -4154,5 +4154,1226 @@
       "स्टैंड अप",
       "उद्यम"
     ]
+  },
+  {
+    "id": "pmegp",
+    "icon": "🏭",
+    "iconId": "artisan_tools",
+    "category": "livelihood",
+    "sourcePortal": "kviconline.gov.in / myscheme.gov.in (Ministry of MSME)",
+    "name": {
+      "hi": "प्रधानमंत्री रोजगार सृजन कार्यक्रम (PMEGP ऋण एवं 35% सब्सिडी)",
+      "mr": "पंतप्रधान रोजगार निर्मिती कार्यक्रम (PMEGP कर्ज व 35% अनुदान)",
+      "en": "Prime Minister Employment Generation Programme (PMEGP 35% Subsidy Loan)"
+    },
+    "tagline": {
+      "hi": "नया उद्योग, कारखाना या सर्विस यूनिट शुरू करने के लिए ₹50 लाख तक बैंक ऋण और 15% से 35% सरकारी सब्सिडी",
+      "mr": "नवीन उद्योग किंवा सेवा व्यवसाय सुरू करण्यासाठी ₹50 लाखांपर्यंत कर्ज आणि 35% पर्यंत शासकीय अनुदान",
+      "en": "Bank project loans up to ₹50 Lakh with 15%–35% government capital subsidy for new enterprises"
+    },
+    "benefitBadge": {
+      "hi": "₹50 लाख तक ऋण + 15% से 35% मुफ़्त सरकारी सब्सिडी",
+      "mr": "₹50 लाख कर्ज + 15% ते 35% सरकारी अनुदान",
+      "en": "Up to ₹50 Lakh Loan + 15% to 35% Capital Subsidy"
+    },
+    "benefits": [
+      "Project loan up to ₹50 Lakh for manufacturing and ₹20 Lakh for service enterprises",
+      "Government subsidy (margin money) of 25% for general category (35% for SC/ST/OBC/Women/Minorities/Rural)",
+      "Own beneficiary contribution only 5% to 10% of total project cost"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "विनिर्माण उद्योग के लिए ₹50 लाख और सेवा क्षेत्र के लिए ₹20 लाख तक का बैंक प्रोजेक्ट लोन",
+        "ग्रामीण क्षेत्र, महिलाओं और SC/ST/OBC को 35% तक की सीधी सरकारी सब्सिडी (मार्जिन मनी)",
+        "लाभार्थी को अपनी जेब से केवल 5% से 10% पूंजी लगानी होती है"
+      ],
+      "mr": [
+        "उत्पादन क्षेत्रासाठी ₹50 लाख व सेवा व्यवसायासाठी ₹20 लाखांपर्यंत बँक प्रकल्प कर्ज",
+        "ग्रामीण भागात महिला आणि SC/ST/OBC प्रवर्गासाठी 35% थेट शासकीय अनुदान",
+        "उद्योजकाला स्वतःचे भांडवल केवळ 5% ते 10% गुंतवावे लागते"
+      ],
+      "en": [
+        "Project loan up to ₹50 Lakh for manufacturing and ₹20 Lakh for service enterprises",
+        "Government subsidy of 25% for general category (35% for SC/ST/OBC/Women/Rural)",
+        "Own beneficiary contribution only 5% to 10% of total project cost"
+      ]
+    },
+    "eligibility": [
+      "Any Indian citizen aged 18 years and above",
+      "At least 8th standard pass for manufacturing projects over ₹10 Lakh or service projects over ₹5 Lakh",
+      "New micro-enterprises only; existing units are not eligible for initial subsidy"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "18 वर्ष या उससे अधिक आयु का कोई भी भारतीय नागरिक",
+        "₹10 लाख से अधिक की मैन्युफैक्चरिंग या ₹5 लाख से अधिक सर्विस प्रोजेक्ट हेतु कम से कम 8वीं पास",
+        "केवल नई औद्योगिक या सर्विस इकाई शुरू करने के लिए पात्र"
+      ],
+      "mr": [
+        "18 वर्षे किंवा त्याहून अधिक वयाचा कोणताही भारतीय नागरिक",
+        "₹10 लाखांपेक्षा जास्त उत्पादन किंवा ₹5 लाखांपेक्षा जास्त सेवेसाठी किमान 8वी उत्तीर्ण",
+        "फक्त नवीन उद्योग किंवा सेवा केंद्र सुरू करण्यासाठी पात्र"
+      ],
+      "en": [
+        "Any Indian citizen aged 18 years and above",
+        "At least 8th standard pass for manufacturing projects over ₹10 Lakh or service projects over ₹5 Lakh",
+        "New micro-enterprises only; existing units are not eligible for initial subsidy"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "PAN Card",
+      "Educational Certificate (8th/10th)",
+      "Project Report (DPR)",
+      "Caste / Special Category Certificate"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड",
+        "पैन कार्ड",
+        "शैक्षणिक प्रमाण पत्र (8वीं/10वीं मार्कशीट)",
+        "प्रोजेक्ट रिपोर्ट (DPR)",
+        "जाति / विशेष श्रेणी प्रमाण पत्र"
+      ],
+      "mr": [
+        "आधार कार्ड",
+        "पॅन कार्ड",
+        "शैक्षणिक प्रमाणपत्र (8वी/10वी गुणपत्रिका)",
+        "प्रकल्प अहवाल (DPR)",
+        "जात / प्रवर्ग प्रमाणपत्र"
+      ],
+      "en": [
+        "Aadhaar Card",
+        "PAN Card",
+        "Educational Certificate",
+        "Detailed Project Report (DPR)",
+        "Caste/Category Certificate"
+      ]
+    },
+    "howToApply": [
+      "Apply online on KVIC PMEGP portal (kviconline.gov.in/pmegpeportal)",
+      "Upload project report, Aadhaar, photo and category certificate",
+      "DITC / KVIC committee forwards application to selected financing bank branch"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "kviconline.gov.in पर PMEGP ई-पोर्टल में ऑनलाइन आवेदन करें",
+        "प्रोजेक्ट रिपोर्ट, आधार और जाति प्रमाण पत्र अपलोड करें",
+        "जिला टास्क फोर्स समिति द्वारा सत्यापन के बाद बैंक लोन मंजूर करता है"
+      ],
+      "mr": [
+        "kviconline.gov.in वर PMEGP पोर्टलवर ऑनलाइन अर्ज भरा",
+        "प्रकल्प अहवाल, आधार आणि इतर कागदपत्रे अपलोड करा",
+        "जिल्हा उद्योग केंद्र (DIC) कडून पडताळणीनंतर बँकेमार्फत कर्ज मिळते"
+      ],
+      "en": [
+        "Apply online on KVIC PMEGP portal (kviconline.gov.in/pmegpeportal)",
+        "Upload project report, Aadhaar, photo and category certificate",
+        "Application verified by District Task Force and sanctioned by bank"
+      ]
+    },
+    "officialLink": "https://www.kviconline.gov.in/pmegpeportal",
+    "helpline": "1800-3000-0034",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 65,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "entrepreneur",
+        "artisan",
+        "vendor",
+        "student",
+        "unemployed",
+        "farmer"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "photo",
+        "caste"
+      ]
+    },
+    "keywords": [
+      "pmegp",
+      "subsidy",
+      "business loan",
+      "kvic",
+      "35% subsidy",
+      "startup",
+      "रोजगार",
+      "उद्योग",
+      "अनुदान"
+    ]
+  },
+  {
+    "id": "pm-kusum",
+    "icon": "☀️",
+    "iconId": "solar_roof",
+    "category": "farmer",
+    "sourcePortal": "pmkusum.mnre.gov.in / myscheme.gov.in (Ministry of New and Renewable Energy)",
+    "name": {
+      "hi": "प्रधानमंत्री कुसुम योजना (PM-KUSUM 60% सोलर पंप सब्सिडी)",
+      "mr": "पंतप्रधान कुसुम योजना (PM-KUSUM 60% सौर कृषी पंप अनुदान)",
+      "en": "PM-KUSUM Solar Agriculture Pump Scheme (60% Subsidy)"
+    },
+    "tagline": {
+      "hi": "किसानों को खेतों में सिंचाई के लिए सोलर पंप लगाने पर 60% सरकारी सब्सिडी और 30% आसान बैंक लोन",
+      "mr": "शेतकऱ्यांना शेती सिंचनासाठी सौर कृषी पंप बसवण्यासाठी 60% अनुदान आणि 30% बँक कर्ज",
+      "en": "60% government subsidy + 30% bank loan for farmers to install standalone solar water pumps"
+    },
+    "benefitBadge": {
+      "hi": "सोलर पंप पर 60% सरकारी सब्सिडी + 30% बैंक लोन",
+      "mr": "सौर पंपावर 60% शासकीय अनुदान + 30% बँक कर्ज",
+      "en": "60% Government Subsidy on Solar Water Pump"
+    },
+    "benefits": [
+      "60% financial subsidy (30% Central + 30% State government) on solar irrigation pump installation",
+      "30% bank loan assistance, farmer only needs to invest 10% of total cost",
+      "Zero electricity bills, daytime reliable irrigation, and option to sell surplus power to grid"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "सोलर सिंचाई पंप लगाने पर 60% सीधी सब्सिडी (30% केंद्र + 30% राज्य सरकार द्वारा)",
+        "30% आसान बैंक ऋण, किसान को केवल 10% लागत का भुगतान करना पड़ता है",
+        "बिजली बिल से हमेशा के लिए मुक्ति और दिन के समय निर्बाध सिंचाई"
+      ],
+      "mr": [
+        "सौर कृषी पंप बसवण्यासाठी 60% थेट अनुदान (30% केंद्र + 30% राज्य शासन)",
+        "30% बँक कर्ज साहाय्य, शेतकऱ्याला फक्त 10% रक्कम भरावी लागते",
+        "दिवसा हक्काचे पाणी आणि वीज बिलाच्या त्रासातून कायमची सुटका"
+      ],
+      "en": [
+        "60% financial subsidy on solar irrigation pump installation",
+        "30% bank loan assistance, farmer only invests 10% of total cost",
+        "Zero electricity bills, daytime reliable irrigation, and surplus power sale"
+      ]
+    },
+    "eligibility": [
+      "Individual farmers, group of farmers, FPOs, and Water User Associations",
+      "Must possess cultivable land and a borewell / open well / water source",
+      "Priority to areas without grid power or with diesel pump replacement"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "व्यक्तिगत किसान, किसान समूह, एफपीओ और जल उपभोक्ता समितियां",
+        "कृषि योग्य भूमि (7/12 उतारा) और पानी का स्रोत (बोरवेल / कुआं / तालाब) होना आवश्यक",
+        "डीजल पंप बदलने या बिजली रहित कृषि क्षेत्रों को प्राथमिकता"
+      ],
+      "mr": [
+        "वैयक्तिक शेतकरी, शेतकरी गट, शेतकरी उत्पादक कंपन्या (FPO)",
+        "शेतजमीन (7/12 उतारा) आणि पाण्याचा स्रोत (विहीर/बोअरवेल) असणे आवश्यक",
+        "डिझेल पंप बदलणाऱ्या किंवा वीज जोडणी नसलेल्या शेतकऱ्यांना प्राधान्य"
+      ],
+      "en": [
+        "Individual farmers, farmer groups, FPOs, and cooperatives",
+        "Must possess cultivable land and a functional water source",
+        "Priority to areas without grid power or replacing diesel pumps"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "7/12 & 8-A Land Record",
+      "Bank Passbook",
+      "Passport Size Photo",
+      "Water Source Certificate / Declaration"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड",
+        "जमीन के कागजात (7/12 व खसरा-खतौनी)",
+        "बैंक पासबुक",
+        "पासपोर्ट फोटो",
+        "जल स्रोत स्व-घोषणा पत्र"
+      ],
+      "mr": [
+        "आधार कार्ड",
+        "7/12 व 8-अ उतारा",
+        "बँक पासबुक",
+        "पासपोर्ट फोटो",
+        "जलस्रोत घोषणापत्र"
+      ],
+      "en": [
+        "Aadhaar Card",
+        "7/12 & 8A Land Record",
+        "Bank Passbook",
+        "Passport Photo",
+        "Water Source Declaration"
+      ]
+    },
+    "howToApply": [
+      "Apply on state nodal portal (e.g., Mahakusum / Mahadiscom in Maharashtra or pmkusum.mnre.gov.in)",
+      "Pay 10% farmer share after document verification and pump vendor allocation"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "राज्य नोडल एजेंसी पोर्टल (जैसे महाराष्ट्र में महाकुसुम / महावितरण) पर ऑनलाइन आवेदन करें",
+        "दस्तावेज़ सत्यापन के बाद निर्धारित 10% किसान अंशदान जमा करें"
+      ],
+      "mr": [
+        "महाऊर्जा / महावितरण (mahadiscom.in/solar) किंवा pmkusum.mnre.gov.in वर अर्ज करा",
+        "कागदपत्र पडताळणीनंतर 10% शेतकरी हिस्सा भरून सौर पंप बसवला जातो"
+      ],
+      "en": [
+        "Apply on state nodal portal (e.g. Mahadiscom Solar or pmkusum.mnre.gov.in)",
+        "Pay 10% farmer share after document verification for vendor installation"
+      ]
+    },
+    "officialLink": "https://pmkusum.mnre.gov.in",
+    "helpline": "1800-180-3333",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 85,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "land",
+        "photo"
+      ]
+    },
+    "keywords": [
+      "kusum",
+      "solar pump",
+      "solar",
+      "irrigation",
+      "सोलर पंप",
+      "कुसुम",
+      "सौर कृषी पंप",
+      "सिंचाई"
+    ]
+  },
+  {
+    "id": "pmmsy",
+    "icon": "🐟",
+    "iconId": "crop_shield",
+    "category": "farmer",
+    "sourcePortal": "pmmsy.dof.gov.in / myscheme.gov.in (Department of Fisheries, MoFAHD)",
+    "name": {
+      "hi": "प्रधानमंत्री मत्स्य संपदा योजना (PMMSY मछली पालन एवं तालाब अनुदान)",
+      "mr": "पंतप्रधान मत्स्य संपदा योजना (PMMSY मत्स्य व्यवसाय अनुदान)",
+      "en": "Pradhan Mantri Matsya Sampada Yojana (PMMSY Fisheries Grant)"
+    },
+    "tagline": {
+      "hi": "मछली पालन, नया तालाब निर्माण, बायोफ्लॉक, नाव एवं चारा इकाई के लिए 40% से 60% सरकारी सब्सिडी",
+      "mr": "मत्स्य शेती, नवीन शेततळे, बायोफ्लॉक आणि बोटीसाठी 40% ते 60% शासकीय अनुदान",
+      "en": "40% to 60% financial subsidy for fish farming, pond construction, biofloc, feed mills & fishing boats"
+    },
+    "benefitBadge": {
+      "hi": "तालाब व मछली पालन पर 40% से 60% सरकारी अनुदान",
+      "mr": "मत्स्यपालन व तलावासाठी 40% ते 60% अनुदान",
+      "en": "40% to 60% Capital Subsidy for Fisheries"
+    },
+    "benefits": [
+      "40% government subsidy for General Category and 60% for Women, SC, and ST beneficiaries",
+      "Covers construction of new fish ponds, biofloc units, RAS (recirculatory aquaculture), feed mills and insulated ice trucks",
+      "Insurance support for fishers and fishing vessels against natural disasters"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "सामान्य वर्ग को 40% तथा महिलाओं, SC व ST लाभार्थियों को 60% तक सीधी सरकारी सब्सिडी",
+        "नया मछली तालाब बनाने, बायोफ्लॉक, मछली बीज, चारा चक्की और रेफ्रिजरेटेड गाड़ी खरीदने के लिए अनुदान",
+        "मछुआरों और मछली पकड़ने वाली नावों का सामूहिक दुर्घटना बीमा"
+      ],
+      "mr": [
+        "सर्वसाधारण प्रवर्गासाठी 40% आणि महिला, SC, ST लाभार्थ्यांसाठी 60% थेट शासकीय अनुदान",
+        "नवीन मत्स्यतळे खोदणे, बायोफ्लॉक युनिट, खाद्य गिरणी व बर्फाची गाडी यासाठी भांडवली साहाय्य",
+        "मच्छीमार बांधवांसाठी मोफत विमा संरक्षण"
+      ],
+      "en": [
+        "40% subsidy for General and 60% for Women/SC/ST beneficiaries",
+        "Financial aid for new pond construction, biofloc, feed mills, and refrigerated vehicles",
+        "Comprehensive insurance for fishers and boats"
+      ]
+    },
+    "eligibility": [
+      "Fishers, fish farmers, fish workers, SHGs, and entrepreneurs with suitable land/water rights",
+      "Must have owned or leased land/pond for a minimum specified period (e.g. 7 to 10 years)"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "मछुआरे, मछली पालक किसान, स्वयं सहायता समूह (SHG) और मत्स्य सहकारी समितियां",
+        "स्वयं की या न्यूनतम 7 वर्ष के पट्टे (Lease) पर ली गई जमीन या जल निकाय होना आवश्यक"
+      ],
+      "mr": [
+        "मच्छीमार, शेतकरी, महिला बचत गट, मत्स्य सहकारी संस्था",
+        "स्वतःची शेतजमीन किंवा किमान 7 ते 10 वर्षांच्या करारावर घेतलेला तलाव असावा"
+      ],
+      "en": [
+        "Fishers, fish farmers, aquaculture entrepreneurs, and SHGs",
+        "Must possess owned or leased land/pond for minimum tenure"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "Bank Passbook",
+      "7/12 Land Record or Lease Agreement",
+      "Detailed Project Plan",
+      "Caste Certificate (for 60% category)"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड",
+        "बैंक पासबुक",
+        "जमीन का 7/12 या पट्टा अनुबंध (Lease)",
+        "मत्स्य पालन प्रोजेक्ट प्लान",
+        "जाति प्रमाण पत्र (यदि लागू हो)"
+      ],
+      "mr": [
+        "आधार कार्ड",
+        "बँक पासबुक",
+        "7/12 किंवा भाडेकरार (Lease Agreement)",
+        "प्रकल्प अहवाल",
+        "जात प्रमाणपत्र (लागू असल्यास)"
+      ],
+      "en": [
+        "Aadhaar Card",
+        "Bank Passbook",
+        "Land Record / Lease Deed",
+        "Fisheries Project Report",
+        "Caste Certificate (if applicable)"
+      ]
+    },
+    "howToApply": [
+      "Submit Detailed Project Report (DPR) online on pmmsy.dof.gov.in or to District Fisheries Office (DFO)",
+      "District Level Committee reviews and recommends proposal for sanction"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "pmmsy.dof.gov.in पर ऑनलाइन या जिला मत्स्य पालन अधिकारी (DFO) कार्यालय में प्रोजेक्ट रिपोर्ट जमा करें",
+        "जिला स्तरीय समिति द्वारा अनुमोदन के बाद सब्सिडी बैंक खाते में जारी की जाती है"
+      ],
+      "mr": [
+        "pmmsy.dof.gov.in किंवा जिल्हा मत्स्यव्यवसाय विकास अधिकारी कार्यालयात प्रस्ताव सादर करा",
+        "मंजुरीनंतर अनुदानाची रक्कम टप्प्याटप्प्याने बँक खात्यात जमा होते"
+      ],
+      "en": [
+        "Apply online on pmmsy.dof.gov.in or submit DPR to District Fisheries Officer",
+        "Sanctioned by District Level Committee with DBT disbursement"
+      ]
+    },
+    "officialLink": "https://pmmsy.dof.gov.in",
+    "helpline": "1800-425-1660",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 70,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer",
+        "entrepreneur",
+        "laborer"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "bank",
+        "land",
+        "photo"
+      ]
+    },
+    "keywords": [
+      "pmmsy",
+      "fisheries",
+      "fish pond",
+      "matsya",
+      "मछली पालन",
+      "मत्स्य",
+      "बायोफ्लॉक",
+      "तालाब"
+    ]
+  },
+  {
+    "id": "soil-health-card",
+    "icon": "🧪",
+    "iconId": "tractor_harvest",
+    "category": "farmer",
+    "sourcePortal": "soilhealth.dac.gov.in / myscheme.gov.in (Ministry of Agriculture)",
+    "name": {
+      "hi": "मृदा स्वास्थ्य कार्ड योजना (Soil Health Card मुफ़्त मिट्टी जांच)",
+      "mr": "मृदा आरोग्य पत्रिका योजना (Soil Health Card मोफत माती परीक्षण)",
+      "en": "Soil Health Card Scheme (Free Farm Soil Testing & Advisory)"
+    },
+    "tagline": {
+      "hi": "खेत की मिट्टी की 12 पोषक तत्वों की मुफ़्त वैज्ञानिक जांच और फसल के अनुसार सटीक खाद की सिफारिश",
+      "mr": "शेतातील मातीची 12 घटकांची मोफत प्रयोगशाळा तपासणी आणि योग्य खतांचा सल्ला",
+      "en": "Free scientific soil testing across 12 parameters with crop-wise nutrient & fertilizer dosage advisory"
+    },
+    "benefitBadge": {
+      "hi": "100% मुफ़्त मिट्टी जांच + खाद बचत परामर्श",
+      "mr": "100% मोफत माती परीक्षण व खत सल्ला",
+      "en": "100% Free Soil Test & Nutrient Advisory"
+    },
+    "benefits": [
+      "Complete free laboratory analysis of 12 critical soil health parameters (N, P, K, S, Zn, Fe, Cu, Mn, Bo, pH, EC, OC)",
+      "Customized dosage advice for fertilizers to reduce urea wastage and increase crop yield by 10%–25%",
+      "Card issued once every 3 years for continuous agricultural guidance"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "मिट्टी के 12 मुख्य पोषक तत्वों (नाइट्रोजन, फास्फोरस, पोटाश, जिंक, पीएच आदि) की मुफ़्त प्रयोगशाला जांच",
+        "फसल के अनुसार खाद और जैविक पोषण की सटीक सलाह जिससे 15% से 25% तक खाद खर्च बचता है",
+        "हर 3 साल में नया अपडेटेड कार्ड सीधे किसान को दिया जाता है"
+      ],
+      "mr": [
+        "मातीतील 12 मुख्य पोषण घटकांची (नायट्रोजन, फॉस्फरस, पोटॅश, लोह, झिंक) मोफत प्रयोगशाळेत तपासणी",
+        "पिकानुसार खतांची अचूक मात्रा मिळाल्यामुळे खतांचा नाहक खर्च 15-20% कमी होतो व उत्पादन वाढते",
+        "दर 3 वर्षांनी अद्ययावत मृदा पत्रिका दिली जाते"
+      ],
+      "en": [
+        "Free testing of 12 soil parameters including micro-nutrients and organic carbon",
+        "Customized fertilizer recommendations reducing wasteful chemical input by up to 20%",
+        "Soil health card renewed every 3 years"
+      ]
+    },
+    "eligibility": [
+      "All farmers holding agricultural cultivable land in India",
+      "No income, caste, or landholding size restrictions"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "भारत के सभी किसान जिनके पास खेती योग्य जमीन है",
+        "आय या जमीन के आकार की कोई पाबंदी नहीं; छोटे व बड़े सभी किसान पात्र"
+      ],
+      "mr": [
+        "शेतीयोग्य जमीन असणारे सर्व शेतकरी",
+        "उत्पन्न किंवा शेतजमिनीच्या आकाराची कोणतीही अट नाही"
+      ],
+      "en": [
+        "All cultivable landholding farmers across India",
+        "No income or landholding limits"
+      ]
+    },
+    "documents": [
+      "Aadhaar Card",
+      "7/12 Land Record / Khasra-Khatauni",
+      "Mobile Number"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "आधार कार्ड",
+        "7/12 उतारा / खसरा-खतौनी",
+        "मोबाइल नंबर"
+      ],
+      "mr": [
+        "आधार कार्ड",
+        "7/12 किंवा 8-अ उतारा",
+        "मोबाईल नंबर"
+      ],
+      "en": [
+        "Aadhaar Card",
+        "Land Record (7/12 or Khasra)",
+        "Mobile Number"
+      ]
+    },
+    "howToApply": [
+      "Contact your local Village Agriculture Assistant (Krishi Sahayak / Taluka Krishi Adhikari)",
+      "Agriculture staff collects soil samples using GPS grid points and issues printed card after lab testing"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "अपने ग्राम कृषि सहायक या ब्लॉक/तहसील कृषि कार्यालय से संपर्क करें",
+        "कृषि विभाग की टीम खेत से मिट्टी का नमूना लेकर जांच के बाद मुफ़्त कार्ड जारी करती है"
+      ],
+      "mr": [
+        "आपल्या गावातील कृषी सहाय्यक किंवा तालुका कृषी अधिकाऱ्यांशी संपर्क साधा",
+        "कृषी विभागामार्फत मातीचे नमुने गोळा करून तपासणीअंती मोफत कार्ड दिले जाते"
+      ],
+      "en": [
+        "Contact your village agriculture assistant or block agriculture office",
+        "Department collects geo-tagged sample and issues card after laboratory testing"
+      ]
+    },
+    "officialLink": "https://www.soilhealth.dac.gov.in",
+    "helpline": "1800-180-1551",
+    "criteria": {
+      "minAge": 18,
+      "maxAge": 85,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "land",
+        "mobile"
+      ]
+    },
+    "keywords": [
+      "soil health",
+      "soil test",
+      "fertilizer",
+      "मिट्टी जांच",
+      "मृदा स्वास्थ्य",
+      "माती परीक्षण",
+      "यूरिया"
+    ]
+  },
+  {
+    "id": "mjpjay-maharashtra",
+    "icon": "🏥",
+    "iconId": "hospital_shield",
+    "category": "health",
+    "sourcePortal": "jeevandayee.gov.in / mahadbt.maharashtra.gov.in (Govt of Maharashtra Health Dept)",
+    "name": {
+      "hi": "महात्मा ज्योतिराव फुले जन आरोग्य योजना (MJPJAY महाराष्ट्र ₹5 लाख मुफ़्त इलाज)",
+      "mr": "महात्मा ज्योतिराव फुले जन आरोग्य योजना (MJPJAY ₹5 लाख मोफत उपचार)",
+      "en": "Mahatma Jyotirao Phule Jan Arogya Yojana (MJPJAY ₹5 Lakh Free Healthcare)"
+    },
+    "tagline": {
+      "hi": "महाराष्ट्र के सभी राशन कार्ड धारक परिवारों को प्रति वर्ष ₹5 लाख तक का कैशलेस एवं मुफ़्त अस्पताल इलाज",
+      "mr": "महाराष्ट्रातील रेशन कार्डधारक कुटुंबांना दरवर्षी ₹5 लाखांपर्यंत मोफत व कॅशलेस उपचार",
+      "en": "Cashless health insurance coverage up to ₹5 Lakh per family per year across Maharashtra empanelled hospitals"
+    },
+    "benefitBadge": {
+      "hi": "महाराष्ट्र में प्रति परिवार ₹5 लाख तक मुफ़्त इलाज",
+      "mr": "महाराष्ट्रात दरवर्षी ₹5 लाख मोफत कॅशलेस उपचार",
+      "en": "₹5 Lakh Free Cashless Hospital Care in Maharashtra"
+    },
+    "benefits": [
+      "Cashless hospital treatment up to ₹5,00,000 per family per year across 1,356 medical and surgical procedures",
+      "Covers heart surgery, cancer therapy, kidney dialysis, neurosurgery, orthopedics, and pediatric surgeries",
+      "Universal coverage expanded to all ration card holders (Yellow, Orange, White) across Maharashtra"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "महाराष्ट्र के सरकारी और प्राइवेट सूचीबद्ध अस्पतालों में प्रति परिवार ₹5 लाख तक का कैशलेस इलाज",
+        "हार्ट सर्जरी, कैंसर कीमोथेरेपी/रेडिएशन, किडनी डायलिसिस, मोतियाबिंद और फ्रैक्चर के 1,350+ ऑपरेशन शामिल",
+        "पीले, केसरी व सफेद राशन कार्ड धारक सभी परिवार योजना के दायरे में शामिल"
+      ],
+      "mr": [
+        "महाराष्ट्रातील नोंदणीकृत सरकारी व खाजगी रुग्णालयांमध्ये दरवर्षी ₹5 लाखांपर्यंत कॅशलेस उपचार",
+        "हार्ट शस्त्रक्रिया, कर्करोग, डायलिसिस, मेंदूचे आजार व अपघातासह 1,350 हून अधिक आजारांवर उपचार",
+        "पिवळे, केशरी व पांढरे रेशन कार्ड असणाऱ्या सर्व नागरिकांसाठी खुली"
+      ],
+      "en": [
+        "Cashless hospital treatment up to ₹5 Lakh/year across 1,350+ surgical procedures",
+        "Includes cardiac, cancer, renal, neuro, pediatric, and trauma surgeries",
+        "Universal access for Yellow, Saffron, and White Ration card holding families in Maharashtra"
+      ]
+    },
+    "eligibility": [
+      "Any family resident in Maharashtra possessing a valid Ration Card (Yellow, Orange/Saffron, or White)",
+      "Patients can directly approach Arogyamitra at any network hospital"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "महाराष्ट्र राज्य का निवासी परिवार जिसके पास वैध राशन कार्ड (पीला, केसरी या सफेद) हो",
+        "अस्पताल में आरोग्यमित्र काउंटर पर राशन कार्ड और आधार दिखाकर तुरंत भर्ती की सुविधा"
+      ],
+      "mr": [
+        "महाराष्ट्रातील रहिवासी कुटुंब ज्यांच्याकडे वैध रेशन कार्ड (पिवळे, केशरी किंवा पांढरे) आहे",
+        "कोणत्याही नेटवर्क रुग्णालयात 'आरोग्यमित्र' कक्षात रेशन कार्ड व आधार दाखवून उपचार मिळतात"
+      ],
+      "en": [
+        "Any Maharashtra family possessing a valid Ration Card",
+        "Direct admission assistance through Arogyamitra at network hospitals"
+      ]
+    },
+    "documents": [
+      "Ration Card (Yellow/Orange/White)",
+      "Aadhaar Card",
+      "Mobile Number"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "राशन कार्ड (पीला, केसरी या सफेद)",
+        "आधार कार्ड",
+        "मोबाइल नंबर"
+      ],
+      "mr": [
+        "रेशन कार्ड (पिवळे, केशरी किंवा पांढरे)",
+        "आधार कार्ड",
+        "मोबाईल नंबर"
+      ],
+      "en": [
+        "Ration Card (Yellow / Orange / White)",
+        "Aadhaar Card",
+        "Mobile Number"
+      ]
+    },
+    "howToApply": [
+      "Visit any network hospital with your Ration Card and Aadhaar Card",
+      "Meet the on-duty Arogyamitra who registers and approves cashless admission directly"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "अपने राशन कार्ड और आधार कार्ड के साथ किसी भी सूचीबद्ध सरकारी या प्राइवेट अस्पताल जाएं",
+        "अस्पताल में मौजूद 'आरोग्यमित्र' से मिलें जो तुरंत कैशलेस इलाज की मंजूरी दिलवाता है"
+      ],
+      "mr": [
+        "आपल्या जवळच्या मान्यताप्राप्त रुग्णालयात रेशन कार्ड व आधार कार्ड घेऊन जा",
+        "तेथील 'आरोग्यमित्र' तात्काळ तपासणी करून कॅशलेस मंजुरी मिळवून देतात"
+      ],
+      "en": [
+        "Visit any network hospital with Ration Card and Aadhaar",
+        "Arogyamitra completes e-authorization for cashless treatment on the spot"
+      ]
+    },
+    "officialLink": "https://www.jeevandayee.gov.in",
+    "helpline": "155388 / 1800-233-2200",
+    "criteria": {
+      "minAge": 0,
+      "maxAge": 100,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer",
+        "homemaker",
+        "laborer",
+        "vendor",
+        "artisan",
+        "student",
+        "entrepreneur",
+        "senior",
+        "unemployed"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "maharashtra"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "ration",
+        "aadhaar"
+      ]
+    },
+    "keywords": [
+      "mjpjay",
+      "jeevandayee",
+      "free hospital",
+      "maharashtra health",
+      "5 lakh",
+      "आरोग्यमित्र",
+      "मोफत उपचार",
+      "महात्मा फुले जन आरोग्य"
+    ]
+  },
+  {
+    "id": "lek-ladki-yojana",
+    "icon": "👧",
+    "iconId": "women_empowerment",
+    "category": "women",
+    "sourcePortal": "wcd.maharashtra.gov.in / mahadbt.maharashtra.gov.in (Govt of Maharashtra WCD)",
+    "name": {
+      "hi": "लेक लाड़की योजना (महाराष्ट्र ₹1,01,000 कन्या आर्थिक सहायता)",
+      "mr": "लेक लाडकी योजना (महाराष्ट्र शासन ₹1,01,000 मुलींसाठी अनुदान)",
+      "en": "Lek Ladki Yojana Maharashtra (₹1,01,000 Girl Child Grant)"
+    },
+    "tagline": {
+      "hi": "महाराष्ट्र में गरीब परिवार की बालिकाओं को जन्म से लेकर 18 वर्ष की आयु तक कुल ₹1,01,000 की नकद वित्तीय सहायता",
+      "mr": "मुलीच्या जन्मापासून ते 18 वर्षे वयापर्यंत टप्प्याटप्प्याने एकूण ₹1,01,000 चे थेट आर्थिक अनुदान",
+      "en": "Financial grant of ₹1,01,000 in stages from birth to age 18 for daughters in low-income families"
+    },
+    "benefitBadge": {
+      "hi": "बेटी के जन्म से 18 वर्ष तक कुल ₹1,01,000 की सहायता",
+      "mr": "मुलीला 18 व्या वर्षापर्यंत एकूण ₹1,01,000 अनुदान",
+      "en": "Total ₹1,01,000 Financial Grant for Girl Child"
+    },
+    "benefits": [
+      "Stage 1: ₹5,000 on birth of girl child in low-income family",
+      "Stage 2: ₹6,000 on entering Class 1, ₹7,000 in Class 6, and ₹8,000 on entering Class 11",
+      "Stage 3: ₹75,000 lump-sum cash assistance credited when the daughter turns 18 years of age (Total: ₹1,01,000)"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "पहला चरण: बेटी के जन्म पर ₹5,000 सीधे बैंक खाते में",
+        "शिक्षा चरण: पहली कक्षा में ₹6,000, छठवीं में ₹7,000 और ग्यारहवीं में ₹8,000",
+        "अंतिम चरण: 18 वर्ष की आयु पूरी होने पर एकमुश्त ₹75,000 (कुल लाभ: ₹1,01,000)"
+      ],
+      "mr": [
+        "पहिला टप्पा: मुलीच्या जन्मानंतर ₹5,000 थेट बँक खात्यात",
+        "शिक्षण टप्पा: पहिलीत प्रवेशावेळी ₹6,000, सहावीत ₹7,000 आणि अकरावीत ₹8,000",
+        "अंतिम टप्पा: मुलगी 18 वर्षांची झाल्यावर एकरकमी ₹75,000 (एकूण ₹1,01,000)"
+      ],
+      "en": [
+        "₹5,000 credited at birth of daughter",
+        "Installments of ₹6,000 in Class 1, ₹7,000 in Class 6, and ₹8,000 in Class 11",
+        "₹75,000 lump-sum grant credited on reaching 18 years of age (Total ₹1,01,000)"
+      ]
+    },
+    "eligibility": [
+      "Girl child born on or after 1st April 2023 to families holding Yellow or Orange Ration Card in Maharashtra",
+      "Applicable for up to two girl children per family",
+      "Family annual income within BPL / Orange ration card limits"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "1 अप्रैल 2023 को या उसके बाद जन्मी बालिका जिसका परिवार महाराष्ट्र में पीला या केसरी राशन कार्ड धारक हो",
+        "एक परिवार की अधिकतम दो बेटियों के लिए योजना का लाभ मान्य",
+        "बालिका अविवाहित होनी चाहिए"
+      ],
+      "mr": [
+        "1 एप्रिल 2023 रोजी किंवा नंतर जन्मलेली मुलगी आणि कुटुंब पिवळे किंवा केशरी रेशन कार्डधारक असावे",
+        "एका कुटुंबातील जास्तीत जास्त दोन मुलींसाठी योजना लागू",
+        "मुलगी 18 व्या वर्षापर्यंत अविवाहित असणे आवश्यक"
+      ],
+      "en": [
+        "Girl child born on or after 1 April 2023 in Yellow/Orange ration card families of Maharashtra",
+        "Applicable for up to 2 daughters per family",
+        "Girl must remain unmarried until age 18"
+      ]
+    },
+    "documents": [
+      "Daughter's Birth Certificate",
+      "Parents' Aadhaar Card",
+      "Ration Card (Yellow/Orange)",
+      "Mother / Daughter Bank Passbook",
+      "Income Certificate"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "बालिका का जन्म प्रमाण पत्र",
+        "माता-पिता का आधार कार्ड",
+        "राशन कार्ड (पीला / केसरी)",
+        "बैंक पासबुक",
+        "आय प्रमाण पत्र"
+      ],
+      "mr": [
+        "मुलीचा जन्म दाखला",
+        "आई-वडिलांचे आधार कार्ड",
+        "पिवळे / केशरी रेशन कार्ड",
+        "बँक पासबुक",
+        "उत्पन्नाचा दाखला"
+      ],
+      "en": [
+        "Girl's Birth Certificate",
+        "Parents' Aadhaar Card",
+        "Ration Card (Yellow/Orange)",
+        "Bank Passbook",
+        "Income Certificate"
+      ]
+    },
+    "howToApply": [
+      "Apply at your local Anganwadi worker, Gram Panchayat, or Child Development Project Officer (CDPO) office",
+      "Or submit online through Aaple Sarkar / MahaDBT portal"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "अपने गांव की आंगनवाड़ी सेविका, ग्राम पंचायत या बाल विकास परियोजना अधिकारी (CDPO) कार्यालय में आवेदन करें",
+        "या आपले सरकार / महाडीबीटी पोर्टल पर ऑनलाइन फॉर्म भरें"
+      ],
+      "mr": [
+        "आपल्या भागातील अंगणवाडी सेविका किंवा बाल विकास प्रकल्प अधिकारी (CDPO) कार्यालयात अर्ज करा",
+        "किंवा आपले सरकार / महाडीबीटी पोर्टलवर ऑनलाइन अर्ज सादर करा"
+      ],
+      "en": [
+        "Apply through local Anganwadi worker, Gram Panchayat, or CDPO office",
+        "Or apply online via Aaple Sarkar / MahaDBT portal"
+      ]
+    },
+    "officialLink": "https://wcd.maharashtra.gov.in",
+    "helpline": "181 / 1098",
+    "criteria": {
+      "minAge": 0,
+      "maxAge": 18,
+      "genders": [
+        "female"
+      ],
+      "occupations": [
+        "student",
+        "unemployed",
+        "homemaker"
+      ],
+      "maxAnnualIncome": 250000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "maharashtra"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "aadhaar",
+        "ration",
+        "bank",
+        "income"
+      ]
+    },
+    "keywords": [
+      "lek ladki",
+      "girl child",
+      "1 lakh",
+      "maharashtra girl",
+      "लेक लाडकी",
+      "मुलगी अनुदान",
+      "कन्या योजना"
+    ]
+  },
+  {
+    "id": "pmgkay-ration",
+    "icon": "🌾",
+    "iconId": "tractor_harvest",
+    "category": "livelihood",
+    "sourcePortal": "nfsa.gov.in / myscheme.gov.in (Department of Food & Public Distribution)",
+    "name": {
+      "hi": "प्रधानमंत्री गरीब कल्याण अन्न योजना (PMGKAY मुफ़्त राशन एवं ONORC)",
+      "mr": "पंतप्रधान गरीब कल्याण अन्न योजना (PMGKAY मोफत रेशन व एक देश एक रेशन कार्ड)",
+      "en": "PM Garib Kalyan Anna Yojana (PMGKAY Free Foodgrains & ONORC)"
+    },
+    "tagline": {
+      "hi": "80 करोड़ से अधिक देशवासियों को हर महीने प्रति व्यक्ति 5 किलो मुफ़्त चावल/गेहूं और वन नेशन वन राशन कार्ड की सुविधा",
+      "mr": "प्रत्येक व्यक्तीला दरमहा 5 किलो मोफत गहू/तांदूळ आणि देशभरात कोणत्याही दुकानातून रेशन घेण्याची मुभा",
+      "en": "5 kg free foodgrains per person per month to 80+ Crore citizens with nationwide portability via ONORC"
+    },
+    "benefitBadge": {
+      "hi": "प्रति व्यक्ति 5 किलो बिल्कुल मुफ़्त राशन",
+      "mr": "दरमहा 5 किलो मोफत धान्य",
+      "en": "5 kg Free Foodgrains per Person per Month"
+    },
+    "benefits": [
+      "5 kg foodgrains (wheat/rice) completely free of cost every month for each member of eligible ration card households",
+      "Antyodaya Anna Yojana (AAY) poorest families receive 35 kg foodgrains free per family every month",
+      "One Nation One Ration Card (ONORC) lets migrant workers claim their ration from any Fair Price Shop across India using biometric Aadhaar"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "पात्र परिवार के प्रत्येक सदस्य को हर महीने 5 किलो गेहूं या चावल 100% मुफ़्त",
+        "अंत्योदय (AAY) परिवारों को हर महीने 35 किलो खाद्यान्न पूर्णतः मुफ़्त",
+        "वन नेशन वन राशन कार्ड (ONORC) के तहत प्रवासी मजदूर देश के किसी भी शहर/दुकान से अंगूठा लगाकर मुफ़्त राशन ले सकते हैं"
+      ],
+      "mr": [
+        "कुटुंबातील प्रत्येक व्यक्तीला दरमहा 5 किलो मोफत गहू किंवा तांदूळ",
+        "अंत्योदय (AAY) कुटुंबांना दरमहा 35 किलो मोफत अन्नधान्य",
+        "एक देश एक रेशन कार्ड (ONORC) मुळे स्थलांतरित कामगारांना भारतातील कोणत्याही रेशन दुकानातून धान्य घेता येते"
+      ],
+      "en": [
+        "5 kg free rice/wheat per person per month for Priority Households",
+        "35 kg free foodgrains per month for Antyodaya (AAY) households",
+        "ONORC biometric portability across any Fair Price Shop in India"
+      ]
+    },
+    "eligibility": [
+      "All Antyodaya Anna Yojana (AAY) and Priority Household (PHH) ration card holders across India",
+      "Migrant workers and rural/urban low-income households covered under NFSA"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "सभी अंत्योदय (AAY) और प्राथमिकता परिवार (PHH) राशन कार्ड धारक",
+        "प्रवासी मजदूर, निर्माण श्रमिक और आर्थिक रूप से कमजोर परिवार"
+      ],
+      "mr": [
+        "सर्व अंत्योदय आणि प्राधान्य कुटुंब रेशन कार्डधारक नागरिक",
+        "स्थलांतरित कामगार, शेतमजूर आणि अल्प उत्पन्न कुटुंबे"
+      ],
+      "en": [
+        "All Antyodaya (AAY) and Priority Household (PHH) ration card holders",
+        "Migrant laborers and low-income families under NFSA"
+      ]
+    },
+    "documents": [
+      "Ration Card",
+      "Aadhaar Card of family members (for e-PoS biometric authentication)"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "राशन कार्ड",
+        "परिवार के सदस्यों का आधार कार्ड (बायोमेट्रिक फिंगरप्रिंट हेतु)"
+      ],
+      "mr": [
+        "रेशन कार्ड",
+        "कुटुंबातील सदस्यांचे आधार कार्ड"
+      ],
+      "en": [
+        "Ration Card",
+        "Aadhaar Card (for biometric e-PoS authentication)"
+      ]
+    },
+    "howToApply": [
+      "Visit your nearest Fair Price Shop (ration dealer) with Aadhaar and Ration Card",
+      "Authenticate on the electronic Point of Sale (e-PoS) machine to collect your free monthly foodgrains quota"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "अपने नजदीकी सरकारी सस्ते गल्ले की दुकान (राशन डीलर) पर जाएं",
+        "ई-पॉस (e-PoS) मशीन पर अंगूठा लगाकर अपना मुफ़्त मासिक राशन प्राप्त करें"
+      ],
+      "mr": [
+        "जवळच्या शासकीय रेशन दुकानात जा",
+        "ई-पॉस मशीनवर बायोमेट्रिक अंगठा लावून मोफत रेशन मिळवा"
+      ],
+      "en": [
+        "Visit your nearest Fair Price Shop with Aadhaar",
+        "Authenticate on e-PoS biometric machine to collect free foodgrains"
+      ]
+    },
+    "officialLink": "https://nfsa.gov.in",
+    "helpline": "1967 / 1800-3456789",
+    "criteria": {
+      "minAge": 0,
+      "maxAge": 100,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "farmer",
+        "laborer",
+        "homemaker",
+        "vendor",
+        "artisan",
+        "unemployed",
+        "senior",
+        "student"
+      ],
+      "maxAnnualIncome": 200000,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": [
+        "ration",
+        "aadhaar"
+      ]
+    },
+    "keywords": [
+      "pmgkay",
+      "free ration",
+      "foodgrains",
+      "onorc",
+      "nfsa",
+      "मुफ़्त राशन",
+      "चावल",
+      "गेहूं",
+      "एक देश एक रेशन कार्ड"
+    ]
+  },
+  {
+    "id": "pm-poshan",
+    "icon": "🍲",
+    "iconId": "hospital_shield",
+    "category": "education",
+    "sourcePortal": "pmposhan.education.gov.in / myscheme.gov.in (Ministry of Education)",
+    "name": {
+      "hi": "प्रधानमंत्री पोषण शक्ति निर्माण (PM-POSHAN गर्म पका हुआ मुफ़्त दोपहर का भोजन)",
+      "mr": "प्रधानमंत्री पोषण शक्ती निर्माण (PM-POSHAN शालेय मध्यान्ह भोजन योजना)",
+      "en": "PM POSHAN Scheme (Free Nutritious Mid-Day Meal in Schools)"
+    },
+    "tagline": {
+      "hi": "कक्षा 1 से 8वीं तक के सभी सरकारी व सहायता प्राप्त स्कूलों के बच्चों को रोज़ाना मुफ़्त पौष्टिक गर्म भोजन",
+      "mr": "इयत्ता 1 ली ते 8 वी च्या सर्व शासकीय शाळांमधील विद्यार्थ्यांना दररोज मोफत सकस माध्यान्ह भोजन",
+      "en": "Hot cooked nutritious mid-day meals daily for 11+ Crore school children in Classes 1 to 8 across India"
+    },
+    "benefitBadge": {
+      "hi": "प्रति स्कूल दिवस 100% मुफ़्त गर्म पौष्टिक भोजन",
+      "mr": "दररोज मोफत सकस शालेय माध्यान्ह भोजन",
+      "en": "100% Free Daily School Mid-Day Meal"
+    },
+    "benefits": [
+      "Hot cooked meal providing 450 calories & 12g protein for primary (Classes 1-5), and 700 calories & 20g protein for upper primary (Classes 6-8)",
+      "Regular health checkups, Deworming tablets, and Iron & Folic Acid (IFA) supplements in schools",
+      "Tithi Bhojan community nutrition support and kitchen garden fresh produce"
+    ],
+    "benefitsI18n": {
+      "hi": [
+        "प्राथमिक कक्षा (1-5) के बच्चों को 450 कैलोरी व 12 ग्राम प्रोटीन तथा उच्च प्राथमिक (6-8) को 700 कैलोरी का मुफ़्त गर्म खाना",
+        "स्कूलों में नियमित स्वास्थ्य जांच, पेट के कीड़ों की दवा (Albendazole) और आयरन-फोलिक सप्लीमेंट",
+        "गरीब परिवारों के बच्चों के पोषण और स्कूल में नियमित उपस्थिति की गारंटी"
+      ],
+      "mr": [
+        "पहिली ते पाचवीच्या विद्यार्थ्यांना 450 कॅलरीज व सहावी ते आठवीच्या विद्यार्थ्यांना 700 कॅलरीजचा मोफत ताजा आहार",
+        "शाळेत नियमित आरोग्य तपासणी, जंतनाशक गोळ्या आणि आयर्न-फॉलिक ऍसिड पूरक पोषण",
+        "विद्यार्थ्यांच्या पोषण सुरक्षेची आणि गळती रोखण्याची खात्री"
+      ],
+      "en": [
+        "Nutritious hot cooked meals every school day",
+        "Regular school health screening, Deworming and IFA supplements",
+        "Boosts child nutrition and educational retention"
+      ]
+    },
+    "eligibility": [
+      "All children enrolled in Classes 1 to 8 in Government, Government-aided schools, Local Body schools, and Special Training Centers across India",
+      "Universal access; automatic enrollment upon school admission"
+    ],
+    "eligibilityI18n": {
+      "hi": [
+        "सरकारी, सहायता प्राप्त और स्थानीय निकाय के स्कूलों में कक्षा 1 से 8वीं तक पढ़ने वाले सभी बच्चे",
+        "स्कूल में प्रवेश लेते ही योजना का लाभ अपने-आप मिलने लगता है (कोई अलग फॉर्म नहीं चाहिए)"
+      ],
+      "mr": [
+        "शासकीय, अनुदानित व स्थानिक स्वराज्य संस्थांच्या शाळांमध्ये 1 ली ते 8 वी शिकणारे सर्व विद्यार्थी",
+        "शाळेत प्रवेश घेताच आपोआप लाभ मिळतो (वेगळा अर्ज भरण्याची गरज नाही)"
+      ],
+      "en": [
+        "All children enrolled in Classes 1 to 8 in Government and aided schools",
+        "Automatic enrollment with school admission"
+      ]
+    },
+    "documents": [
+      "School Admission / Enrolment Register (Handled by School Headmaster)"
+    ],
+    "documentsI18n": {
+      "hi": [
+        "स्कूल में दाखिला (स्कूल प्रधानाध्यापक द्वारा प्रबंधित)"
+      ],
+      "mr": [
+        "शाळेत नावनोंदणी (मुख्याध्यापकांमार्फत)"
+      ],
+      "en": [
+        "School Admission Record (Handled by School)"
+      ]
+    },
+    "howToApply": [
+      "Enroll child in any nearby Government or Government-aided elementary school",
+      "Nutritious hot meals are served automatically every working school day"
+    ],
+    "howToApplyI18n": {
+      "hi": [
+        "अपने बच्चे का दाखिला नजदीकी सरकारी या सहायता प्राप्त प्राथमिक स्कूल में कराएं",
+        "प्रत्येक स्कूल दिवस में दोपहर का भोजन स्कूल की रसोई में मुफ़्त परोसा जाता है"
+      ],
+      "mr": [
+        "मुलाचा जवळच्या शासकीय प्राथमिक किंवा माध्यमिक शाळेत प्रवेश घ्यावा",
+        "दररोज शाळेच्या मधल्या सुट्टीत भोजन आपोआप दिले जाते"
+      ],
+      "en": [
+        "Enroll child in nearest government elementary school",
+        "Meal served directly every working day"
+      ]
+    },
+    "officialLink": "https://pmposhan.education.gov.in",
+    "helpline": "1800-111-955",
+    "criteria": {
+      "minAge": 5,
+      "maxAge": 15,
+      "genders": [
+        "male",
+        "female",
+        "other"
+      ],
+      "occupations": [
+        "student"
+      ],
+      "maxAnnualIncome": null,
+      "areas": [
+        "rural",
+        "urban"
+      ],
+      "states": [
+        "all"
+      ],
+      "socialCategories": [
+        "general",
+        "obc",
+        "sc_st",
+        "minority",
+        "divyang"
+      ],
+      "requiredDocIds": []
+    },
+    "keywords": [
+      "pm poshan",
+      "mid day meal",
+      "school lunch",
+      "nutrition",
+      "मध्यान्ह भोजन",
+      "पीएम पोषण",
+      "शालेय पोषण आहार"
+    ]
   }
 ]
