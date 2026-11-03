@@ -511,6 +511,7 @@ function HomeContent() {
         body: JSON.stringify({
           transcript: userText,
           language: targetLangCode,
+          languageCode: targetLangCode,
         }),
       });
 
@@ -518,7 +519,31 @@ function HomeContent() {
         throw new Error('Chat request failed');
       }
 
-      const chatData: ChatResponse = await chatRes.json();
+      const rawData = await chatRes.json();
+      const chatData: ChatResponse = {
+        schemeId: rawData.schemeId || null,
+        schemeName: rawData.schemeName || rawData.card?.title || 'सरकारी योजना',
+        spokenAnswer: rawData.spokenAnswer || rawData.spokenText || '',
+        eligibility: Array.isArray(rawData.eligibility)
+          ? rawData.eligibility
+          : Array.isArray(rawData.card?.eligibility)
+          ? rawData.card.eligibility
+          : [],
+        benefits: Array.isArray(rawData.benefits)
+          ? rawData.benefits
+          : Array.isArray(rawData.card?.benefits)
+          ? rawData.card.benefits
+          : [],
+        documents: Array.isArray(rawData.documents)
+          ? rawData.documents
+          : Array.isArray(rawData.card?.documents)
+          ? rawData.card.documents
+          : [],
+        officialLink: rawData.officialLink || 'https://www.myscheme.gov.in',
+        confidence: rawData.confidence || 'high',
+        fallbackUsed: Boolean(rawData.fallbackUsed),
+        demoCached: Boolean(rawData.demoCached),
+      };
       setAnswer(chatData);
 
       if (chatData.spokenAnswer) {
@@ -590,7 +615,7 @@ function HomeContent() {
         const rawBlob = new Blob(audioChunksRef.current, {
           type: mediaRecorder.mimeType || 'audio/webm',
         });
-        if (rawBlob.size < 800) {
+        if (rawBlob.size < 300) {
           setMicState('idle');
           setErrorBanner(
             lang === 'en'
@@ -1144,7 +1169,7 @@ function HomeContent() {
                       <span>{t.keyBenefits}</span>
                     </div>
                     <ul className="space-y-1.5">
-                      {answer.benefits.map((item, idx) => (
+                      {(answer.benefits || []).map((item, idx) => (
                         <li key={idx} className="text-sm text-[#1E1E1E] flex items-start gap-2">
                           <span className="text-[#1B5E20] font-bold">•</span>
                           <span>{item}</span>
@@ -1159,7 +1184,7 @@ function HomeContent() {
                       <span>{t.eligibilityCriteria}</span>
                     </div>
                     <ul className="space-y-1.5">
-                      {answer.eligibility.map((item, idx) => (
+                      {(answer.eligibility || []).map((item, idx) => (
                         <li key={idx} className="text-sm text-[#1E1E1E] flex items-start gap-2">
                           <span className="text-saffron font-bold">✓</span>
                           <span>{item}</span>

@@ -17,7 +17,12 @@ export async function POST(req: NextRequest) {
 
     // Call Sarvam STT REST endpoint
     const sarvamFormData = new FormData();
-    sarvamFormData.append('file', file, 'recording.wav');
+    const mimeType = file.type || '';
+    let filename = 'recording.wav';
+    if (mimeType.includes('webm')) filename = 'recording.webm';
+    else if (mimeType.includes('ogg')) filename = 'recording.ogg';
+    else if (mimeType.includes('mp4')) filename = 'recording.mp4';
+    sarvamFormData.append('file', file, filename);
     sarvamFormData.append('model', process.env.SARVAM_STT_MODEL || 'saaras:v3');
     if (languageHint && languageHint !== 'unknown') {
       sarvamFormData.append('language_code', languageHint);

@@ -96,23 +96,36 @@ function getStaticFallback(matchedScheme: Scheme | undefined, langCode: string) 
   const benList = scheme.benefitsI18n?.[langKey] || scheme.benefits;
   const docList = scheme.documentsI18n?.[langKey] || scheme.documents;
 
+  const spoken = `${scheme.name[langKey]}। ${scheme.tagline[langKey]}। ${benList[0] || ''}`;
+
   return {
     schemeId: scheme.id,
-    spokenText: `${scheme.name[langKey]}। ${scheme.tagline[langKey]}। ${benList[0] || ''}`,
+    schemeName: scheme.name[langKey],
+    spokenAnswer: spoken,
+    spokenText: spoken,
     card: {
       title: scheme.name[langKey],
       eligibility: eligList,
       benefits: benList,
       documents: docList,
     },
+    eligibility: eligList,
+    benefits: benList,
+    documents: docList,
+    officialLink: scheme.officialLink || 'https://www.myscheme.gov.in',
+    confidence: 'high',
     languageCode: langCode || 'hi-IN',
     modelUsed: 'static-verified-rag',
+    fallbackUsed: true,
   };
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const { transcript, languageCode = 'hi-IN', isDemo = false } = await req.json();
+    const body = await req.json();
+    const transcript = body.transcript;
+    const languageCode = body.languageCode || body.language || 'hi-IN';
+    const isDemo = Boolean(body.isDemo);
 
     if (!transcript) {
       return NextResponse.json({ error: 'Transcript is required' }, { status: 400 });
@@ -217,8 +230,19 @@ ${contextJson}`;
         const parsed = JSON.parse(cleaned);
 
         if (parsed.spokenText && parsed.card) {
+          const schemeName = parsed.card?.title || primaryMatched?.name[baseLangKey] || 'सरकारी योजना';
+          const spoken = parsed.spokenText;
           return NextResponse.json({
-            ...parsed,
+            schemeId: parsed.schemeId || primaryMatched?.id || null,
+            schemeName,
+            spokenAnswer: spoken,
+            spokenText: spoken,
+            card: parsed.card,
+            eligibility: parsed.card?.eligibility || primaryMatched?.eligibility || [],
+            benefits: parsed.card?.benefits || primaryMatched?.benefits || [],
+            documents: parsed.card?.documents || primaryMatched?.documents || [],
+            officialLink: primaryMatched?.officialLink || 'https://www.myscheme.gov.in',
+            confidence: 'high',
             languageCode: languageCode || 'hi-IN',
             modelUsed: modelName,
           });
