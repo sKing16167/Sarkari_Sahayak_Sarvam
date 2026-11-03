@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFDF9"/>
+      <stop offset="100%" stop-color="#FFF3E0"/>
+    </linearGradient>
+    <linearGradient id="saffronGrad" x1="0" y1="0" x2="128" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF8F00"/>
+      <stop offset="100%" stop-color="#E65100"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0" y1="64" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2E7D32"/>
+      <stop offset="100%" stop-color="#1B5E20"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Rounded Shield Base -->
+  <rect x="6" y="6" width="116" height="116" rx="30" fill="url(#bgGrad)" stroke="#EADCC9" stroke-width="4"/>
+
+  <!-- Top Saffron Arc -->
+  <path d="M18 36C18 24.9543 26.9543 16 38 16H90C101.046 16 110 24.9543 110 36V44C82 36 46 36 18 44V36Z" fill="url(#saffronGrad)"/>
+
+  <!-- Bottom Civic Green Arc -->
+  <path d="M18 84C46 92 82 92 110 84V92C110 103.046 101.046 112 90 112H38C26.9543 112 18 103.046 18 92V84Z" fill="url(#greenGrad)"/>
+
+  <!-- Subtle Ashoka Chakra Ring -->
+  <circle cx="64" cy="64" r="28" stroke="#1A237E" stroke-width="2.5" stroke-dasharray="4 3" opacity="0.35"/>
+
+  <!-- Central Voice Microphone Emblem -->
+  <circle cx="64" cy="64" r="22" fill="#F57C00"/>
+  <rect x="58" y="50" width="12" height="18" rx="6" fill="#FFFFFF"/>
+  <path d="M52 61C52 67.6274 57.3726 73 64 73C70.6274 73 76 67.6274 76 61" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M64 73V79M58 79H70" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Soundwave Bars Left & Right -->
+  <path d="M31 58V70" stroke="#F57C00" stroke-width="4" stroke-linecap="round"/>
+  <path d="M23 61V67" stroke="#1B5E20" stroke-width="4" stroke-linecap="round"/>
+  <path d="M97 58V70" stroke="#F57C00" stroke-width="4" stroke-linecap="round"/>
+  <path d="M105 61V67" stroke="#1B5E20" stroke-width="4" stroke-linecap="round"/>
+</svg>
