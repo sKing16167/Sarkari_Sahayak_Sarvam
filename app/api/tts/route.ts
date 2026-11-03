@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const VALID_SPEAKERS = ['ritu', 'priya', 'neha', 'pooja', 'simran', 'kavya', 'aditya', 'ashutosh', 'rahul', 'rohan', 'amit', 'dev'];
+
 export async function POST(req: NextRequest) {
   try {
-    const { text, languageCode = 'hi-IN' } = await req.json();
+    const { text, languageCode = 'hi-IN', speaker: requestedSpeaker } = await req.json();
 
     if (!text || typeof text !== 'string') {
       return NextResponse.json({ error: 'Text input is required' }, { status: 400 });
@@ -13,15 +15,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'SARVAM_API_KEY not configured' }, { status: 500 });
     }
 
-    // Determine target language code (e.g. hi-IN, mr-IN, en-IN)
-    let lang = languageCode;
-    if (lang.startsWith('hi')) lang = 'hi-IN';
-    else if (lang.startsWith('mr')) lang = 'mr-IN';
-    else if (lang.startsWith('en')) lang = 'en-IN';
-    else if (!lang.includes('-')) lang = `${lang}-IN`;
+    // Normalize BCP-47 target language code supported by Sarvam Bulbul v3
+    const langMap: Record<string, string> = {
+      hi: 'hi-IN',
+      mr: 'mr-IN',
+      en: 'en-IN',
+      ta: 'ta-IN',
+      te: 'te-IN',
+      bn: 'bn-IN',
+      gu: 'gu-IN',
+      kn: 'kn-IN',
+      ml: 'ml-IN',
+      pa: 'pa-IN',
+      od: 'od-IN',
+    };
+
+    const shortCode = languageCode.split('-')[0].toLowerCase();
+    const lang = langMap[shortCode] || (languageCode.includes('-') ? languageCode : 'hi-IN');
 
     const model = process.env.SARVAM_TTS_MODEL || 'bulbul:v3';
-    const speaker = process.env.SARVAM_TTS_SPEAKER || 'ritu';
+    const envSpeaker = process.env.SARVAM_TTS_SPEAKER || 'ritu';
+    const speaker =
+      requestedSpeaker && VALID_SPEAKERS.includes(requestedSpeaker.toLowerCase())
+        ? requestedSpeaker.toLowerCase()
+        : envSpeaker;
 
     // Maximum characters per chunk for safety
     const trimmedText = text.slice(0, 500);
@@ -60,6 +77,9 @@ export async function POST(req: NextRequest) {
       audioBase64,
       mimeType: 'audio/wav',
       dataUrl: `data:audio/wav;base64,${audioBase64}`,
+      modelUsed: model,
+      speakerUsed: speaker,
+      languageCode: lang,
     });
   } catch (err: any) {
     console.error('TTS handler error:', err);

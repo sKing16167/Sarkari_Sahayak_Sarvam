@@ -28,6 +28,17 @@ interface Scheme {
   keywords: string[];
 }
 
+const LANGUAGE_NAMES: Record<string, string> = {
+  'hi-IN': 'Hindi (हिंदी)',
+  'mr-IN': 'Marathi (मराठी)',
+  'en-IN': 'simple English',
+  'ta-IN': 'Tamil (தமிழ்)',
+  'te-IN': 'Telugu (తెలుగు)',
+  'bn-IN': 'Bengali (বাংলা)',
+  'gu-IN': 'Gujarati (ગુજરાતી)',
+  'kn-IN': 'Kannada (ಕನ್ನಡ)',
+};
+
 function matchSchemes(transcript: string, schemes: Scheme[]): Scheme[] {
   const lower = transcript.toLowerCase();
   const scored = schemes
@@ -72,7 +83,7 @@ function cleanJsonText(raw: string): string {
   return cleaned.trim();
 }
 
-function getLangKey(langCode: string): 'hi' | 'mr' | 'en' {
+function getBaseLangKey(langCode: string): 'hi' | 'mr' | 'en' {
   if (langCode.startsWith('mr')) return 'mr';
   if (langCode.startsWith('en')) return 'en';
   return 'hi';
@@ -80,7 +91,7 @@ function getLangKey(langCode: string): 'hi' | 'mr' | 'en' {
 
 function getStaticFallback(matchedScheme: Scheme | undefined, langCode: string) {
   const scheme = (matchedScheme || schemesData[0]) as Scheme;
-  const langKey = getLangKey(langCode);
+  const langKey = getBaseLangKey(langCode);
   const eligList = scheme.eligibilityI18n?.[langKey] || scheme.eligibility;
   const benList = scheme.benefitsI18n?.[langKey] || scheme.benefits;
   const docList = scheme.documentsI18n?.[langKey] || scheme.documents;
@@ -95,6 +106,7 @@ function getStaticFallback(matchedScheme: Scheme | undefined, langCode: string) 
       documents: docList,
     },
     languageCode: langCode || 'hi-IN',
+    modelUsed: 'static-verified-rag',
   };
 }
 
@@ -106,7 +118,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Transcript is required' }, { status: 400 });
     }
 
-    const langKey = getLangKey(languageCode);
+    const baseLangKey = getBaseLangKey(languageCode);
 
     // Demo mode fallback check
     if (isDemo) {
@@ -119,7 +131,7 @@ export async function POST(req: NextRequest) {
           (d.schemeId && lower.includes(d.schemeId))
       );
       if (cached) {
-        return NextResponse.json(cached);
+        return NextResponse.json({ ...cached, modelUsed: 'demo-cache' });
       }
       const matchedForDemo = matchSchemes(transcript, schemesData as Scheme[]);
       return NextResponse.json(getStaticFallback(matchedForDemo[0], languageCode));
@@ -136,13 +148,13 @@ export async function POST(req: NextRequest) {
     const contextJson = JSON.stringify(
       matchedSchemes.map((s) => ({
         id: s.id,
-        name: s.name[langKey] || s.name.hi,
+        name: s.name[baseLangKey] || s.name.hi,
         category: s.category,
-        tagline: s.tagline[langKey] || s.tagline.hi,
-        eligibility: s.eligibilityI18n?.[langKey] || s.eligibility,
-        benefits: s.benefitsI18n?.[langKey] || s.benefits,
-        documents: s.documentsI18n?.[langKey] || s.documents,
-        howToApply: s.howToApplyI18n?.[langKey] || s.howToApply,
+        tagline: s.tagline[baseLangKey] || s.tagline.hi,
+        eligibility: s.eligibilityI18n?.[baseLangKey] || s.eligibility,
+        benefits: s.benefitsI18n?.[baseLangKey] || s.benefits,
+        documents: s.documentsI18n?.[baseLangKey] || s.documents,
+        howToApply: s.howToApplyI18n?.[baseLangKey] || s.howToApply,
         helpline: s.helpline,
         officialLink: s.officialLink,
       })),
@@ -150,8 +162,7 @@ export async function POST(req: NextRequest) {
       2
     );
 
-    const targetLangName =
-      langKey === 'mr' ? 'Marathi (मराठी)' : langKey === 'en' ? 'simple English' : 'Hindi (हिंदी)';
+    const targetLangName = LANGUAGE_NAMES[languageCode] || 'Hindi (हिंदी)';
 
     const systemPrompt = `You are Sarkari Sahayak, a warm, trustworthy helper for low-literacy citizens in India.
 Answer ONLY from the SCHEMES CONTEXT provided below. Never invent benefits, amounts, dates, or eligibility rules.
@@ -161,7 +172,7 @@ Use very short, simple, everyday words (Class 5 reading level). If information i
 Return ONLY a single valid JSON object (no markdown fences, no extra explanation):
 {
   "schemeId": "matched-scheme-id or null",
-  "spokenText": "2 to 3 short, friendly sentences in ${targetLangName} suitable for reading aloud via TTS, with numbers written clearly in words or simple digits and no bullet symbols",
+  "spokenText": "2 to 3 short, friendly sentences in ${targetLangName} suitable for reading aloud via TTS, with numbers written clearly and no bullet symbols",
   "card": {
     "title": "Clear title in ${targetLangName}",
     "eligibility": ["Short point 1 in ${targetLangName}", "Short point 2"],
@@ -206,7 +217,11 @@ ${contextJson}`;
         const parsed = JSON.parse(cleaned);
 
         if (parsed.spokenText && parsed.card) {
-          return NextResponse.json(parsed);
+          return NextResponse.json({
+            ...parsed,
+            languageCode: languageCode || 'hi-IN',
+            modelUsed: modelName,
+          });
         }
         throw new Error('Missing spokenText or card in response');
       } catch (err: any) {

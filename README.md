@@ -1,81 +1,61 @@
-# Sarkari Sahayak (सरकारी सहायक)
+# Sarkari Sahayak (सरकारी सहायक) 🇮🇳
 
-> **Voice-first government welfare scheme assistant for low-literacy Indian citizens, powered by Sarvam AI.**
+> **Voice-First, Multilingual Indian Government Welfare Scheme Assistant for Low-Literacy Citizens — Powered End-to-End by the Sarvam AI Sovereign Stack.**
 
-Built for the hackathon demo in Next.js 14, Tailwind CSS, TypeScript, and the Sarvam AI platform.
+Built with **Next.js 14**, **Tailwind CSS**, **TypeScript**, **Google Stitch Design System ("Sovereign Civic")**, and **4 Core Sarvam AI APIs**.
+
+---
+
+## 🧠 Deep Sarvam AI Stack Integration (Judge Evaluation Guide)
+
+Every interactive feature in **Sarkari Sahayak** utilizes live server-side calls to Sarvam AI APIs (with a live **Sarvam AI Telemetry Bar** in the UI showing active model invocations):
+
+| Sarvam AI Service | Model Used | Endpoint | Where It Powers Sarkari Sahayak |
+| :--- | :--- | :--- | :--- |
+| **1. Speech-to-Text (STT)** | `saaras:v3` | `POST /api/stt` (`https://api.sarvam.ai/speech-to-text`) | Hold-to-speak voice queries in code-mixed Hinglish, Marathi, Tamil, Telugu, Bengali, Gujarati, Kannada, & English (`language_code: unknown`). Also powers voice answers in the Eligibility Wizard. |
+| **2. Sovereign LLM Chat** | `sarvam-105b-conversations` | `POST /api/chat` (`https://api.sarvam.ai/v1/chat/completions`) | Grounded RAG over 18 verified central & state government schemes (`data/schemes.json`). Zero hallucination of benefit amounts or eligibility criteria. Also generates personalized eligibility explanations. |
+| **3. Indic Translation** | `mayura:v1` (`mode: formal`) | `POST /api/translate` (`https://api.sarvam.ai/translate`) | Real-time neural translation of scheme cards, full scheme detail pages, and document readiness advisories across **8 Indic languages** (`hi-IN`, `mr-IN`, `ta-IN`, `te-IN`, `bn-IN`, `gu-IN`, `kn-IN`, `en-IN`). |
+| **4. Text-to-Speech (TTS)** | `bulbul:v3` | `POST /api/tts` (`https://api.sarvam.ai/text-to-speech`) | Reads aloud scheme summaries on every card (`सुनें`), speaks full answers in the voice assistant, and narrates personalized eligibility & document readiness advisories with selectable voices (`ritu`, `priya`, `aditya`, `rohan`). |
 
 ---
 
 ## 🌟 Key Features
 
-1. **Voice-First Interaction (Hold to Speak):**
-   - Natural speech in mixed Hindi/English (Hinglish) or Marathi/English.
-   - Converts speech to 16kHz mono WAV and transcribes via **Sarvam Saaras STT (`saaras:v3`)**.
-2. **Grounded Sovereign Intelligence:**
-   - Powered by **Sarvam 105B (`sarvam-105b-conversations`)**.
-   - Answers are strictly grounded in verified scheme data (`data/schemes.json`). Never hallucinates amounts or rules.
-3. **Voice Response (Audio Autoplay):**
-   - Speaks answers aloud using **Sarvam Bulbul TTS (`bulbul:v3`, speaker `ritu`)** in Hindi, Marathi, and English.
-   - Animated visual equalizer waveform and replay controls.
-4. **Accessible Mobile UI (Tactile Clarity):**
-   - 390px mobile viewport, ≥56px touch targets, 18px+ readable text, high contrast.
-   - Saffron (`#F57C00`) action colors & civic green (`#1B5E20`) for confirmed benefits.
-5. **Bulletproof Fallbacks (Never Fails):**
-   - **Microphone Denied:** Instant toggle to typed text query.
-   - **LLM Parsing Error:** Automatic fallback to verified static card.
-   - **TTS Unavailable:** Soft text-only display without crashing.
-   - **Offline / Rate-Limit Demo Mode:** Toggleable `?demo=1` mode serving instant cached answers.
+1. **18 Verified Official Central & State Government Schemes (`data/schemes.json`):**
+   - Covers 6 major citizen categories: **Farmer (`farmer`)**, **Women (`women`)**, **Health (`health`)**, **Housing (`housing`)**, **Livelihood (`livelihood`)**, and **Education (`education`)**.
+   - Includes PM-KISAN, Ladki Bahin Yojana, Ayushman Bharat PM-JAY, PM Ujjwala 2.0, PMAY, Sukanya Samriddhi, PM Vishwakarma, PM SVANidhi, PMFBY, Kisan Credit Card, Atal Pension Yojana, PM Matru Vandana, Lakhpati Didi, E-Shram, PM Surya Ghar Muft Bijli, MGNREGA, Stand-Up India, and Janani Suraksha Yojana.
+2. **🎯 3-Step Visual & Voice Eligibility Wizard (`पात्रता जांचें`):**
+   - Designed for low-literacy users with giant icon tiles (Occupation, Gender/Group, State/Area) or direct **Speak About Yourself (`बोलकर अपनी जानकारी दें`)** input via `saaras:v3`.
+   - Instant matching + grounded explanation by `sarvam-105b-conversations` + spoken advisory via `bulbul:v3`.
+3. **📄 Document Readiness & Checklist Analyzer (`दस्तावेज़ जांचें`):**
+   - Citizens tap the documents they currently hold (Aadhaar, Ration Card, Bank Passbook, 7/12 Land Record, Income Certificate, etc.) or upload a document note.
+   - `/api/doc-check` cross-checks all 18 schemes to show **"100% Ready to Apply Today"** vs **"Almost Ready (1 Document Missing)"**, translates the advisory via `mayura:v1`, and speaks it aloud via `bulbul:v3`.
+4. **🎨 3 Stitch-Assessed Accessible Color Themes:**
+   - **🌅 केसरिया (Civic Warmth):** Warm Ivory (`#FAF7F2`), Saffron (`#F57C00`), and Forest Green (`#1B5E20`).
+   - **🏛️ अशोक नेवी (Sovereign Navy & Gold):** Deep Ashoka Navy (`#1A237E`) & Marigold (`#F57C00`) for institutional authority.
+   - **☀️ धूप मोड (High-Contrast Daylight AAA):** Pure White (`#FFFFFF`), Deep Charcoal (`#090D16`), and high-contrast borders for rural outdoor sunlight visibility.
 
 ---
 
-## 🚀 Quick Start / How to Run the Demo
-
-The production server is already built and running locally at:
-👉 **[http://localhost:3000](http://localhost:3000)**
-
-If you ever need to restart the server manually:
+## 🚀 Quick Start
 
 ```bash
-# 1. Install dependencies (if fresh clone)
+# 1. Install dependencies
 npm install
 
-# 2. Build the optimized production bundle
-npm run build
+# 2. Add your Sarvam API key in .env.local
+# SARVAM_API_KEY=your_key_here
 
-# 3. Start the application
+# 3. Build and start production server
+npm run build
 npm run start
 ```
-*(Or for rapid development with live reload: `npm run dev`)*
 
----
-
-## 🎬 60-Second Hackathon Demo Script
-
-1. **Introduction (10s):**
-   - *"Meet Rameshbhai, a farmer who cannot read long bureaucratic forms. Today, we show you Sarkari Sahayak."*
-   - Open **`http://localhost:3000`** in mobile view (or DevTools mobile responsive mode at 390px).
-
-2. **Hinglish Voice Query (20s):**
-   - Hold the big saffron mic button at the bottom:
-   - Speak: **"PM Kisan ke liye documents kya lagte hain?"** (or tap the suggestion chip).
-   - Watch the mic transition: `recording` (with timer) ➔ `thinking` (dots) ➔ `speaking` (waveform).
-   - Show the structured answer: **Eligibility**, **Benefits**, and **Documents Needed** with audio playing aloud.
-
-3. **Regional & Code-Mixed Understanding (15s):**
-   - Tap the **मराठी** language chip.
-   - Ask or tap: **"Ladki Bahin yojana ke benefits kya hain?"**
-   - Point out the visible badge: **"Understands Hindi + English mixed 🎙️"** — Sarvam's code-mixed speech understanding handles vernacular speech seamlessly.
-
-4. **Scheme Exploration & Fallbacks (10s):**
-   - Tap on the scheme card or click **"पूरी जानकारी व आवेदन विधि"** to open `/scheme/ladki-bahin` with official portal links and step-by-step application guidance.
-   - Show the offline demo toggle (`?demo=1`) showing that the app works even if network drops.
-
-5. **Closing (5s):**
-   - *"Any citizen, any literacy level, one single button."*
+Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 ---
 
 ## 🔒 Security
 
-- All Sarvam AI API interactions happen **server-side** via Next.js Route Handlers (`/api/stt`, `/api/chat`, `/api/tts`).
-- `SARVAM_API_KEY` is loaded securely from `.env.local` and is never exposed in browser bundles or client network requests.
+- All Sarvam AI calls execute strictly server-side in Next.js App Router API routes (`/api/stt`, `/api/chat`, `/api/tts`, `/api/translate`, `/api/doc-check`).
+- `.env` and `.env.local` are git-ignored so `SARVAM_API_KEY` is never exposed to the client or repository.

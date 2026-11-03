@@ -13,14 +13,43 @@ import {
   Loader2,
   Square,
   PhoneCall,
+  Languages,
+  Cpu,
 } from 'lucide-react';
+
+type IndicLang = 'hi' | 'mr' | 'ta' | 'te' | 'bn' | 'gu' | 'kn' | 'en';
+
+const LANG_OPTIONS: { id: IndicLang; code: string; label: string }[] = [
+  { id: 'hi', code: 'hi-IN', label: 'हिन्दी' },
+  { id: 'mr', code: 'mr-IN', label: 'मराठी' },
+  { id: 'ta', code: 'ta-IN', label: 'தமிழ்' },
+  { id: 'te', code: 'te-IN', label: 'తెలుగు' },
+  { id: 'bn', code: 'bn-IN', label: 'বাংলা' },
+  { id: 'gu', code: 'gu-IN', label: 'ગુજરાતી' },
+  { id: 'kn', code: 'kn-IN', label: 'ಕನ್ನಡ' },
+  { id: 'en', code: 'en-IN', label: 'English' },
+];
 
 export default function SchemeDetailPage() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
 
-  const [lang, setLang] = useState<'hi' | 'mr' | 'en'>('hi');
+  const [lang, setLang] = useState<IndicLang>('hi');
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translatedDetails, setTranslatedDetails] = useState<Record<
+    string,
+    {
+      name: string;
+      tagline: string;
+      badge: string;
+      benefits: string[];
+      eligibility: string[];
+      documents: string[];
+      howToApply: string[];
+    }
+  >>({});
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(null);
@@ -34,6 +63,74 @@ export default function SchemeDetailPage() {
       }
     };
   }, [audioInstance]);
+
+  useEffect(() => {
+    if (!scheme) return;
+    if (lang === 'hi' || lang === 'mr' || lang === 'en') return;
+    if (translatedDetails[lang]) return;
+
+    const translateScheme = async () => {
+      try {
+        setIsTranslating(true);
+        const targetCode = LANG_OPTIONS.find((l) => l.id === lang)?.code || 'hi-IN';
+
+        const baseName = scheme.name.en;
+        const baseTagline = scheme.tagline.en;
+        const baseBadge = scheme.benefitBadge?.en || scheme.benefits[0];
+        const baseBenefits: string[] = scheme.benefitsI18n?.en || scheme.benefits;
+        const baseEligibility: string[] = scheme.eligibilityI18n?.en || scheme.eligibility;
+        const baseDocs: string[] = scheme.documentsI18n?.en || scheme.documents;
+        const baseHow: string[] = scheme.howToApplyI18n?.en || scheme.howToApply;
+
+        const allStrings = [
+          baseName,
+          baseTagline,
+          baseBadge,
+          ...baseBenefits,
+          ...baseEligibility,
+          ...baseDocs,
+          ...baseHow,
+        ];
+
+        const res = await fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            texts: allStrings,
+            sourceLanguageCode: 'en-IN',
+            targetLanguageCode: targetCode,
+          }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const t: string[] = data.translatedTexts || allStrings;
+          let idx = 0;
+          const name = t[idx++];
+          const tagline = t[idx++];
+          const badge = t[idx++];
+          const benefits = t.slice(idx, idx + baseBenefits.length);
+          idx += baseBenefits.length;
+          const eligibility = t.slice(idx, idx + baseEligibility.length);
+          idx += baseEligibility.length;
+          const documents = t.slice(idx, idx + baseDocs.length);
+          idx += baseDocs.length;
+          const howToApply = t.slice(idx, idx + baseHow.length);
+
+          setTranslatedDetails((prev) => ({
+            ...prev,
+            [lang]: { name, tagline, badge, benefits, eligibility, documents, howToApply },
+          }));
+        }
+      } catch (e) {
+        console.error('Detail translation error:', e);
+      } finally {
+        setIsTranslating(false);
+      }
+    };
+
+    translateScheme();
+  }, [lang, scheme, translatedDetails]);
 
   if (!scheme) {
     return (
@@ -49,11 +146,21 @@ export default function SchemeDetailPage() {
     );
   }
 
-  const benefitsList: string[] = scheme.benefitsI18n?.[lang] || scheme.benefits;
-  const eligibilityList: string[] = scheme.eligibilityI18n?.[lang] || scheme.eligibility;
-  const documentsList: string[] = scheme.documentsI18n?.[lang] || scheme.documents;
-  const howToApplyList: string[] = scheme.howToApplyI18n?.[lang] || scheme.howToApply;
-  const benefitBadge: string = scheme.benefitBadge?.[lang] || scheme.benefitBadge?.hi || benefitsList[0];
+  const isNativeLang = lang === 'hi' || lang === 'mr' || lang === 'en';
+  const tData = !isNativeLang ? translatedDetails[lang] : null;
+
+  const displayName = tData?.name || scheme.name[isNativeLang ? lang : 'hi'];
+  const displayTagline = tData?.tagline || scheme.tagline[isNativeLang ? lang : 'hi'];
+  const benefitsList: string[] =
+    tData?.benefits || scheme.benefitsI18n?.[isNativeLang ? lang : 'hi'] || scheme.benefits;
+  const eligibilityList: string[] =
+    tData?.eligibility || scheme.eligibilityI18n?.[isNativeLang ? lang : 'hi'] || scheme.eligibility;
+  const documentsList: string[] =
+    tData?.documents || scheme.documentsI18n?.[isNativeLang ? lang : 'hi'] || scheme.documents;
+  const howToApplyList: string[] =
+    tData?.howToApply || scheme.howToApplyI18n?.[isNativeLang ? lang : 'hi'] || scheme.howToApply;
+  const benefitBadge: string =
+    tData?.badge || scheme.benefitBadge?.[isNativeLang ? lang : 'hi'] || scheme.benefitBadge?.hi || benefitsList[0];
 
   const handlePlayTTS = async () => {
     if (isPlaying && audioInstance) {
@@ -64,19 +171,13 @@ export default function SchemeDetailPage() {
 
     try {
       setIsLoadingAudio(true);
-      const spokenSummary =
-        lang === 'mr'
-          ? `${scheme.name.mr}। ${scheme.tagline.mr}। मुख्य लाभ: ${benefitsList.slice(0, 2).join('। ')}। आवश्यक कागदपत्रे: ${documentsList.slice(0, 3).join(', ')}।`
-          : lang === 'en'
-          ? `${scheme.name.en}. ${scheme.tagline.en}. Key benefits: ${benefitsList.slice(0, 2).join('. ')}. Required documents: ${documentsList.slice(0, 3).join(', ')}.`
-          : `${scheme.name.hi}। ${scheme.tagline.hi}। मुख्य लाभ: ${benefitsList.slice(0, 2).join('। ')}। जरूरी दस्तावेज: ${documentsList.slice(0, 3).join(', ')}।`;
-
-      const langCode = lang === 'mr' ? 'mr-IN' : lang === 'en' ? 'en-IN' : 'hi-IN';
+      const spokenSummary = `${displayName}। ${displayTagline}। ${benefitsList.slice(0, 2).join('। ')}। ${documentsList.slice(0, 3).join(', ')}।`;
+      const langCode = LANG_OPTIONS.find((l) => l.id === lang)?.code || 'hi-IN';
 
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: spokenSummary, languageCode: langCode }),
+        body: JSON.stringify({ text: spokenSummary, languageCode: langCode, speaker: 'ritu' }),
       });
 
       if (!res.ok) throw new Error('Audio generation failed');
@@ -104,29 +205,39 @@ export default function SchemeDetailPage() {
 
       <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-5">
         {/* Top Bar */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#E6D7C3]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E6D7C3]">
           <button
             onClick={() => router.push('/')}
-            className="min-h-[48px] px-4 flex items-center gap-2 rounded-2xl bg-white border border-[#E6D7C3] shadow-2xs text-[#1E1E1E] hover:border-saffron active:scale-95 transition-all text-sm font-bold"
+            className="min-h-[48px] px-4 flex items-center gap-2 rounded-2xl bg-white border border-[#E6D7C3] shadow-2xs text-[#1E1E1E] hover:border-saffron active:scale-95 transition-all text-sm font-bold self-start"
             aria-label="Back to home"
           >
             <ArrowLeft className="w-5 h-5 text-saffron" />
             <span>{lang === 'mr' ? 'मागे जा (Back)' : lang === 'en' ? 'Back to All Schemes' : 'सभी योजनाओं पर वापस जाएं'}</span>
           </button>
 
-          {/* Language switcher */}
-          <div className="flex bg-white rounded-xl p-1 border border-[#E6D7C3] shadow-2xs">
-            {(['hi', 'mr', 'en'] as const).map((l) => (
+          {/* 8-Language Sarvam Mayura Bar */}
+          <div className="flex items-center gap-1.5 flex-wrap bg-white rounded-2xl p-1.5 border border-[#E6D7C3] shadow-2xs">
+            <span className="inline-flex items-center gap-1 text-xs font-extrabold text-saffron px-2">
+              <Languages className="w-3.5 h-3.5" />
+              Mayura:
+            </span>
+            {LANG_OPTIONS.map((l) => (
               <button
-                key={l}
-                onClick={() => setLang(l)}
-                className={`px-3.5 py-1.5 rounded-lg text-sm font-bold transition-colors ${
-                  lang === l ? 'bg-saffron text-white shadow-xs' : 'text-[#545454] hover:text-[#1E1E1E]'
+                key={l.id}
+                onClick={() => setLang(l.id)}
+                className={`px-2.5 py-1 rounded-xl text-xs font-extrabold transition-colors ${
+                  lang === l.id ? 'bg-saffron text-white shadow-2xs' : 'text-[#545454] hover:text-[#1E1E1E]'
                 }`}
               >
-                {l === 'hi' ? 'हिंदी' : l === 'mr' ? 'मराठी' : 'English'}
+                {l.label}
               </button>
             ))}
+            {isTranslating && (
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-saffron px-2">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                Translating...
+              </span>
+            )}
           </div>
         </div>
 
@@ -149,13 +260,17 @@ export default function SchemeDetailPage() {
                       हेल्पलाइन: {scheme.helpline}
                     </span>
                   )}
+                  <span className="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-1 rounded-xl bg-slate-900 text-amber-300">
+                    <Cpu className="w-3 h-3" />
+                    bulbul:v3 + mayura:v1
+                  </span>
                 </div>
 
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1E1E1E] leading-tight">
-                  {scheme.name[lang]}
+                  {displayName}
                 </h1>
                 <p className="mt-2.5 text-base sm:text-lg text-[#545454] font-medium leading-relaxed">
-                  {scheme.tagline[lang]}
+                  {displayTagline}
                 </p>
               </div>
             </div>
